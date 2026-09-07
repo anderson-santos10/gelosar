@@ -1,0 +1,401 @@
+:root {
+    --gs-primary: #0B63C5;
+    --gs-primary-hover: #094F9E;
+    --gs-navy: #0B2C5C;
+    --gs-navy-dark: #071E40;
+    --gs-cyan: #2BA4E0;
+    --gs-ice: #EEF6FC;
+    --gs-text: #12233A;
+    --gs-text-muted: #6B7C90;
+    --gs-border: #D9E3EE;
+    --gs-danger: #C0392B;
+    --gs-danger-bg: #FDECEC;
+    --gs-success-bg: #E8F6EE;
+    --gs-warning-bg: #FFF6E5;
+    --gs-info-bg: #E8F3FC;
+    --gs-radius-sm: 6px;
+    --gs-radius-md: 8px;
+    --gs-radius-lg: 12px;
+    --gs-shadow-lg: 0 14px 32px rgba(11, 44, 92, 0.18);
+    --gs-font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --gs-focus: rgba(11, 99, 197, 0.28);
+
+    --gelosar-primary: var(--gs-primary);
+    --gelosar-primary-hover: var(--gs-primary-hover);
+    --gelosar-dark-navy: var(--gs-navy);
+    --gelosar-ice-bg: var(--gs-ice);
+    --gelosar-border: var(--gs-border);
+    --gelosar-focus-ring: var(--gs-focus);
+}
+
+body.gs-login {
+    min-height: 100vh;
+    background: var(--gs-navy-dark);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--gs-font-family);
+    margin: 0;
+    position: relative;
+    overflow-x: hidden;
+    color: var(--gs-text);
+    -webkit-font-smoothing: antialiased;
+}
+
+
+/* ============================================================
+   FORMAS DECORATIVAS
+============================================================ */
+
+.bg-shape {
+    position: absolute;
+    pointer-events: none;
+    z-index: 0;
+    background: rgba(43, 164, 224, 0.12);
+    clip-path: polygon(25% 6.7%, 75% 6.7%, 100% 50%, 75% 93.3%, 25% 93.3%, 0% 50%);
+}
+
+.shape-1 {
+    width: 320px;
+    height: 320px;
+    top: -90px;
+    right: -70px;
+}
+
+.shape-2 {
+    width: 200px;
+    height: 200px;
+    bottom: -60px;
+    left: -50px;
+    background: rgba(255, 255, 255, 0.06);
+}
+
+
+/* ============================================================
+   CARD DE LOGIN
+============================================================ */
+
+.login-card {
+    background: #ffffff;
+    border-radius: var(--gs-radius-lg);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    box-shadow: var(--gs-shadow-lg);
+    padding: 2.25rem 2rem;
+    width: 100%;
+    max-width: 400px;
+    position: relative;
+    z-index: 1;
+}
+
+
+/* ============================================================
+   LOGO
+============================================================ */
+
+.logo-container {
+    width: 100%;
+    text-align: center;
+
+    margin-bottom: 1.75rem;
+    padding: 0;
+}
+
+.logo-container img {
+    width: auto;
+    height: auto;
+    max-width: 200px;
+    max-height: 120px;
+    object-fit: contain;
+    display: block;
+    margin: 0 auto;
+}
+
+
+/* ============================================================
+   TÍTULO
+============================================================ */
+
+.welcome-title {
+    color: var(--gs-navy);
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: 1.5rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.gs-alert {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    padding: 0.7rem 0.85rem;
+    border-radius: var(--gs-radius-md);
+    border: 1px solid var(--gs-border);
+    font-size: 0.8125rem;
+}
+
+.gs-alert--error,
+.gs-alert--danger {
+    background: var(--gs-danger-bg);
+    border-color: #F5C2C7;
+    color: var(--gs-danger);
+}
+
+.gs-alert--success {
+    background: var(--gs-success-bg);
+    color: #1B7F4A;
+}
+
+.gs-alert--warning {
+    background: var(--gs-warning-bg);
+    color: #9A6B00;
+}
+
+.gs-alert--info {
+    background: var(--gs-info-bg);
+    color: var(--gs-primary);
+}
+
+.gs-field-error {
+    margin: 0.35rem 0 0;
+    color: var(--gs-danger);
+    font-size: 0.8125rem;
+}
+
+
+/* ============================================================
+   LABELS
+============================================================ */
+
+.form-label {
+    color: #334155;
+
+    font-size: 0.8125rem;
+    font-weight: 600;
+
+    margin-bottom: 0.4rem;
+}
+
+
+/* ============================================================
+   INPUTS (Ajustado integração Ícone + Campo)
+============================================================ */
+
+.input-group {
+    border: 1px solid var(--gelosar-border);
+    border-radius: 8px;
+    transition: all 0.2s ease-in-out;
+    background-color: var(--gelosar-ice-bg);
+    overflow: hidden;
+    flex-wrap: nowrap;
+}
+
+.input-group-text {
+    background-color: transparent;
+
+    border: none;
+
+    color: #64748b;
+    padding-left: 0.875rem;
+    padding-right: 0.5rem;
+}
+
+.input-group .toggle-password {
+    cursor: pointer;
+    padding-left: 0.4rem;
+    padding-right: 0.875rem;
+    color: #64748b;
+}
+
+.input-group .toggle-password:hover {
+    color: var(--gelosar-primary);
+}
+
+.form-control {
+    border: none;
+
+    background-color: transparent;
+
+    padding: 0.65rem 0.875rem 0.65rem 0.25rem;
+
+    font-size: 0.875rem;
+    color: var(--gelosar-dark-navy);
+    box-shadow: none;
+}
+
+.form-control::placeholder {
+    color: #94a3b8;
+}
+
+.form-control:focus {
+    box-shadow: none;
+    background-color: transparent;
+    border-color: transparent;
+}
+
+.form-control:-webkit-autofill,
+.form-control:-webkit-autofill:hover,
+.form-control:-webkit-autofill:focus {
+    -webkit-text-fill-color: var(--gelosar-dark-navy);
+    -webkit-box-shadow: 0 0 0 1000px var(--gelosar-ice-bg) inset;
+    transition: background-color 9999s ease-out;
+}
+
+/* Estado de Foco Unificado no Input-Group */
+.input-group:focus-within {
+    background-color: #ffffff;
+    border-color: var(--gelosar-primary);
+    box-shadow: 0 0 0 3px var(--gelosar-focus-ring);
+}
+
+.input-group:focus-within .input-group-text {
+    color: var(--gelosar-primary);
+}
+
+
+/* ============================================================
+   ESQUECEU A SENHA
+============================================================ */
+
+.login-options {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+}
+
+.login-options .form-check {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0;
+    padding: 0;
+    min-height: auto;
+}
+
+.login-options .form-check-input {
+    float: none;
+    margin: 0;
+    position: static;
+    width: 1rem;
+    height: 1rem;
+    flex-shrink: 0;
+}
+
+.forgot-link {
+    color: var(--gelosar-primary);
+
+    font-size: 0.8125rem;
+
+    text-decoration: none;
+
+    font-weight: 600;
+
+    white-space: nowrap;
+    margin-left: auto;
+
+    transition: color 0.15s ease;
+}
+
+.forgot-link:hover {
+    color: var(--gelosar-primary-hover);
+    text-decoration: underline;
+}
+
+
+/* ============================================================
+   BOTÃO LOGIN
+============================================================ */
+
+.btn-login {
+    background-color: var(--gs-primary);
+    border: 1px solid var(--gs-primary);
+    border-radius: var(--gs-radius-sm);
+    padding: 0.75rem;
+    font-weight: 600;
+    font-size: 0.9375rem;
+    color: #ffffff;
+    min-height: 44px;
+    transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.btn-login:hover {
+    background-color: var(--gs-primary-hover);
+    border-color: var(--gs-primary-hover);
+    color: #ffffff;
+}
+
+.btn-login:focus-visible {
+    outline: 3px solid var(--gs-focus);
+    outline-offset: 2px;
+}
+
+.btn-login:active {
+    background-color: #073F7E;
+}
+
+
+/* ============================================================
+   CHECKBOX
+============================================================ */
+
+.form-check-input:checked {
+    background-color: var(--gelosar-primary);
+    border-color: var(--gelosar-primary);
+}
+
+.form-check-input:focus {
+    box-shadow: 0 0 0 3px var(--gelosar-focus-ring);
+    border-color: var(--gelosar-primary);
+}
+
+.form-check-label {
+    font-size: 0.8125rem;
+
+    color: #475569;
+
+    user-select: none;
+}
+
+
+/* ============================================================
+   RODAPÉ
+============================================================ */
+
+.footer-links {
+    margin-top: 1.75rem;
+    text-align: center;
+    z-index: 1;
+    color: rgba(255, 255, 255, 0.72);
+    font-size: 0.8125rem;
+}
+
+
+/* ============================================================
+   RESPONSIVIDADE
+============================================================ */
+
+@media (max-width: 576px) {
+
+    .login-card {
+        width: calc(100% - 2.5rem);
+
+        padding: 2rem 1.25rem;
+
+        border-radius: 14px;
+    }
+
+    .logo-container img {
+        max-width: 160px;
+        max-height: 96px;
+    }
+
+    .login-options {
+        flex-wrap: wrap;
+        row-gap: 0.5rem;
+    }
+}

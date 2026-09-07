@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+
+{% block title %}Clientes | GELOSAR{% endblock %}
+
+{% block content %}
+
+<div class="gs-page">
+
+    <header class="gs-page-header">
+        <div>
+            <ol class="gs-breadcrumb">
+                <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                <li aria-hidden="true">/</li>
+                <li>Clientes</li>
+            </ol>
+            <h1 class="gs-page-header__title">Clientes</h1>
+            <p class="gs-page-header__desc">Gerencie os clientes cadastrados no sistema</p>
+        </div>
+        <div class="gs-page-header__actions">
+            <a href="{% url 'cadastrar_cliente' %}" class="gs-btn gs-btn-primary">
+                <i class="bi bi-plus-lg" aria-hidden="true"></i>
+                Cadastrar cliente
+            </a>
+        </div>
+    </header>
+
+    {% if clientes %}
+    <div class="gs-table-wrap">
+        <table class="gs-table">
+            <thead>
+                <tr>
+                    <th>Cliente</th>
+                    <th>CNPJ / CPF</th>
+                    <th>Telefone</th>
+                    <th>Cidade</th>
+                    <th>Status</th>
+                    <th>Cadastro</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for cliente in clientes %}
+                <tr>
+                    <td>
+                        <a href="{% url 'dashboard_cliente' cliente.id %}" title="Abrir dashboard de {{ cliente.nome }}">
+                            {{ cliente.nome }}
+                        </a>
+                    </td>
+                    <td>{{ cliente.cnpj|default:"-" }}</td>
+                    <td>{{ cliente.telefone|default:"-" }}</td>
+                    <td>{{ cliente.cidade|default:"-" }}</td>
+                    <td>
+                        {% if cliente.ativo %}
+                            <span class="gs-badge gs-badge--ok">Ativo</span>
+                        {% else %}
+                            <span class="gs-badge gs-badge--neutral">Inativo</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ cliente.criado_em|date:"d/m/Y" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="gs-empty">
+        <h2 class="gs-empty__title">Nenhum cliente cadastrado</h2>
+        <p class="gs-empty__text">Ainda não existem clientes cadastrados no sistema.</p>
+        <a href="{% url 'cadastrar_cliente' %}" class="gs-btn gs-btn-primary">
+            <i class="bi bi-plus-lg" aria-hidden="true"></i>
+            Cadastrar cliente
+        </a>
+    </div>
+    {% endif %}
+
+</div>
+
+{% endblock %}

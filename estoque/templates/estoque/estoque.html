@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+
+{% block title %}Estoque | GELOSAR{% endblock %}
+
+{% block content %}
+<div class="gs-page">
+
+    <header class="gs-page-header">
+        <div>
+            <ol class="gs-breadcrumb">
+                <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                <li aria-hidden="true">/</li>
+                <li>Estoque</li>
+            </ol>
+            <h1 class="gs-page-header__title">Estoque</h1>
+            <p class="gs-page-header__desc">Acompanhe gelo, insumos e movimentações</p>
+        </div>
+        <div class="gs-page-header__actions">
+            <a href="{% url 'estoque:entrada_insumo' %}" class="gs-btn gs-btn-primary">
+                <i class="bi bi-plus-lg" aria-hidden="true"></i>
+                Entrada de insumos
+            </a>
+        </div>
+    </header>
+
+    {% if estoque_5kg_sacos == 0 or estoque_3kg_sacos == 0 %}
+    <div class="gs-alert gs-alert--warning mb-4" role="status">
+        <div class="gs-alert__body">
+            <i class="bi bi-exclamation-triangle-fill" aria-hidden="true"></i>
+            <span>
+                <strong>Atenção ao estoque.</strong>
+                Um ou mais produtos estão sem estoque disponível.
+            </span>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="row g-3 mb-4">
+        <div class="col-12 col-md-6 col-xl-4">
+            <div class="gs-card h-100">
+                <p class="gs-card__title">Gelo 5kg</p>
+                <p class="gs-card__value">{{ estoque_5kg_sacos }}</p>
+                <p class="gs-card__hint">sacos · {{ estoque_5kg_kg }} kg</p>
+            </div>
+        </div>
+        <div class="col-12 col-md-6 col-xl-4">
+            <div class="gs-card h-100">
+                <p class="gs-card__title">Gelo 3kg</p>
+                <p class="gs-card__value">{{ estoque_3kg_sacos }}</p>
+                <p class="gs-card__hint">sacos · {{ estoque_3kg_kg }} kg</p>
+            </div>
+        </div>
+        <div class="col-12 col-xl-4">
+            <div class="gs-card h-100">
+                <p class="gs-card__title">Total de gelo</p>
+                <p class="gs-card__value">{{ total_estoque_gelo_sacos }}</p>
+                <p class="gs-card__hint">sacos · {{ total_estoque_gelo_kg }} kg</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-12 col-md-4">
+            <div class="gs-card">
+                <p class="gs-card__title">Entradas</p>
+                <p class="gs-card__value">{{ total_entradas }}</p>
+                <p class="gs-card__hint">movimentações</p>
+            </div>
+        </div>
+        <div class="col-12 col-md-4">
+            <div class="gs-card">
+                <p class="gs-card__title">Saídas</p>
+                <p class="gs-card__value">{{ total_saidas }}</p>
+                <p class="gs-card__hint">movimentações</p>
+            </div>
+        </div>
+        <div class="col-12 col-md-4">
+            <div class="gs-card">
+                <p class="gs-card__title">Ajustes</p>
+                <p class="gs-card__value">{{ total_ajustes }}</p>
+                <p class="gs-card__hint">movimentações</p>
+            </div>
+        </div>
+    </div>
+
+    {% if movimentacoes %}
+    <div class="gs-table-wrap">
+        <table class="gs-table">
+            <thead>
+                <tr>
+                    <th>Data</th>
+                    <th>Produto</th>
+                    <th>Tipo</th>
+                    <th>Quantidade</th>
+                    <th>Observação</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for movimentacao in movimentacoes %}
+                <tr>
+                    <td>{{ movimentacao.criado_em|date:"d/m/Y H:i" }}</td>
+                    <td>
+                        {{ movimentacao.produto.nome }}
+                        {% if movimentacao.produto.peso_kg %}
+                            ({{ movimentacao.produto.peso_kg }} kg)
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if movimentacao.tipo == "ENTRADA" %}
+                            <span class="gs-badge gs-badge--ok">{{ movimentacao.get_tipo_display }}</span>
+                        {% elif movimentacao.tipo == "SAIDA" %}
+                            <span class="gs-badge gs-badge--danger">{{ movimentacao.get_tipo_display }}</span>
+                        {% else %}
+                            <span class="gs-badge gs-badge--warning">{{ movimentacao.get_tipo_display }}</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ movimentacao.quantidade }} sacos</td>
+                    <td>{% if movimentacao.observacao %}{{ movimentacao.observacao }}{% else %}—{% endif %}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="gs-empty">
+        <h2 class="gs-empty__title">Nenhuma movimentação encontrada</h2>
+        <p class="gs-empty__text">As entradas e saídas de produtos aparecerão aqui.</p>
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}

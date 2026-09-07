@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Pedido #{{ venda.id }} | GELOSAR{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'venda/css/detalhe_venda.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="gs-page pedido-detalhe">
+
+    <header class="gs-page-header">
+        <div>
+            <ol class="gs-breadcrumb">
+                <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                <li aria-hidden="true">/</li>
+                <li><a href="{% url 'dashboard_cliente' venda.cliente.pk %}">{{ venda.cliente.nome }}</a></li>
+                <li aria-hidden="true">/</li>
+                <li>Pedido #{{ venda.id }}</li>
+            </ol>
+            <h1 class="gs-page-header__title">Pedido #{{ venda.id }}</h1>
+            <p class="gs-page-header__desc">Detalhes e produtos do pedido</p>
+        </div>
+        <div class="gs-page-header__actions">
+            <a href="{% url 'dashboard_cliente' venda.cliente.pk %}" class="gs-btn gs-btn-outline">Voltar</a>
+            <button type="button" class="gs-btn gs-btn-primary" data-gs-print>
+                <i class="bi bi-printer" aria-hidden="true"></i>
+                Imprimir
+            </button>
+        </div>
+    </header>
+
+    <div class="gs-card mb-4">
+        <p class="gs-card__title">Informações do pedido</p>
+        <div class="row g-3">
+            <div class="col-12 col-md-4">
+                <p class="gs-card__hint mb-1">Número do pedido</p>
+                <p class="mb-0 fw-semibold">#{{ venda.id }}</p>
+            </div>
+            <div class="col-12 col-md-4">
+                <p class="gs-card__hint mb-1">Cliente</p>
+                <p class="mb-0 fw-semibold">
+                    <a href="{% url 'dashboard_cliente' venda.cliente.pk %}">{{ venda.cliente.nome }}</a>
+                </p>
+            </div>
+            <div class="col-12 col-md-4">
+                <p class="gs-card__hint mb-1">Data</p>
+                <p class="mb-0 fw-semibold">{{ venda.data|date:"d/m/Y" }}</p>
+            </div>
+            <div class="col-12 col-md-4">
+                <p class="gs-card__hint mb-1">Criado em</p>
+                <p class="mb-0 fw-semibold">{{ venda.criado_em|date:"d/m/Y H:i" }}</p>
+            </div>
+            <div class="col-12 col-md-4">
+                <p class="gs-card__hint mb-1">Quantidade total</p>
+                <p class="mb-0 fw-semibold">{{ venda.quantidade_total }}</p>
+            </div>
+            <div class="col-12 col-md-4">
+                <p class="gs-card__hint mb-1">Total do pedido</p>
+                <p class="mb-0 fw-semibold">R$ {{ venda.total|floatformat:2 }}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="gs-card mb-4">
+        <p class="gs-card__title">Produtos</p>
+
+        {% if venda.itens.all %}
+        <div class="gs-table-wrap gs-table-wrap--flush">
+            <table class="gs-table">
+                <thead>
+                    <tr>
+                        <th>Produto</th>
+                        <th>Quantidade</th>
+                        <th>Preço unitário</th>
+                        <th>Subtotal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in venda.itens.all %}
+                    <tr>
+                        <td>{{ item.produto.nome }}</td>
+                        <td>{{ item.quantidade }}</td>
+                        <td>R$ {{ item.preco_unitario|floatformat:2 }}</td>
+                        <td>R$ {{ item.subtotal|floatformat:2 }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="row justify-content-end mt-3">
+            <div class="col-12 col-md-5 col-lg-4">
+                <div class="pedido-resumo">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="gs-card__hint mb-0">Quantidade total</span>
+                        <span class="fw-semibold">{{ venda.quantidade_total }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span class="fw-semibold">Total</span>
+                        <span class="fw-semibold">R$ {{ venda.total|floatformat:2 }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="gs-empty gs-empty--flush">
+            <h2 class="gs-empty__title">Nenhum produto neste pedido</h2>
+            <p class="gs-empty__text">Nenhum produto foi adicionado a este pedido.</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="gs-card">
+        <p class="gs-card__title">Observações</p>
+        {% if venda.observacoes %}
+        <p class="pedido-observacoes mb-0">{{ venda.observacoes }}</p>
+        {% else %}
+        <p class="gs-card__hint mb-0">Nenhuma observação foi registrada neste pedido.</p>
+        {% endif %}
+    </div>
+
+</div>
+{% endblock %}

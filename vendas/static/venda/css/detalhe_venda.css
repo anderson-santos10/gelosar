@@ -1,0 +1,53 @@
+.pedido-resumo {
+    padding: 1rem 1.25rem;
+    border: 1px solid var(--gs-border);
+    border-radius: var(--gs-radius-md);
+    background: var(--gs-ice);
+}
+
+.pedido-observacoes {
+    white-space: pre-line;
+    color: var(--gs-text);
+    line-height: 1.6;
+}
+
+.pedido-detalhe a {
+    color: var(--gs-navy);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.pedido-detalhe a:hover,
+.pedido-detalhe a:focus-visible {
+    color: var(--gs-primary);
+}
+
+@media print {
+    @page {
+        size: A4 portrait;
+        margin: 8mm;
+    }
+
+    .gs-skip-link,
+    .gs-nav-overlay,
+    .gs-navbar,
+    .gs-footer,
+    .gs-page-header__actions,
+    .messages-container {
+        display: none !important;
+    }
+
+    .app-wrapper,
+    .main-content,
+    .page-content {
+        margin: 0;
+        padding: 0;
+        background: #fff;
+        box-shadow: none;
+    }
+
+    .gs-card {
+        box-shadow: none;
+        break-inside: avoid;
+    }
+}

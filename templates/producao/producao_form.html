@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+
+{% block title %}Registrar Produção | GELOSAR{% endblock %}
+
+{% block content %}
+<div class="gs-page">
+
+    <header class="gs-page-header">
+        <div>
+            <ol class="gs-breadcrumb">
+                <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                <li aria-hidden="true">/</li>
+                <li><a href="{% url 'producao:producao_list' %}">Produção</a></li>
+                <li aria-hidden="true">/</li>
+                <li>Nova produção</li>
+            </ol>
+            <h1 class="gs-page-header__title">Nova produção</h1>
+            <p class="gs-page-header__desc">Registre a produção e atualize o estoque conforme as regras atuais</p>
+        </div>
+        <div class="gs-page-header__actions">
+            <a href="{% url 'producao:producao_list' %}" class="gs-btn gs-btn-outline">Voltar</a>
+        </div>
+    </header>
+
+    <div class="row justify-content-center">
+        <div class="col-12 col-lg-8 col-xl-6">
+            <div class="gs-card">
+                <form method="post" novalidate class="gs-form">
+                    {% csrf_token %}
+
+                    {% if form.non_field_errors %}
+                    <div class="gs-alert gs-alert--error" role="alert">
+                        <div class="gs-alert__body">
+                            <i class="bi bi-exclamation-octagon-fill" aria-hidden="true"></i>
+                            <span>{{ form.non_field_errors|striptags }}</span>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label class="gs-label" for="{{ form.equipamento.id_for_label }}">
+                                Equipamento{% if form.equipamento.field.required %} *{% endif %}
+                            </label>
+                            {{ form.equipamento }}
+                            {% if form.equipamento.errors %}
+                            <p class="gs-field-error">{{ form.equipamento.errors|striptags }}</p>
+                            {% endif %}
+                        </div>
+                        <div class="col-12">
+                            <label class="gs-label" for="{{ form.produto.id_for_label }}">
+                                Produto{% if form.produto.field.required %} *{% endif %}
+                            </label>
+                            {{ form.produto }}
+                            {% if form.produto.errors %}
+                            <p class="gs-field-error">{{ form.produto.errors|striptags }}</p>
+                            {% endif %}
+                        </div>
+                        <div class="col-12">
+                            <label class="gs-label" for="{{ form.quantidade.id_for_label }}">
+                                Quantidade{% if form.quantidade.field.required %} *{% endif %}
+                            </label>
+                            {{ form.quantidade }}
+                            {% if form.quantidade.errors %}
+                            <p class="gs-field-error">{{ form.quantidade.errors|striptags }}</p>
+                            {% endif %}
+                        </div>
+                        <div class="col-12">
+                            <label class="gs-label" for="{{ form.observacao.id_for_label }}">
+                                Observação
+                            </label>
+                            {{ form.observacao }}
+                            {% if form.observacao.errors %}
+                            <p class="gs-field-error">{{ form.observacao.errors|striptags }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="gs-form-actions">
+                        <a href="{% url 'producao:producao_list' %}" class="gs-btn gs-btn-outline">Cancelar</a>
+                        <button type="submit" class="gs-btn gs-btn-primary">Salvar produção</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

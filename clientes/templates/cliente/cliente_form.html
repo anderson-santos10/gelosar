@@ -1,0 +1,134 @@
+{% extends 'base.html' %}
+
+{% block title %}Novo Cliente | GELOSAR{% endblock %}
+
+{% block content %}
+<div class="gs-page">
+
+    <header class="gs-page-header">
+        <div>
+            <ol class="gs-breadcrumb">
+                <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                <li aria-hidden="true">/</li>
+                <li><a href="{% url 'lista_clientes' %}">Clientes</a></li>
+                <li aria-hidden="true">/</li>
+                <li>Novo cliente</li>
+            </ol>
+            <h1 class="gs-page-header__title">Novo cliente</h1>
+            <p class="gs-page-header__desc">Cadastre um cliente para pedidos, equipamentos e histórico comercial</p>
+        </div>
+    </header>
+
+    <div class="row justify-content-center">
+        <div class="col-12 col-xl-10">
+            <div class="gs-card">
+                <form method="post" novalidate class="gs-form">
+                    {% csrf_token %}
+
+                    {% if form.non_field_errors %}
+                    <div class="gs-alert gs-alert--error" role="alert">
+                        <div class="gs-alert__body">
+                            <i class="bi bi-exclamation-octagon-fill" aria-hidden="true"></i>
+                            <span>{{ form.non_field_errors|striptags }}</span>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <div class="row g-3">
+                        <div class="col-12 col-md-6 col-lg-4">
+                            <label class="gs-label" for="{{ form.nome.id_for_label }}">
+                                Nome / Razão Social{% if form.nome.field.required %} *{% endif %}
+                            </label>
+                            {{ form.nome }}
+                            {% if form.nome.errors %}
+                            <p class="gs-field-error">{{ form.nome.errors|striptags }}</p>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-12 col-md-6 col-lg-4">
+                            <label class="gs-label" for="{{ form.cnpj.id_for_label }}">
+                                CNPJ / CPF{% if form.cnpj.field.required %} *{% endif %}
+                            </label>
+                            {{ form.cnpj }}
+                            {% if form.cnpj.errors %}
+                            <p class="gs-field-error">{{ form.cnpj.errors|striptags }}</p>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-12 col-md-6 col-lg-4">
+                            <label class="gs-label" for="{{ form.telefone.id_for_label }}">
+                                Telefone{% if form.telefone.field.required %} *{% endif %}
+                            </label>
+                            {{ form.telefone }}
+                            {% if form.telefone.errors %}
+                            <p class="gs-field-error">{{ form.telefone.errors|striptags }}</p>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-12 col-md-6 col-lg-4">
+                            <label class="gs-label" for="{{ form.email.id_for_label }}">
+                                E-mail{% if form.email.field.required %} *{% endif %}
+                            </label>
+                            {{ form.email }}
+                            {% if form.email.errors %}
+                            <p class="gs-field-error">{{ form.email.errors|striptags }}</p>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-12 col-md-6 col-lg-4">
+                            <label class="gs-label" for="{{ form.endereco.id_for_label }}">
+                                Endereço{% if form.endereco.field.required %} *{% endif %}
+                            </label>
+                            {{ form.endereco }}
+                            {% if form.endereco.errors %}
+                            <p class="gs-field-error">{{ form.endereco.errors|striptags }}</p>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-12 col-md-6 col-lg-4">
+                            <label class="gs-label" for="{{ form.cidade.id_for_label }}">
+                                Cidade{% if form.cidade.field.required %} *{% endif %}
+                            </label>
+                            {{ form.cidade }}
+                            {% if form.cidade.errors %}
+                            <p class="gs-field-error">{{ form.cidade.errors|striptags }}</p>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-12">
+                            <div class="gs-check-wrapper">
+                                <label class="gs-check" for="{{ form.ativo.id_for_label }}">
+                                    {{ form.ativo }}
+                                    <span>Cliente ativo</span>
+                                </label>
+                            </div>
+                            {% if form.ativo.errors %}
+                            <p class="gs-field-error">{{ form.ativo.errors|striptags }}</p>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-12">
+                            <label class="gs-label" for="{{ form.observacoes.id_for_label }}">
+                                Observações{% if form.observacoes.field.required %} *{% endif %}
+                            </label>
+                            {{ form.observacoes }}
+                            {% if form.observacoes.errors %}
+                            <p class="gs-field-error">{{ form.observacoes.errors|striptags }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="gs-form-actions">
+                        <a href="{% url 'lista_clientes' %}" class="gs-btn gs-btn-outline">Cancelar</a>
+                        <button type="submit" class="gs-btn gs-btn-primary">
+                            <i class="bi bi-check-lg" aria-hidden="true"></i>
+                            Salvar cliente
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

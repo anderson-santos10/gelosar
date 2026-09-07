@@ -1,0 +1,66 @@
+{% if form.non_field_errors %}
+<div class="gs-alert gs-alert--error" role="alert">
+    <div class="gs-alert__body">
+        <i class="bi bi-exclamation-octagon-fill" aria-hidden="true"></i>
+        <span>{{ form.non_field_errors|striptags }}</span>
+    </div>
+</div>
+{% endif %}
+
+<div class="row g-3">
+    <div class="col-12 col-md-6">
+        <label class="gs-label" for="{{ form.nome.id_for_label }}">Nome{% if form.nome.field.required %} *{% endif %}</label>
+        {{ form.nome }}
+        {% if form.nome.errors %}<p class="gs-field-error">{{ form.nome.errors|striptags }}</p>{% endif %}
+    </div>
+    <div class="col-12 col-md-6">
+        <label class="gs-label" for="{{ form.tipo.id_for_label }}">Tipo{% if form.tipo.field.required %} *{% endif %}</label>
+        {{ form.tipo }}
+        {% if form.tipo.errors %}<p class="gs-field-error">{{ form.tipo.errors|striptags }}</p>{% endif %}
+    </div>
+    <div class="col-12 col-md-6">
+        <label class="gs-label" for="{{ form.cliente.id_for_label }}">Cliente</label>
+        {{ form.cliente }}
+        {% if form.cliente.errors %}<p class="gs-field-error">{{ form.cliente.errors|striptags }}</p>{% endif %}
+    </div>
+    <div class="col-12 col-md-6">
+        <label class="gs-label" for="{{ form.status.id_for_label }}">Status{% if form.status.field.required %} *{% endif %}</label>
+        {{ form.status }}
+        {% if form.status.errors %}<p class="gs-field-error">{{ form.status.errors|striptags }}</p>{% endif %}
+    </div>
+    <div class="col-12 col-md-6">
+        <label class="gs-label" for="{{ form.fabricante.id_for_label }}">Fabricante</label>
+        {{ form.fabricante }}
+        {% if form.fabricante.errors %}<p class="gs-field-error">{{ form.fabricante.errors|striptags }}</p>{% endif %}
+    </div>
+    <div class="col-12 col-md-6">
+        <label class="gs-label" for="{{ form.numero_serie.id_for_label }}">Número de série</label>
+        {{ form.numero_serie }}
+        {% if form.numero_serie.errors %}<p class="gs-field-error">{{ form.numero_serie.errors|striptags }}</p>{% endif %}
+    </div>
+    <div class="col-12 col-md-6">
+        <label class="gs-label" for="{{ form.localizacao.id_for_label }}">Localização</label>
+        {{ form.localizacao }}
+        {% if form.localizacao.errors %}<p class="gs-field-error">{{ form.localizacao.errors|striptags }}</p>{% endif %}
+    </div>
+    <div class="col-12 col-md-6">
+        <label class="gs-label" for="{{ form.valor_compra.id_for_label }}">Valor de compra</label>
+        {{ form.valor_compra }}
+        {% if form.valor_compra.errors %}<p class="gs-field-error">{{ form.valor_compra.errors|striptags }}</p>{% endif %}
+    </div>
+    <div class="col-12 col-md-6">
+        <label class="gs-label" for="{{ form.data_compra.id_for_label }}">Data da compra</label>
+        {{ form.data_compra }}
+        {% if form.data_compra.errors %}<p class="gs-field-error">{{ form.data_compra.errors|striptags }}</p>{% endif %}
+    </div>
+    <div class="col-12 col-md-6">
+        <label class="gs-label" for="{{ form.garantia_meses.id_for_label }}">Garantia (meses)</label>
+        {{ form.garantia_meses }}
+        {% if form.garantia_meses.errors %}<p class="gs-field-error">{{ form.garantia_meses.errors|striptags }}</p>{% endif %}
+    </div>
+    <div class="col-12">
+        <label class="gs-label" for="{{ form.observacoes.id_for_label }}">Observações</label>
+        {{ form.observacoes }}
+        {% if form.observacoes.errors %}<p class="gs-field-error">{{ form.observacoes.errors|striptags }}</p>{% endif %}
+    </div>
+</div>

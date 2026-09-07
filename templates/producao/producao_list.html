@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+
+{% block title %}Produção | GELOSAR{% endblock %}
+
+{% block content %}
+<div class="gs-page">
+
+    <header class="gs-page-header">
+        <div>
+            <ol class="gs-breadcrumb">
+                <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                <li aria-hidden="true">/</li>
+                <li>Produção</li>
+            </ol>
+            <h1 class="gs-page-header__title">Produção</h1>
+            <p class="gs-page-header__desc">Registros de produção e totais do dia</p>
+        </div>
+        <div class="gs-page-header__actions">
+            <a href="{% url 'producao:new_producao' %}" class="gs-btn gs-btn-primary">
+                <i class="bi bi-plus-lg" aria-hidden="true"></i>
+                Nova produção
+            </a>
+        </div>
+    </header>
+
+    <div class="row g-3 mb-4">
+        <div class="col-12 col-md-4">
+            <div class="gs-card h-100">
+                <p class="gs-card__title">Sacos 3kg</p>
+                <p class="gs-card__value">{{ total_3kg|default:0 }}</p>
+                <p class="gs-card__hint">sacos</p>
+            </div>
+        </div>
+        <div class="col-12 col-md-4">
+            <div class="gs-card h-100">
+                <p class="gs-card__title">Sacos 5kg</p>
+                <p class="gs-card__value">{{ total_5kg|default:0 }}</p>
+                <p class="gs-card__hint">sacos</p>
+            </div>
+        </div>
+        <div class="col-12 col-md-4">
+            <div class="gs-card h-100">
+                <p class="gs-card__title">Total do dia</p>
+                <p class="gs-card__value">{{ total_dia|default:0 }}</p>
+                <p class="gs-card__hint">sacos</p>
+            </div>
+        </div>
+    </div>
+
+    {% if producoes %}
+    <div class="gs-table-wrap">
+        <table class="gs-table">
+            <thead>
+                <tr>
+                    <th>Data</th>
+                    <th>Horário</th>
+                    <th>Máquina / Equipamento</th>
+                    <th>Produto</th>
+                    <th>Quantidade</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for producao in producoes %}
+                <tr>
+                    <td>{{ producao.data_hora|date:"d/m/Y" }}</td>
+                    <td>{{ producao.data_hora|date:"H:i" }}</td>
+                    <td>{{ producao.equipamento.nome }}</td>
+                    <td>{{ producao.produto.nome }}</td>
+                    <td>{{ producao.quantidade }} sacos</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="gs-empty">
+        <h2 class="gs-empty__title">Nenhuma produção registrada</h2>
+        <p class="gs-empty__text">Ainda não existem registros de produção no sistema.</p>
+        <a href="{% url 'producao:new_producao' %}" class="gs-btn gs-btn-primary">Nova produção</a>
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}

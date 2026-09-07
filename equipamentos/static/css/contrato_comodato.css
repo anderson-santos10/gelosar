@@ -1,0 +1,316 @@
+/* A folha A4 permanece específica. Header/ações usam o Design System. */
+.contrato-page,
+.contrato {
+    --doc-bg: var(--gs-background);
+    --paper-bg: var(--gs-surface);
+    --text-main: var(--gs-text);
+    --text-muted: var(--gs-text-secondary);
+    --border-light: var(--gs-border);
+    --primary: var(--gs-primary);
+    --primary-hover: var(--gs-primary-hover);
+}
+
+.contrato {
+    background: var(--paper-bg);
+    max-width: 210mm;   /* Largura exata do A4 */
+    min-height: 297mm;  /* Altura mínima do A4 */
+    margin: 0 auto;
+    padding: 25mm 20mm; /* Margens de impressão (2.5cm e 2.0cm) */
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    box-sizing: border-box;
+    line-height: 1.6;
+    font-family: 'Times New Roman', Times, serif;
+    color: var(--text-main);
+}
+
+/* Tipografia do Documento */
+.contrato p {
+    margin: 0 0 15px;
+    text-align: justify;
+    font-size: 12pt;
+}
+
+.contrato strong {
+    font-weight: bold;
+}
+
+/* Cabeçalho do Documento */
+.contrato-cabecalho {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    font-family: system-ui, -apple-system, sans-serif;
+}
+
+.marca .logo-marca {
+    font-size: 24px;
+    font-weight: 900;
+    letter-spacing: 1px;
+    color: var(--text-main);
+}
+
+.marca span {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--text-muted);
+}
+
+.titulo-documento {
+    text-align: right;
+}
+
+.titulo-documento h1 {
+    margin: 0;
+    font-size: 18px;
+    text-transform: uppercase;
+}
+
+.titulo-documento p {
+    margin: 0;
+    font-size: 13px;
+    color: var(--text-muted);
+    text-align: right;
+}
+
+.documento-linha {
+    height: 2px;
+    background: var(--text-main);
+    margin-bottom: 30px;
+}
+
+/* =====================================================
+   SEÇÕES E CAIXAS DE DESTAQUE
+===================================================== */
+.secao-documento {
+    margin-bottom: 30px;
+}
+
+.secao-titulo {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+    margin-bottom: 20px;
+    font-family: system-ui, -apple-system, sans-serif;
+}
+
+.numero-secao {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--primary);
+    border-bottom: 2px solid var(--primary);
+    line-height: 1;
+    padding-bottom: 2px;
+}
+
+.secao-titulo h2 {
+    margin: 0 0 3px;
+    font-size: 14pt;
+    text-transform: uppercase;
+}
+
+.secao-titulo p {
+    margin: 0;
+    font-size: 11pt;
+    color: var(--text-muted);
+    text-align: left;
+}
+
+/* Grid das Partes (Comodante/Comodatário) */
+.partes {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.parte {
+    background: #f9fafb;
+    border: 1px solid var(--border-light);
+    padding: 15px;
+    border-radius: 4px;
+}
+
+.parte-titulo {
+    font-family: system-ui, -apple-system, sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+    border-bottom: 1px solid var(--border-light);
+    padding-bottom: 5px;
+}
+
+.parte p {
+    margin-bottom: 8px;
+    font-size: 11pt;
+    text-align: left;
+}
+
+.parte p:last-child {
+    margin-bottom: 0;
+}
+
+.texto-introdutorio {
+    text-align: center !important;
+    font-style: italic;
+    margin-top: 25px;
+}
+
+/* Box de Equipamento e Endereço */
+.equipamento-box,
+.endereco-box {
+    background: #f9fafb;
+    border: 1px solid var(--border-light);
+    padding: 15px;
+    border-radius: 4px;
+    margin-bottom: 15px;
+}
+
+.equipamento-box {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.equipamento-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.equipamento-full {
+    grid-column: span 2;
+}
+
+.equipamento-box .label {
+    font-family: system-ui, -apple-system, sans-serif;
+    font-size: 11px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+}
+
+/* =====================================================
+   ASSINATURAS E ENCERRAMENTO
+===================================================== */
+.encerramento {
+    margin-top: 40px;
+}
+
+.data-documento {
+    text-align: right;
+    margin-top: 30px;
+    margin-bottom: 50px;
+    font-weight: bold;
+}
+
+.assinaturas {
+    display: flex;
+    justify-content: space-between;
+    gap: 40px;
+    margin-top: 60px;
+    page-break-inside: avoid; /* Evita que a assinatura quebre no meio da página */
+}
+
+.assinatura {
+    flex: 1;
+    text-align: center;
+    font-family: system-ui, -apple-system, sans-serif;
+}
+
+.linha-assinatura {
+    border-top: 1px solid var(--text-main);
+    width: 90%;
+    margin: 0 auto 10px;
+}
+
+.assinatura strong {
+    display: block;
+    font-size: 14px;
+    margin-bottom: 2px;
+}
+
+.assinatura span {
+    display: block;
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+}
+
+.assinatura p {
+    font-size: 11px;
+    color: var(--text-muted);
+    text-align: center;
+    margin: 0 0 3px;
+}
+
+/* Rodapé do Documento */
+.contrato-rodape {
+    margin-top: 50px;
+    border-top: 1px solid var(--border-light);
+    padding-top: 10px;
+    display: flex;
+    justify-content: space-between;
+    font-family: system-ui, -apple-system, sans-serif;
+    font-size: 10px;
+    color: #9ca3af;
+}
+
+/* =====================================================
+   REGRAS DE IMPRESSÃO (O MÁGICO)
+===================================================== */
+@media print {
+    .no-print,
+    .gs-skip-link,
+    .gs-nav-overlay,
+    .gs-navbar,
+    .gs-footer,
+    .gs-page-header,
+    .messages-container {
+        display: none !important;
+    }
+
+    body, html, .contrato-page,
+    .app-wrapper, .main-content, .page-content {
+        background: transparent !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        box-shadow: none !important;
+    }
+
+    /* Ajusta a folha para preencher o papel real */
+    .contrato {
+        box-shadow: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        min-height: auto !important;
+    }
+
+    /* Remove os fundos cinzas das caixas para ficar P&B perfeito */
+    .parte, .equipamento-box, .endereco-box {
+        background: transparent !important;
+        border-color: #000 !important;
+    }
+
+    .numero-secao {
+        color: #000 !important;
+        border-color: #000 !important;
+    }
+
+    /* Evita que blocos quebrem no meio de uma folha e outra */
+    .secao-documento {
+        page-break-inside: auto;
+    }
+    
+    .assinaturas, .equipamento-box {
+        page-break-inside: avoid;
+    }
+    
+    /* Configurações da página no navegador */
+    @page {
+        size: A4;
+        margin: 2cm;
+    }
+}

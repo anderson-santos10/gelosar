@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block title %}Documentos | GELOSAR{% endblock %}
+
+{% block content %}
+<div class="gs-page">
+
+    <header class="gs-page-header">
+        <div>
+            <ol class="gs-breadcrumb">
+                <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                <li aria-hidden="true">/</li>
+                <li><a href="{% url 'equipamentos:listar_equipamentos' %}">Equipamentos</a></li>
+                <li aria-hidden="true">/</li>
+                <li><a href="{% url 'equipamentos:indice_documentos' %}">Documentos</a></li>
+                <li aria-hidden="true">/</li>
+                <li><a href="{% url 'equipamentos:detalhe_equipamento' equipamento.pk %}">{{ equipamento.codigo }}</a></li>
+                <li aria-hidden="true">/</li>
+                <li>Documentos</li>
+            </ol>
+            <h1 class="gs-page-header__title">Documentos do equipamento</h1>
+            <p class="gs-page-header__desc">{{ equipamento.nome }}{% if equipamento.cliente %} · {{ equipamento.cliente.nome }}{% endif %}</p>
+        </div>
+        <div class="gs-page-header__actions">
+            <a href="{% url 'equipamentos:detalhe_equipamento' equipamento.pk %}" class="gs-btn gs-btn-outline">Voltar</a>
+            <a href="{% url 'equipamentos:upload_documento' equipamento.pk %}" class="gs-btn gs-btn-primary">Adicionar documento</a>
+        </div>
+    </header>
+
+    {% if documentos %}
+    <div class="gs-table-wrap">
+        <table class="gs-table">
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Arquivo</th>
+                    <th>Data de envio</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for doc in documentos %}
+                <tr>
+                    <td>{{ doc.nome }}</td>
+                    <td>{{ doc.arquivo.name }}</td>
+                    <td>{{ doc.data_upload|date:"d/m/Y H:i" }}</td>
+                    <td>
+                        {% if doc.arquivo %}
+                        <a href="{% url 'equipamentos:download_documento' doc.pk %}" class="gs-btn gs-btn-outline" target="_blank" rel="noopener noreferrer">Abrir</a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="gs-empty">
+        <h2 class="gs-empty__title">Nenhum documento anexado</h2>
+        <p class="gs-empty__text">Este equipamento ainda não possui arquivos cadastrados.</p>
+        <a href="{% url 'equipamentos:upload_documento' equipamento.pk %}" class="gs-btn gs-btn-primary">Adicionar documento</a>
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}

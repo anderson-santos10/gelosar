@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+
+{% block title %}Equipamentos | GELOSAR{% endblock %}
+
+{% block content %}
+<div class="gs-page">
+
+    <header class="gs-page-header">
+        <div>
+            <ol class="gs-breadcrumb">
+                <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                <li aria-hidden="true">/</li>
+                <li>Equipamentos</li>
+            </ol>
+            <h1 class="gs-page-header__title">Equipamentos</h1>
+            <p class="gs-page-header__desc">Cadastro e status do maquinário</p>
+        </div>
+        <div class="gs-page-header__actions">
+            <a href="{% url 'equipamentos:cadastrar_equipamentos' %}" class="gs-btn gs-btn-primary">
+                <i class="bi bi-plus-lg" aria-hidden="true"></i>
+                Cadastrar equipamento
+            </a>
+        </div>
+    </header>
+
+    {% if equipamentos %}
+    <div class="gs-table-wrap">
+        <table class="gs-table">
+            <thead>
+                <tr>
+                    <th>Código</th>
+                    <th>Nome</th>
+                    <th>Tipo</th>
+                    <th>Status</th>
+                    <th>Cliente</th>
+                    <th>Localização</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for equipamento in equipamentos %}
+                <tr>
+                    <td>
+                        <a href="{% url 'equipamentos:detalhe_equipamento' equipamento.id %}">{{ equipamento.codigo }}</a>
+                    </td>
+                    <td>{{ equipamento.nome }}</td>
+                    <td>{{ equipamento.get_tipo_display }}</td>
+                    <td>
+                        {% if equipamento.status == 'ativo' %}
+                            <span class="gs-badge gs-badge--ok">{{ equipamento.get_status_display }}</span>
+                        {% elif equipamento.status == 'manutencao' %}
+                            <span class="gs-badge gs-badge--warning">{{ equipamento.get_status_display }}</span>
+                        {% else %}
+                            <span class="gs-badge gs-badge--neutral">{{ equipamento.get_status_display }}</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if equipamento.cliente %}
+                            <a href="{% url 'dashboard_cliente' equipamento.cliente.id %}">{{ equipamento.cliente.nome }}</a>
+                        {% else %}
+                            —
+                        {% endif %}
+                    </td>
+                    <td>{{ equipamento.localizacao|default:"—" }}</td>
+                    <td>
+                        <a href="{% url 'equipamentos:detalhe_equipamento' equipamento.id %}" class="gs-btn gs-btn-outline">Ver</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="gs-empty">
+        <h2 class="gs-empty__title">Nenhum equipamento cadastrado</h2>
+        <p class="gs-empty__text">Ainda não existem equipamentos registrados no sistema.</p>
+        <a href="{% url 'equipamentos:cadastrar_equipamentos' %}" class="gs-btn gs-btn-primary">
+            <i class="bi bi-plus-lg" aria-hidden="true"></i>
+            Cadastrar equipamento
+        </a>
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}

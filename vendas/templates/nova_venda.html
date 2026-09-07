@@ -1,0 +1,189 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Novo Pedido | GELOSAR{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'venda/css/nova_venda.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="gs-page">
+
+    <header class="gs-page-header">
+        <div>
+            <ol class="gs-breadcrumb">
+                <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                <li aria-hidden="true">/</li>
+                <li>Novo pedido</li>
+            </ol>
+            <h1 class="gs-page-header__title">Novo pedido</h1>
+            <p class="gs-page-header__desc">Informe o cliente, os produtos e as quantidades</p>
+        </div>
+        <div class="gs-page-header__actions">
+            <a href="{% url 'dashboard' %}" class="gs-btn gs-btn-outline">Cancelar</a>
+        </div>
+    </header>
+
+    <form method="post" id="venda-form" novalidate class="gs-form">
+        {% csrf_token %}
+
+        {% if venda_form.non_field_errors %}
+        <div class="gs-alert gs-alert--error" role="alert">
+            <div class="gs-alert__body">
+                <i class="bi bi-exclamation-octagon-fill" aria-hidden="true"></i>
+                <span>{{ venda_form.non_field_errors|striptags }}</span>
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="gs-card mb-4">
+            <p class="gs-card__title">Dados do pedido</p>
+            <div class="row g-3">
+                <div class="col-12 col-md-6">
+                    <label class="gs-label" for="{{ venda_form.cliente.id_for_label }}">
+                        Cliente{% if venda_form.cliente.field.required %} *{% endif %}
+                    </label>
+                    {{ venda_form.cliente }}
+                    {% for error in venda_form.cliente.errors %}
+                    <p class="gs-field-error">{{ error }}</p>
+                    {% endfor %}
+                </div>
+                <div class="col-12 col-md-6">
+                    <label class="gs-label" for="{{ venda_form.observacoes.id_for_label }}">
+                        Observações
+                    </label>
+                    {{ venda_form.observacoes }}
+                    {% for error in venda_form.observacoes.errors %}
+                    <p class="gs-field-error">{{ error }}</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <div class="gs-card venda-formset">
+            <p class="gs-card__title">Produtos do pedido</p>
+            <p class="gs-card__hint mb-3">Adicione os produtos e informe as quantidades.</p>
+
+            {% if formset.non_form_errors %}
+            <div class="gs-alert gs-alert--error" role="alert">
+                <div class="gs-alert__body">
+                    <i class="bi bi-exclamation-octagon-fill" aria-hidden="true"></i>
+                    <span>
+                        {% for error in formset.non_form_errors %}{{ error }} {% endfor %}
+                    </span>
+                </div>
+            </div>
+            {% endif %}
+
+            {{ formset.management_form }}
+
+            <div class="gs-table-wrap gs-table-wrap--flush">
+                <table class="gs-table produtos-table">
+                    <thead>
+                        <tr>
+                            <th class="produto">Produto</th>
+                            <th class="quantidade">Quantidade</th>
+                            <th class="preco">Preço unitário</th>
+                            <th class="subtotal">Subtotal</th>
+                            <th class="remover">Ação</th>
+                        </tr>
+                    </thead>
+                    <tbody id="itens-container">
+                        {% for form in formset %}
+                        <tr class="item-row">
+                            {% for hidden in form.hidden_fields %}
+                                {{ hidden }}
+                            {% endfor %}
+                            <td>
+                                {{ form.produto }}
+                                {% for error in form.produto.errors %}
+                                <p class="gs-field-error">{{ error }}</p>
+                                {% endfor %}
+                            </td>
+                            <td>
+                                {{ form.quantidade }}
+                                {% for error in form.quantidade.errors %}
+                                <p class="gs-field-error">{{ error }}</p>
+                                {% endfor %}
+                            </td>
+                            <td>
+                                <input
+                                    type="text"
+                                    class="form-control preco-input"
+                                    value="R$ 0,00"
+                                    readonly
+                                >
+                            </td>
+                            <td>
+                                <span class="subtotal">R$ 0,00</span>
+                            </td>
+                            <td class="remover">
+                                <button type="button" class="btn-remover" title="Remover produto" aria-label="Remover produto">
+                                    &times;
+                                </button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="add-container mt-3">
+                <button type="button" class="btn-adicionar" id="btn-adicionar-produto">
+                    + Adicionar produto
+                </button>
+            </div>
+
+            <div class="total-area mt-3">
+                <div class="total-box">
+                    <span class="total-label">Total do pedido</span>
+                    <span class="total-value" id="total-venda">R$ 0,00</span>
+                </div>
+            </div>
+
+            <div class="gs-form-actions">
+                <a href="{% url 'dashboard' %}" class="gs-btn gs-btn-outline">Cancelar</a>
+                <button type="submit" class="gs-btn gs-btn-primary">Salvar pedido</button>
+            </div>
+        </div>
+    </form>
+
+</div>
+
+<template id="empty-form-template">
+<tr class="item-row">
+    {% for hidden in formset.empty_form.hidden_fields %}
+        {{ hidden }}
+    {% endfor %}
+    <td>
+        {{ formset.empty_form.produto }}
+    </td>
+    <td>
+        {{ formset.empty_form.quantidade }}
+    </td>
+    <td>
+        <input
+            type="text"
+            class="form-control preco-input"
+            value="R$ 0,00"
+            readonly
+        >
+    </td>
+    <td>
+        <span class="subtotal">R$ 0,00</span>
+    </td>
+    <td class="remover">
+        <button type="button" class="btn-remover" title="Remover produto" aria-label="Remover produto">
+            &times;
+        </button>
+    </td>
+</tr>
+</template>
+
+{{ produtos_precos_json|json_script:"produtos-precos-data" }}
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'venda/js/nova_venda.js' %}"></script>
+{% endblock %}

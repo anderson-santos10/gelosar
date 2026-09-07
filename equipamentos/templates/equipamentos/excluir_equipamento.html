@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block title %}Excluir Equipamento | GELOSAR{% endblock %}
+
+{% block content %}
+<div class="gs-page">
+
+    <header class="gs-page-header">
+        <div>
+            <ol class="gs-breadcrumb">
+                <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                <li aria-hidden="true">/</li>
+                <li><a href="{% url 'equipamentos:listar_equipamentos' %}">Equipamentos</a></li>
+                <li aria-hidden="true">/</li>
+                <li>Excluir</li>
+            </ol>
+            <h1 class="gs-page-header__title">Excluir equipamento</h1>
+            <p class="gs-page-header__desc">Esta ação não pode ser desfeita</p>
+        </div>
+    </header>
+
+    <div class="row justify-content-center">
+        <div class="col-12 col-lg-7">
+            <div class="gs-card">
+                <div class="gs-alert gs-alert--warning" role="alert">
+                    <div class="gs-alert__body">
+                        <i class="bi bi-exclamation-triangle-fill" aria-hidden="true"></i>
+                        <span>A exclusão é permanente. Documentos vinculados a este equipamento também serão removidos.</span>
+                    </div>
+                </div>
+                <p>Confirma a exclusão de <strong>{{ object.codigo }} — {{ object.nome }}</strong>?</p>
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="gs-form-actions">
+                        <a href="{% url 'equipamentos:detalhe_equipamento' object.pk %}" class="gs-btn gs-btn-outline">Cancelar</a>
+                        <button type="submit" class="gs-btn gs-btn-danger">Confirmar exclusão</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

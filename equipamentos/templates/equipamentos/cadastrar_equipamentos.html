@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block title %}Cadastrar Equipamento | GELOSAR{% endblock %}
+
+{% block content %}
+<div class="gs-page">
+
+    <header class="gs-page-header">
+        <div>
+            <ol class="gs-breadcrumb">
+                <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                <li aria-hidden="true">/</li>
+                <li><a href="{% url 'equipamentos:listar_equipamentos' %}">Equipamentos</a></li>
+                <li aria-hidden="true">/</li>
+                <li>Novo equipamento</li>
+            </ol>
+            <h1 class="gs-page-header__title">Novo equipamento</h1>
+            <p class="gs-page-header__desc">Cadastre um equipamento no parque de máquinas</p>
+        </div>
+        <div class="gs-page-header__actions">
+            <a href="{% url 'equipamentos:listar_equipamentos' %}" class="gs-btn gs-btn-outline">Voltar</a>
+        </div>
+    </header>
+
+    <div class="row justify-content-center">
+        <div class="col-12 col-xl-10">
+            <div class="gs-card">
+                <form method="post" novalidate class="gs-form">
+                    {% csrf_token %}
+                    {% include 'equipamentos/_equipamento_form.html' %}
+                    <div class="gs-form-actions">
+                        <a href="{% url 'equipamentos:listar_equipamentos' %}" class="gs-btn gs-btn-outline">Cancelar</a>
+                        <button type="submit" class="gs-btn gs-btn-primary">Salvar equipamento</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

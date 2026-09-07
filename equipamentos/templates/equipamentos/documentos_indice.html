@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+
+{% block title %}Documentos | GELOSAR{% endblock %}
+
+{% block content %}
+<div class="gs-page">
+
+    <header class="gs-page-header">
+        <div>
+            <ol class="gs-breadcrumb">
+                <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                <li aria-hidden="true">/</li>
+                <li>Documentos</li>
+            </ol>
+            <h1 class="gs-page-header__title">Documentos</h1>
+            <p class="gs-page-header__desc">Arquivos anexados aos equipamentos</p>
+        </div>
+        <div class="gs-page-header__actions">
+            <a href="{% url 'equipamentos:listar_equipamentos' %}" class="gs-btn gs-btn-outline">Equipamentos</a>
+        </div>
+    </header>
+
+    <div class="row g-3 mb-4">
+        <div class="col-12 col-md-4">
+            <div class="gs-card">
+                <p class="gs-card__title">Documentos</p>
+                <p class="gs-card__value">{{ documentos|length }}</p>
+                <p class="gs-card__hint">arquivos cadastrados</p>
+            </div>
+        </div>
+    </div>
+
+    {% if documentos %}
+    <div class="gs-table-wrap">
+        <table class="gs-table">
+            <thead>
+                <tr>
+                    <th>Documento</th>
+                    <th>Equipamento</th>
+                    <th>Cliente</th>
+                    <th>Upload</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for documento in documentos %}
+                <tr>
+                    <td>{{ documento.nome }}</td>
+                    <td>
+                        <a href="{% url 'equipamentos:detalhe_equipamento' documento.equipamento.pk %}">
+                            {{ documento.equipamento.nome }}
+                        </a>
+                    </td>
+                    <td>
+                        {% if documento.equipamento.cliente %}
+                            {{ documento.equipamento.cliente.nome }}
+                        {% else %}
+                            —
+                        {% endif %}
+                    </td>
+                    <td>{{ documento.data_upload|date:"d/m/Y H:i" }}</td>
+                    <td>
+                        <a href="{% url 'equipamentos:listar_documentos' documento.equipamento.pk %}" class="gs-btn gs-btn-ghost">
+                            Ver documentos
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="gs-empty">
+        <h2 class="gs-empty__title">Nenhum documento cadastrado</h2>
+        <p class="gs-empty__text">Ainda não existem arquivos anexados a equipamentos.</p>
+        <a href="{% url 'equipamentos:listar_equipamentos' %}" class="gs-btn gs-btn-primary">Ir para equipamentos</a>
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}

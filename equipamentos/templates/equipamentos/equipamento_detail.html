@@ -1,0 +1,135 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ equipamento.codigo }} | GELOSAR{% endblock %}
+
+{% block content %}
+<div class="gs-page">
+
+    <header class="gs-page-header">
+        <div>
+            <ol class="gs-breadcrumb">
+                <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                <li aria-hidden="true">/</li>
+                <li><a href="{% url 'equipamentos:listar_equipamentos' %}">Equipamentos</a></li>
+                <li aria-hidden="true">/</li>
+                <li>{{ equipamento.codigo }}</li>
+            </ol>
+            <h1 class="gs-page-header__title">{{ equipamento.nome }}</h1>
+            <p class="gs-page-header__desc">{{ equipamento.codigo }} · {{ equipamento.get_tipo_display }}</p>
+        </div>
+        <div class="gs-page-header__actions">
+            {% if equipamento.status == 'ativo' %}
+                <span class="gs-badge gs-badge--ok">{{ equipamento.get_status_display }}</span>
+            {% elif equipamento.status == 'manutencao' %}
+                <span class="gs-badge gs-badge--warning">{{ equipamento.get_status_display }}</span>
+            {% else %}
+                <span class="gs-badge gs-badge--neutral">{{ equipamento.get_status_display }}</span>
+            {% endif %}
+            <a href="{% url 'equipamentos:listar_equipamentos' %}" class="gs-btn gs-btn-outline">Voltar</a>
+            <a href="{% url 'equipamentos:listar_documentos' equipamento.id %}" class="gs-btn gs-btn-outline">Documentos</a>
+            <a href="{% url 'equipamentos:editar_equipamento' equipamento.id %}" class="gs-btn gs-btn-primary">Editar</a>
+            <a href="{% url 'equipamentos:excluir_equipamento' equipamento.id %}" class="gs-btn gs-btn-danger">Excluir</a>
+        </div>
+    </header>
+
+    <div class="row g-3">
+        <div class="col-12 col-lg-8">
+            <div class="gs-card">
+                <p class="gs-card__title">Identificação</p>
+                <div class="row g-3">
+                    <div class="col-12 col-sm-6">
+                        <span class="gs-card__hint d-block">Código</span>
+                        <strong>{{ equipamento.codigo }}</strong>
+                    </div>
+                    <div class="col-12 col-sm-6">
+                        <span class="gs-card__hint d-block">Nome</span>
+                        <strong>{{ equipamento.nome }}</strong>
+                    </div>
+                    <div class="col-12 col-sm-6">
+                        <span class="gs-card__hint d-block">Tipo</span>
+                        <span>{{ equipamento.get_tipo_display }}</span>
+                    </div>
+                    <div class="col-12 col-sm-6">
+                        <span class="gs-card__hint d-block">Número de série</span>
+                        <span>{% if equipamento.numero_serie %}{{ equipamento.numero_serie }}{% else %}—{% endif %}</span>
+                    </div>
+                    <div class="col-12 col-sm-6">
+                        <span class="gs-card__hint d-block">Fabricante</span>
+                        <span>{% if equipamento.fabricante %}{{ equipamento.fabricante }}{% else %}—{% endif %}</span>
+                    </div>
+                    <div class="col-12 col-sm-6">
+                        <span class="gs-card__hint d-block">Localização</span>
+                        <span>{% if equipamento.localizacao %}{{ equipamento.localizacao }}{% else %}—{% endif %}</span>
+                    </div>
+                    <div class="col-12">
+                        <span class="gs-card__hint d-block">Cliente</span>
+                        {% if equipamento.cliente %}
+                            <a href="{% url 'dashboard_cliente' equipamento.cliente.id %}">{{ equipamento.cliente.nome }}</a>
+                        {% else %}
+                            <span>—</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="gs-card mt-3">
+                <p class="gs-card__title">Aquisição</p>
+                <div class="row g-3">
+                    <div class="col-12 col-sm-4">
+                        <span class="gs-card__hint d-block">Valor de compra</span>
+                        <span>{% if equipamento.valor_compra %}R$ {{ equipamento.valor_compra }}{% else %}—{% endif %}</span>
+                    </div>
+                    <div class="col-12 col-sm-4">
+                        <span class="gs-card__hint d-block">Data da compra</span>
+                        <span>{% if equipamento.data_compra %}{{ equipamento.data_compra|date:"d/m/Y" }}{% else %}—{% endif %}</span>
+                    </div>
+                    <div class="col-12 col-sm-4">
+                        <span class="gs-card__hint d-block">Garantia</span>
+                        <span>{% if equipamento.garantia_meses %}{{ equipamento.garantia_meses }} meses{% else %}—{% endif %}</span>
+                    </div>
+                </div>
+            </div>
+
+            {% if equipamento.observacoes %}
+            <div class="gs-card mt-3">
+                <p class="gs-card__title">Observações</p>
+                <p class="mb-0">{{ equipamento.observacoes }}</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="col-12 col-lg-4">
+            <div class="gs-card">
+                <p class="gs-card__title">Registro</p>
+                <p class="gs-card__hint mb-1">Criado em</p>
+                <p>{{ equipamento.criado_em|date:"d/m/Y H:i" }}</p>
+                <p class="gs-card__hint mb-1">Atualizado em</p>
+                <p class="mb-0">{{ equipamento.atualizado_em|date:"d/m/Y H:i" }}</p>
+            </div>
+
+            <div class="gs-card mt-3">
+                <div class="d-flex justify-content-between align-items-center gap-2 mb-3">
+                    <p class="gs-card__title mb-0">Documentos</p>
+                    <a href="{% url 'equipamentos:upload_documento' equipamento.id %}" class="gs-btn gs-btn-outline">Adicionar</a>
+                </div>
+                {% if equipamento.documentos.all %}
+                    <ul class="list-unstyled mb-3">
+                        {% for doc in equipamento.documentos.all %}
+                        <li class="d-flex justify-content-between align-items-center gap-2 py-2">
+                            <span>{{ doc.nome }}</span>
+                            {% if doc.arquivo %}
+                            <a href="{% url 'equipamentos:download_documento' doc.pk %}" class="gs-btn gs-btn-ghost" target="_blank" rel="noopener noreferrer">Abrir</a>
+                            {% endif %}
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    <a href="{% url 'equipamentos:listar_documentos' equipamento.id %}" class="gs-btn gs-btn-outline">Ver todos</a>
+                {% else %}
+                    <p class="gs-card__hint mb-0">Nenhum documento anexado.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

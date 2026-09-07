@@ -1,0 +1,106 @@
+/* Regras específicas do formset de itens. Visual geral vem de base.css. */
+
+.venda-formset .produtos-table {
+    min-width: 720px;
+}
+
+.venda-formset .produtos-table .quantidade,
+.venda-formset .produtos-table .preco,
+.venda-formset .produtos-table .subtotal {
+    width: 9rem;
+}
+
+.venda-formset .produtos-table .remover {
+    width: 4rem;
+    text-align: center;
+}
+
+.venda-formset .preco-input[readonly] {
+    background: var(--gs-ice);
+    color: var(--gs-text-muted);
+    cursor: default;
+}
+
+.venda-formset .subtotal {
+    font-weight: var(--gs-font-weight-semibold);
+    white-space: nowrap;
+}
+
+.btn-remover {
+    width: 34px;
+    height: 34px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: none;
+    border-radius: var(--gs-radius-sm);
+    background: var(--gs-danger-bg);
+    color: var(--gs-danger);
+    font-size: 1.25rem;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.btn-remover:hover {
+    filter: brightness(0.96);
+}
+
+.btn-adicionar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 40px;
+    padding: 0 1rem;
+    border: 1px dashed var(--gs-primary);
+    border-radius: var(--gs-radius-sm);
+    background: var(--gs-info-bg);
+    color: var(--gs-primary);
+    font-size: var(--gs-font-size-sm);
+    font-weight: var(--gs-font-weight-semibold);
+    cursor: pointer;
+}
+
+.btn-adicionar:hover {
+    background: var(--gs-ice);
+}
+
+.total-area {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.total-box {
+    min-width: 16rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    padding: 1rem 1.25rem;
+    border: 1px solid var(--gs-border);
+    border-radius: var(--gs-radius-md);
+    background: var(--gs-ice);
+}
+
+.total-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--gs-text-secondary);
+}
+
+.total-value {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--gs-navy);
+}
+
+@media (max-width: 800px) {
+    .total-area {
+        justify-content: stretch;
+    }
+
+    .total-box {
+        width: 100%;
+        min-width: 0;
+    }
+}

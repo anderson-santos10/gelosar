@@ -1,0 +1,54 @@
+/* Dashboard — layout específico. Tokens, cards e badges vêm de base.css. */
+
+.icon-box {
+    width: 52px;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--gs-radius-md);
+    flex-shrink: 0;
+}
+
+.icon-box-primary {
+    background: var(--gs-navy);
+    color: var(--gs-text-inverse);
+}
+
+.icon-box-cyan {
+    background: var(--gs-ice);
+    color: var(--gs-primary);
+    border: 1px solid var(--gs-border);
+}
+
+.production-icon {
+    width: 36px;
+    height: 36px;
+}
+
+.card-footer-total {
+    background: var(--gs-ice);
+    border-radius: var(--gs-radius-md);
+    border: 1px dashed var(--gs-border-strong);
+}
+
+.equipment-summary {
+    background: var(--gs-ice);
+    border: 1px solid var(--gs-border);
+    border-radius: var(--gs-radius-md);
+}
+
+.dashboard-blue {
+    color: var(--gs-primary);
+}
+
+.gs-chart-wrap {
+    position: relative;
+    width: 100%;
+    max-width: 100%;
+    height: 240px;
+}
+
+.gs-chart-wrap canvas {
+    max-width: 100%;
+}

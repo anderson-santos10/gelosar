@@ -1,0 +1,312 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Contrato de Comodato | GELOSAR{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/contrato_comodato.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="gs-page contrato-page">
+
+    <header class="gs-page-header no-print">
+        <div>
+            <ol class="gs-breadcrumb">
+                <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                <li aria-hidden="true">/</li>
+                <li>Contrato de comodato</li>
+            </ol>
+            <h1 class="gs-page-header__title">Contrato de comodato</h1>
+            <p class="gs-page-header__desc">Modelo do instrumento. Não há contrato persistido no sistema.</p>
+        </div>
+        <div class="gs-page-header__actions">
+            <a href="{% url 'equipamentos:listar_equipamentos' %}" class="gs-btn gs-btn-outline">Voltar</a>
+            <button type="button" class="gs-btn gs-btn-primary" data-gs-print>
+                <i class="bi bi-printer" aria-hidden="true"></i>
+                Imprimir
+            </button>
+        </div>
+    </header>
+
+    <div class="gs-alert gs-alert--info no-print mb-4" role="status">
+        <div class="gs-alert__body">
+            <i class="bi bi-info-circle-fill" aria-hidden="true"></i>
+            <span>
+                Esta tela exibe o modelo de contrato já existente. Não há cadastro, edição nem vínculo com cliente ou equipamento.
+            </span>
+        </div>
+    </div>
+
+    <main class="contrato">
+
+        <header class="contrato-cabecalho">
+            <div class="marca">
+                <div class="logo-marca">GELOSAR</div>
+                <span>INDÚSTRIA DE GELO</span>
+            </div>
+            <div class="titulo-documento">
+                <h1>CONTRATO DE COMODATO</h1>
+                <p>Cessão gratuita de uso de equipamento</p>
+            </div>
+        </header>
+
+        <div class="documento-linha"></div>
+
+        <section class="secao-documento">
+            <div class="secao-titulo">
+                <span class="numero-secao">01</span>
+                <div>
+                    <h2>Identificação das partes</h2>
+                    <p>Qualificação das partes contratantes.</p>
+                </div>
+            </div>
+
+            <div class="partes">
+                <div class="parte">
+                    <div class="parte-titulo">COMODANTE</div>
+                    <p>
+                        <strong>GELOSAR</strong>,
+                        inscrita no CNPJ sob nº
+                        <strong>68.165.831/0001-57</strong>,
+                        neste ato representada por seu responsável legal.
+                    </p>
+                </div>
+
+                <div class="parte">
+                    <div class="parte-titulo">COMODATÁRIO</div>
+                    <p>
+                        <strong>{% firstof contrato.razao_social "________________" %}</strong>
+                        {% if contrato.nome_fantasia %}
+                            ({{ contrato.nome_fantasia }})
+                        {% endif %}
+                        , inscrito(a) no CNPJ/CPF sob nº
+                        <strong>{% firstof contrato.cnpj_cpf "________________" %}</strong>
+                        {% if contrato.inscricao_estadual %}
+                            , IE nº {{ contrato.inscricao_estadual }}
+                        {% endif %}.
+                    </p>
+                    <p>
+                        Endereço:
+                        {% firstof contrato.endereco "________________" %},
+                        nº {% firstof contrato.numero "____" %}
+                        {% if contrato.complemento %}, {{ contrato.complemento }}{% endif %},
+                        Bairro {% firstof contrato.bairro "________________" %},
+                        {% firstof contrato.cidade_uf "________________" %},
+                        CEP {% firstof contrato.cep "________" %}.
+                    </p>
+                    <p>
+                        Representado por:
+                        <strong>{% firstof contrato.responsavel_legal "________________" %}</strong>
+                        {% if contrato.cpf_responsavel %}
+                            , CPF nº {{ contrato.cpf_responsavel }}
+                        {% endif %}.
+                    </p>
+                    {% if contrato.telefone or contrato.email %}
+                    <p class="contato">
+                        {% if contrato.telefone %}
+                            <strong>Telefone:</strong> {{ contrato.telefone }}
+                        {% endif %}
+                        {% if contrato.telefone and contrato.email %}&nbsp;&nbsp;|&nbsp;&nbsp;{% endif %}
+                        {% if contrato.email %}
+                            <strong>E-mail:</strong> {{ contrato.email }}
+                        {% endif %}
+                    </p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <p class="texto-introdutorio">
+                As partes acima identificadas têm, entre si, justo e
+                contratado o presente
+                <strong>CONTRATO DE COMODATO DE EQUIPAMENTO</strong>,
+                que será regido pelas cláusulas e condições seguintes.
+            </p>
+        </section>
+
+        <section class="secao-documento">
+            <div class="secao-titulo">
+                <span class="numero-secao">02</span>
+                <div>
+                    <h2>Do equipamento</h2>
+                    <p>Identificação do equipamento objeto do comodato.</p>
+                </div>
+            </div>
+
+            <p>
+                A COMODANTE cede gratuitamente ao COMODATÁRIO,
+                em regime de comodato, o equipamento abaixo identificado:
+            </p>
+
+            <div class="equipamento-box">
+                <div class="equipamento-item">
+                    <span class="label">Equipamento</span>
+                    <strong>{% firstof contrato.descricao_equipamento "________________" %}</strong>
+                </div>
+                <div class="equipamento-item">
+                    <span class="label">Número de série</span>
+                    <strong>{% firstof contrato.numero_serie "________________" %}</strong>
+                </div>
+                {% if contrato.especificacoes %}
+                <div class="equipamento-item equipamento-full">
+                    <span class="label">Especificações / identificação</span>
+                    <strong>{{ contrato.especificacoes }}</strong>
+                </div>
+                {% endif %}
+            </div>
+
+            <p>
+                O equipamento permanecerá sendo de propriedade exclusiva
+                da COMODANTE, não havendo qualquer transferência de
+                propriedade ao COMODATÁRIO em razão deste contrato.
+            </p>
+        </section>
+
+        <section class="secao-documento">
+            <div class="secao-titulo">
+                <span class="numero-secao">03</span>
+                <div>
+                    <h2>Da utilização e responsabilidade</h2>
+                    <p>Condições de uso e conservação do equipamento.</p>
+                </div>
+            </div>
+
+            <p>
+                O equipamento deverá ser utilizado exclusivamente
+                no estabelecimento do COMODATÁRIO situado em:
+            </p>
+
+            <div class="endereco-box">
+                {% firstof contrato.endereco "________________" %},
+                nº {% firstof contrato.numero "____" %}
+                {% if contrato.complemento %}, {{ contrato.complemento }}{% endif %},
+                Bairro {% firstof contrato.bairro "________________" %},
+                {% firstof contrato.cidade_uf "________________" %},
+                CEP {% firstof contrato.cep "________" %}.
+            </div>
+
+            <p>
+                O COMODATÁRIO declara receber o equipamento em boas
+                condições de funcionamento e compromete-se a zelar
+                por sua conservação, segurança, manutenção adequada
+                e utilização correta.
+            </p>
+
+            <p>
+                Fica expressamente vedado ao COMODATÁRIO vender,
+                emprestar, transferir, remover, modificar ou permitir
+                que terceiros utilizem o equipamento sem autorização
+                prévia da COMODANTE.
+            </p>
+        </section>
+
+        <section class="secao-documento">
+            <div class="secao-titulo">
+                <span class="numero-secao">04</span>
+                <div>
+                    <h2>Da devolução do equipamento</h2>
+                    <p>Condições para restituição do bem.</p>
+                </div>
+            </div>
+
+            <p>
+                O COMODATÁRIO deverá devolver o equipamento à
+                COMODANTE sempre que solicitado, bem como em caso
+                de encerramento da parceria comercial entre as partes.
+            </p>
+            <p>
+                O equipamento deverá ser devolvido nas mesmas
+                condições em que foi recebido, ressalvado o desgaste
+                natural decorrente de sua utilização adequada.
+            </p>
+            <p>
+                Em caso de dano decorrente de mau uso, negligência,
+                alteração, violação ou utilização inadequada,
+                o COMODATÁRIO ficará responsável pelos custos
+                necessários à reparação ou reposição do equipamento.
+            </p>
+        </section>
+
+        <section class="secao-documento">
+            <div class="secao-titulo">
+                <span class="numero-secao">05</span>
+                <div>
+                    <h2>Da vigência</h2>
+                    <p>Prazo de validade do presente instrumento.</p>
+                </div>
+            </div>
+            <p>
+                O presente contrato terá prazo indeterminado,
+                permanecendo vigente enquanto o equipamento estiver
+                cedido em comodato ao COMODATÁRIO.
+            </p>
+        </section>
+
+        <section class="secao-documento">
+            <div class="secao-titulo">
+                <span class="numero-secao">06</span>
+                <div>
+                    <h2>Do foro</h2>
+                    <p>Foro eleito pelas partes.</p>
+                </div>
+            </div>
+            <p>
+                Fica eleito o foro da comarca de
+                <strong>{% firstof contrato.foro_comarca "________________" %}</strong>
+                para dirimir quaisquer dúvidas ou questões
+                decorrentes deste contrato, com renúncia a qualquer
+                outro, por mais privilegiado que seja.
+            </p>
+        </section>
+
+        <section class="encerramento">
+            <p>
+                E, por estarem de acordo com todas as condições
+                estabelecidas neste instrumento, as partes assinam
+                o presente contrato em duas vias de igual teor e forma,
+                para que produza seus efeitos legais.
+            </p>
+            <div class="data-documento">
+                {% if contrato.data_assinatura %}
+                    {{ contrato.cidade_uf }},
+                    {{ contrato.data_assinatura|date:"d" }}
+                    de
+                    {{ contrato.data_assinatura|date:"F" }}
+                    de
+                    {{ contrato.data_assinatura|date:"Y" }}.
+                {% else %}
+                    ________________________________,
+                    ____ de __________________ de ______.
+                {% endif %}
+            </div>
+        </section>
+
+        <section class="assinaturas">
+            <div class="assinatura">
+                <div class="linha-assinatura"></div>
+                <strong>GELOSAR</strong>
+                <span>COMODANTE</span>
+                <p>CNPJ: 68.165.831/0001-57</p>
+                <p>Responsável legal</p>
+            </div>
+            <div class="assinatura">
+                <div class="linha-assinatura"></div>
+                <strong>{% firstof contrato.razao_social "________________" %}</strong>
+                <span>COMODATÁRIO</span>
+                <p>CNPJ/CPF: {% firstof contrato.cnpj_cpf "________________" %}</p>
+                <p>
+                    Responsável legal:
+                    <strong>{% firstof contrato.responsavel_legal "________________" %}</strong>
+                </p>
+            </div>
+        </section>
+
+        <footer class="contrato-rodape">
+            <span>GELOSAR INDÚSTRIA</span>
+            <span>Contrato de Comodato de Equipamento</span>
+        </footer>
+
+    </main>
+
+</div>
+{% endblock %}

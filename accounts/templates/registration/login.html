@@ -1,0 +1,121 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#071E40">
+    <title>GELOSAR | Acesso ao sistema</title>
+    <link rel="icon" href="{% static 'img/logo-gelosar.jpg' %}" type="image/jpeg">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="{% static 'accounts/css/login.css' %}">
+</head>
+<body class="gs-login">
+    <div class="bg-shape shape-1" aria-hidden="true"></div>
+    <div class="bg-shape shape-2" aria-hidden="true"></div>
+
+    <main class="login-card">
+        <div class="logo-container">
+            <img
+                src="{% static 'img/logo-gelosar.jpg' %}"
+                alt="GELOSAR — Fábrica de Gelo"
+                width="220"
+                height="140"
+            >
+        </div>
+
+        <p class="welcome-title">Acesso ao sistema</p>
+
+        <form method="post" action="{% url 'login' %}" novalidate>
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+                <div class="gs-alert gs-alert--error" role="alert">
+                    <i class="bi bi-exclamation-octagon-fill" aria-hidden="true"></i>
+                    <span>{{ form.non_field_errors|striptags }}</span>
+                </div>
+            {% endif %}
+
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="gs-alert gs-alert--{{ message.tags|default:'info' }}" role="status">
+                        <i class="bi bi-info-circle-fill" aria-hidden="true"></i>
+                        <span>{{ message }}</span>
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <div class="mb-3">
+                <label class="form-label" for="id_username">Usuário</label>
+                <div class="input-group">
+                    <span class="input-group-text" aria-hidden="true">
+                        <i class="bi bi-person"></i>
+                    </span>
+                    <input
+                        type="text"
+                        class="form-control"
+                        id="id_username"
+                        name="username"
+                        autocomplete="username"
+                        required
+                        value="{{ form.username.value|default:'' }}"
+                    >
+                </div>
+                {% if form.username.errors %}
+                    <p class="gs-field-error">{{ form.username.errors|striptags }}</p>
+                {% endif %}
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label" for="id_password">Senha</label>
+                <div class="input-group">
+                    <span class="input-group-text" aria-hidden="true">
+                        <i class="bi bi-lock"></i>
+                    </span>
+                    <input
+                        type="password"
+                        class="form-control"
+                        id="id_password"
+                        name="password"
+                        autocomplete="current-password"
+                        required
+                    >
+                    <button type="button" class="input-group-text toggle-password" id="togglePassword" aria-label="Mostrar senha" title="Mostrar senha">
+                        <i class="bi bi-eye" id="eyeIcon" aria-hidden="true"></i>
+                    </button>
+                </div>
+                {% if form.password.errors %}
+                    <p class="gs-field-error">{{ form.password.errors|striptags }}</p>
+                {% endif %}
+            </div>
+
+            <div class="login-options">
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="remember_me" name="remember_me">
+                    <label class="form-check-label" for="remember_me">Manter-me conectado</label>
+                </div>
+            </div>
+
+            {% if next %}
+                <input type="hidden" name="next" value="{{ next }}">
+            {% endif %}
+
+            <button type="submit" class="btn btn-login w-100 d-inline-flex align-items-center justify-content-center gap-2">
+                <i class="bi bi-box-arrow-in-right" aria-hidden="true"></i>
+                <span>Entrar</span>
+            </button>
+        </form>
+    </main>
+
+    <footer class="footer-links">
+        GELOSAR · Fábrica de Gelo
+    </footer>
+
+    <script src="{% static 'accounts/js/login.js' %}"></script>
+</body>
+</html>

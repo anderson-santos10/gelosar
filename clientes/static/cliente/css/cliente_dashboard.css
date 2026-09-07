@@ -1,0 +1,197 @@
+/* Dashboard do cliente — layout específico; tokens vêm de base.css. */
+
+.cliente-dashboard .gs-card__hint a {
+    color: var(--gs-primary);
+    text-decoration: none;
+    font-weight: var(--gs-font-weight-medium);
+}
+
+.cliente-dashboard .gs-card__hint a:hover {
+    text-decoration: underline;
+}
+
+.kpi-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--gs-space-2);
+}
+
+.kpi-header .gs-card__title {
+    margin: 0;
+}
+
+.section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--gs-space-2);
+    padding: var(--gs-space-4) var(--gs-space-5);
+    border-bottom: 1px solid var(--gs-border);
+}
+
+.section-header h2 {
+    margin: 0;
+    font-size: var(--gs-font-size-sm);
+    font-weight: var(--gs-font-weight-semibold);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--gs-text-muted);
+}
+
+.equipment-progress {
+    padding: 0.25rem 0 0.75rem;
+}
+
+.equipment-progress-content {
+    display: flex;
+    align-items: center;
+    gap: var(--gs-space-4);
+}
+
+.progress-circle {
+    --progress: 0;
+    width: 56px;
+    height: 56px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: conic-gradient(var(--gs-primary) calc(var(--progress) * 1%), var(--gs-ice) 0);
+}
+
+.progress-circle-value {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--gs-surface);
+    color: var(--gs-navy);
+    font-size: 0.72rem;
+    font-weight: var(--gs-font-weight-bold);
+}
+
+.equipment-progress-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.equipment-progress-title {
+    font-size: var(--gs-font-size-sm);
+    font-weight: var(--gs-font-weight-semibold);
+    color: var(--gs-navy);
+}
+
+.equipment-progress-main,
+.equipment-progress-details {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem 0.75rem;
+    margin-top: 0.2rem;
+    color: var(--gs-text-secondary);
+    font-size: var(--gs-font-size-sm);
+}
+
+.equipment-progress-bar {
+    margin-top: 0.45rem;
+    height: 6px;
+    background: var(--gs-ice);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.equipment-progress-bar-fill {
+    height: 100%;
+    width: 0;
+    background: var(--gs-primary);
+}
+
+.equipment-progress-complete .progress-circle {
+    background: conic-gradient(var(--gs-success) 100%, var(--gs-ice) 0);
+}
+
+.history-header-btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--gs-space-3);
+    padding: var(--gs-space-4) var(--gs-space-5);
+    border: 0;
+    background: var(--gs-surface);
+    color: var(--gs-navy);
+    font-family: inherit;
+    font-size: var(--gs-font-size-sm);
+    font-weight: var(--gs-font-weight-semibold);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    cursor: pointer;
+}
+
+.history-header-btn:focus-visible {
+    outline: 3px solid var(--gs-focus);
+    outline-offset: -3px;
+}
+
+.history-body {
+    border-top: 1px solid var(--gs-border);
+}
+
+.history-item {
+    border-bottom: 1px solid var(--gs-border);
+}
+
+.history-item:last-child {
+    border-bottom: 0;
+}
+
+.history-item-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--gs-space-2);
+    padding: var(--gs-space-3) var(--gs-space-5);
+}
+
+.history-date {
+    border: 0;
+    background: transparent;
+    color: var(--gs-primary);
+    font-family: inherit;
+    font-size: var(--gs-font-size-sm);
+    font-weight: var(--gs-font-weight-semibold);
+    cursor: pointer;
+}
+
+.history-value {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--gs-space-2);
+}
+
+@media (max-width: 575.98px) {
+    .equipment-progress-content {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .history-item-header {
+        align-items: flex-start;
+    }
+}
+
+.gs-chart-wrap {
+    position: relative;
+    width: 100%;
+    max-width: 100%;
+    height: 240px;
+}
+
+.gs-chart-wrap canvas {
+    max-width: 100%;
+}

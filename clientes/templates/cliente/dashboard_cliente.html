@@ -1,0 +1,328 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ cliente.nome }} | GELOSAR{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'cliente/css/cliente_dashboard.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="gs-page cliente-dashboard">
+
+    <header class="gs-page-header">
+        <div>
+            <ol class="gs-breadcrumb">
+                <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                <li aria-hidden="true">/</li>
+                <li><a href="{% url 'lista_clientes' %}">Clientes</a></li>
+                <li aria-hidden="true">/</li>
+                <li>{{ cliente.nome }}</li>
+            </ol>
+            <h1 class="gs-page-header__title">{{ cliente.nome }}</h1>
+            <p class="gs-page-header__desc">
+                {{ cliente.cnpj|default:"CNPJ/CPF não informado" }}
+                · {{ cliente.telefone|default:"Sem telefone" }}
+                · {{ cliente.cidade|default:"Cidade não informada" }}
+            </p>
+        </div>
+        <div class="gs-page-header__actions">
+            {% if cliente.ativo %}
+                <span class="gs-badge gs-badge--ok">Ativo</span>
+            {% else %}
+                <span class="gs-badge gs-badge--neutral">Inativo</span>
+            {% endif %}
+            <a href="{% url 'vendas:novo_pedido' %}" class="gs-btn gs-btn-primary">
+                <i class="bi bi-plus-lg" aria-hidden="true"></i>
+                Novo pedido
+            </a>
+        </div>
+    </header>
+
+    <div class="row g-3 mb-4">
+        <div class="col-12 col-md-4">
+            <div class="gs-card kpi-card">
+                <div class="kpi-header">
+                    <p class="gs-card__title">Total comprado</p>
+                    <button type="button" class="gs-btn gs-btn-ghost gs-btn-icon btn-sensitive-toggle" data-gs-sensitive aria-label="Mostrar valor" title="Alternar visibilidade">
+                        <i class="bi bi-eye" aria-hidden="true"></i>
+                    </button>
+                </div>
+                <p class="gs-card__value text-success sensitive-value d-none">R$ {{ total_compras|floatformat:2 }}</p>
+                <p class="gs-card__value text-success sensitive-masked">R$ ••••••</p>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-4">
+            <div class="gs-card kpi-card">
+                <div class="kpi-header">
+                    <p class="gs-card__title">Sacos vendidos</p>
+                    <button type="button" class="gs-btn gs-btn-ghost gs-btn-icon btn-sensitive-toggle" data-gs-sensitive aria-label="Mostrar quantidade" title="Alternar visibilidade">
+                        <i class="bi bi-eye" aria-hidden="true"></i>
+                    </button>
+                </div>
+                <p class="gs-card__value">
+                    <span class="sensitive-value d-none">{{ quantidade_total }}</span>
+                    <span class="sensitive-masked">••••</span>
+                    <span class="gs-card__hint">sacos</span>
+                </p>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-4">
+            <div class="gs-card">
+                <p class="gs-card__title">Última compra</p>
+                {% if ultima_compra %}
+                    <p class="gs-card__value">{{ ultima_compra.data|date:"d/m/Y" }}</p>
+                    <p class="gs-card__hint">
+                        <a href="{% url 'vendas:detalhe_venda' ultima_compra.pk %}">Ver pedido</a>
+                    </p>
+                {% else %}
+                    <p class="gs-card__value">—</p>
+                    <p class="gs-card__hint">Nenhuma compra registrada</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-12 col-lg-5">
+            <div class="gs-card h-100 p-0 overflow-hidden">
+                <div class="section-header">
+                    <h2>Resumo por produto</h2>
+                    <button type="button" class="gs-btn gs-btn-ghost gs-btn-icon btn-sensitive-toggle" data-gs-sensitive-container="produtos-summary-body" aria-label="Mostrar valores" title="Alternar visibilidade">
+                        <i class="bi bi-eye" aria-hidden="true"></i>
+                    </button>
+                </div>
+                <div id="produtos-summary-body">
+                    {% if produtos %}
+                    <div class="gs-table-wrap gs-table-wrap--flush">
+                        <table class="gs-table">
+                            <thead>
+                                <tr>
+                                    <th>Produto</th>
+                                    <th>Acumulado</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for produto, quantidade in produtos.items %}
+                                <tr>
+                                    <td>{{ produto }}</td>
+                                    <td>
+                                        <span class="sensitive-value d-none">{{ quantidade }} sacos</span>
+                                        <span class="sensitive-masked">••• sacos</span>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="gs-empty gs-empty--flush">
+                        <p class="gs-empty__title">Nenhum produto registrado</p>
+                        <p class="gs-empty__text">Este cliente ainda não possui itens em pedidos.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-lg-7">
+            <div class="gs-card h-100 p-0 overflow-hidden">
+                <div class="section-header">
+                    <h2>Equipamentos alocados</h2>
+                </div>
+                {% if equipamentos %}
+                <div class="gs-table-wrap gs-table-wrap--flush">
+                    <table class="gs-table">
+                        <thead>
+                            <tr>
+                                <th>Equipamento</th>
+                                <th>Código</th>
+                                <th>Tipo</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for equipamento in equipamentos %}
+                            <tr>
+                                <td>
+                                    <a href="{% url 'equipamentos:detalhe_equipamento' equipamento.id %}">{{ equipamento.nome }}</a>
+                                </td>
+                                <td>{{ equipamento.codigo }}</td>
+                                <td>{{ equipamento.get_tipo_display }}</td>
+                                <td>
+                                    {% if equipamento.status == 'ativo' %}
+                                        <span class="gs-badge gs-badge--ok">{{ equipamento.get_status_display }}</span>
+                                    {% elif equipamento.status == 'manutencao' %}
+                                        <span class="gs-badge gs-badge--warning">{{ equipamento.get_status_display }}</span>
+                                    {% else %}
+                                        <span class="gs-badge gs-badge--neutral">{{ equipamento.get_status_display }}</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="4">
+                                    <div
+                                        class="equipment-progress"
+                                        data-equipment-value="{{ equipamento.valor_compra|default:'0' }}"
+                                        data-client-total="{{ total_compras|default:'0' }}"
+                                    >
+                                        {% if equipamento.valor_compra %}
+                                        <div class="equipment-progress-content">
+                                            <div class="progress-circle" aria-label="Progresso do pagamento do equipamento">
+                                                <span class="progress-circle-value">0%</span>
+                                            </div>
+                                            <div class="equipment-progress-info">
+                                                <div class="equipment-progress-title">Retorno do investimento</div>
+                                                <div class="equipment-progress-main">
+                                                    <span class="progress-paid">R$ 0,00</span>
+                                                    <span>de</span>
+                                                    <span class="progress-total">R$ {{ equipamento.valor_compra|floatformat:2 }}</span>
+                                                </div>
+                                                <div class="equipment-progress-details">
+                                                    <span>Pago: <strong class="progress-paid-detail">R$ 0,00</strong></span>
+                                                    <span>Falta: <strong class="progress-remaining">R$ {{ equipamento.valor_compra|floatformat:2 }}</strong></span>
+                                                </div>
+                                                <div class="equipment-progress-bar">
+                                                    <div class="equipment-progress-bar-fill"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {% else %}
+                                        <p class="gs-card__hint mb-0">Valor de compra do equipamento não informado.</p>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="gs-empty gs-empty--flush">
+                    <p class="gs-empty__title">Nenhum equipamento vinculado</p>
+                    <p class="gs-empty__text">Este cliente ainda não possui equipamentos alocados.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-12 col-lg-6">
+            <div class="gs-card">
+                <p class="gs-card__title">Compras (6 meses)</p>
+                <div class="gs-chart-wrap">
+                    <canvas
+                        id="chart-compras-mes"
+                        data-gs-chart="chart-compras-mes-data"
+                        aria-label="Gráfico de compras do cliente nos últimos 6 meses"
+                    ></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-lg-6">
+            <div class="gs-card">
+                <p class="gs-card__title">Produtos comprados</p>
+                <div class="gs-chart-wrap">
+                    <canvas
+                        id="chart-produtos"
+                        data-gs-chart="chart-produtos-data"
+                        aria-label="Gráfico de quantidade de produtos comprados"
+                    ></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{ chart_compras_mes|json_script:"chart-compras-mes-data" }}
+    {{ chart_produtos|json_script:"chart-produtos-data" }}
+
+    <div class="gs-card p-0 overflow-hidden">
+        <button
+            class="history-header-btn"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#collapseHistorico"
+            aria-expanded="false"
+            aria-controls="collapseHistorico"
+        >
+            <span>Histórico de compras</span>
+            <i class="bi bi-chevron-down" aria-hidden="true"></i>
+        </button>
+
+        <div class="collapse" id="collapseHistorico">
+            <div class="history-body" id="accordionVendas">
+                {% if vendas %}
+                    {% for venda in vendas %}
+                    <div class="history-item">
+                        <div class="history-item-header">
+                            <button
+                                class="history-date"
+                                type="button"
+                                data-bs-toggle="collapse"
+                                data-bs-target="#collapseVenda{{ forloop.counter }}"
+                                aria-expanded="false"
+                                aria-controls="collapseVenda{{ forloop.counter }}"
+                            >
+                                {{ venda.data|date:"d/m/Y" }}
+                            </button>
+                            <div class="history-value kpi-card">
+                                <span class="gs-badge gs-badge--ok sensitive-value d-none">R$ {{ venda.total|floatformat:2 }}</span>
+                                <span class="gs-badge gs-badge--neutral sensitive-masked">R$ ••••••</span>
+                                <a href="{% url 'vendas:detalhe_venda' venda.pk %}" class="gs-btn gs-btn-ghost">Ver pedido</a>
+                                <button type="button" class="gs-btn gs-btn-ghost gs-btn-icon btn-sensitive-toggle" data-gs-sensitive aria-label="Mostrar valor" title="Alternar visibilidade">
+                                    <i class="bi bi-eye" aria-hidden="true"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div id="collapseVenda{{ forloop.counter }}" class="collapse" data-bs-parent="#accordionVendas">
+                            <div class="gs-table-wrap gs-table-wrap--flush">
+                                <table class="gs-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Produto</th>
+                                            <th>Quantidade</th>
+                                            <th>Subtotal</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for item in venda.itens.all %}
+                                        <tr>
+                                            <td>{{ item.produto.nome }}</td>
+                                            <td>
+                                                <span class="sensitive-value d-none">{{ item.quantidade }} sacos</span>
+                                                <span class="sensitive-masked">••• sacos</span>
+                                            </td>
+                                            <td>
+                                                <span class="sensitive-value d-none">R$ {{ item.subtotal|floatformat:2 }}</span>
+                                                <span class="sensitive-masked">R$ ••••••</span>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                <div class="gs-empty gs-empty--flush">
+                    <p class="gs-empty__title">Nenhuma compra registrada</p>
+                    <p class="gs-empty__text">Ainda não existem pedidos para este cliente.</p>
+                    <a href="{% url 'vendas:novo_pedido' %}" class="gs-btn gs-btn-primary">Novo pedido</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="{% static 'js/dashboard_charts.js' %}"></script>
+<script src="{% static 'cliente/js/cliente_dashboard.js' %}"></script>
+{% endblock %}
