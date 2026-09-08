@@ -139,6 +139,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -241,6 +242,25 @@ STATICFILES_DIRS = [
 ]
 
 STATIC_ROOT = BASE_DIR / "staticfiles"
+
+# Manifest + compressão só em produção (DEBUG=False). Em desenvolvimento
+# o Manifest exige staticfiles/ já coletado e quebra templates/testes.
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        "BACKEND": (
+            "whitenoise.storage.CompressedManifestStaticFilesStorage"
+            if not DEBUG
+            else "django.contrib.staticfiles.storage.StaticFilesStorage"
+        ),
+    },
+}
+
+# chart.umd.min.js referencia um .map que não está no repositório.
+# Sem isto o collectstatic em produção (Manifest) falha no Railway.
+WHITENOISE_MANIFEST_STRICT = False
 
 
 # ============================================================
