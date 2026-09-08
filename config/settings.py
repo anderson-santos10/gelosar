@@ -108,6 +108,11 @@ ALLOWED_HOSTS = _env_list(
     ["localhost", "127.0.0.1"],
 )
 
+CSRF_TRUSTED_ORIGINS = _env_list(
+    "DJANGO_CSRF_TRUSTED_ORIGINS",
+    [],
+)
+
 
 # ============================================================
 # APPLICATIONS
