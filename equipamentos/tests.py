@@ -435,6 +435,8 @@ class ContratoComodatoPersistenciaTests(TestCase):
         self.assertContains(detalhe, "contrato-comodato")
         self.assertContains(detalhe, "gs-print-comodato")
         self.assertContains(detalhe, "css/contrato_comodato.css")
+        self.assertContains(detalhe, "img/logo-gelosar.jpg")
+        self.assertContains(detalhe, "logo-oficial")
 
     def test_edicao_mantem_criado_em(self):
         contrato = ContratoComodato.objects.create(

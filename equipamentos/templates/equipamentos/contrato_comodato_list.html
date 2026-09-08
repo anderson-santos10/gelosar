@@ -48,7 +48,7 @@
                     <td>{{ contrato.cliente.nome }}</td>
                     <td>{{ contrato.equipamento.nome }}</td>
                     <td>{{ contrato.data_inicio|date:"d/m/Y" }}</td>
-                    <td>{{ contrato.data_fim|date:"d/m/Y"|default:"—" }}</td>
+                    <td>{{ contrato.data_fim|date:"d/m/Y"|default:"Indeterminado" }}</td>
                     <td>{{ contrato.get_status_display }}</td>
                     <td>
                         <a href="{% url 'equipamentos:contrato_comodato_detalhe' contrato.pk %}" class="gs-btn gs-btn-outline">Ver</a>
