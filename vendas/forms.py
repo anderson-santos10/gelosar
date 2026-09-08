@@ -1,5 +1,5 @@
 from django import forms
-from django.forms import inlineformset_factory
+from django.forms import BaseInlineFormSet, inlineformset_factory
 from decimal import Decimal
 
 from .models import Venda, ItemVenda
@@ -58,10 +58,23 @@ class ItemVendaForm(forms.ModelForm):
         return quantidade
 
 
+class BaseItemVendaFormSet(BaseInlineFormSet):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.error_messages = self.error_messages.copy()
+        self.error_messages["too_few_forms"] = (
+            "A venda deve possuir pelo menos um item."
+        )
+
+
 ItemVendaFormSet = inlineformset_factory(
     Venda,
     ItemVenda,
     form=ItemVendaForm,
+    formset=BaseItemVendaFormSet,
     extra=1,
-    can_delete=True
+    min_num=1,
+    validate_min=True,
+    can_delete=True,
 )

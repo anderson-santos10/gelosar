@@ -16,6 +16,9 @@
             <p class="gs-page-header__desc">Acompanhe gelo, insumos e movimentações</p>
         </div>
         <div class="gs-page-header__actions">
+            <a href="{% url 'estoque:ajuste_produto' %}" class="gs-btn gs-btn-outline">
+                Ajuste de produto
+            </a>
             <a href="{% url 'estoque:entrada_insumo' %}" class="gs-btn gs-btn-primary">
                 <i class="bi bi-plus-lg" aria-hidden="true"></i>
                 Entrada de insumos
@@ -23,7 +26,7 @@
         </div>
     </header>
 
-    {% if estoque_5kg_sacos == 0 or estoque_3kg_sacos == 0 %}
+    {% if estoque_5kg_sacos <= 0 or estoque_3kg_sacos <= 0 %}
     <div class="gs-alert gs-alert--warning mb-4" role="status">
         <div class="gs-alert__body">
             <i class="bi bi-exclamation-triangle-fill" aria-hidden="true"></i>
@@ -81,6 +84,35 @@
                 <p class="gs-card__hint">movimentações</p>
             </div>
         </div>
+    </div>
+
+    <div class="gs-card mb-4">
+        <p class="gs-card__title">Saldo de insumos</p>
+        <p class="gs-card__hint mb-3">Fórmula oficial: ENTRADA − SAIDA + AJUSTE</p>
+        {% if saldos_insumos %}
+        <div class="gs-table-wrap gs-table-wrap--flush">
+            <table class="gs-table">
+                <thead>
+                    <tr>
+                        <th>Insumo</th>
+                        <th>Unidade</th>
+                        <th>Saldo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in saldos_insumos %}
+                    <tr>
+                        <td>{{ item.insumo.nome }}</td>
+                        <td>{{ item.insumo.unidade }}</td>
+                        <td>{{ item.saldo }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p class="gs-card__hint mb-0">Nenhum insumo cadastrado.</p>
+        {% endif %}
     </div>
 
     {% if movimentacoes %}

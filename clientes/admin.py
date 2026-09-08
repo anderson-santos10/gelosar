@@ -1,8 +1,4 @@
 from django.contrib import admin
-from .models import Cliente
-
-# Register your models here.
-from django.contrib import admin
 from django.urls import reverse
 from django.utils.html import format_html
 
@@ -38,8 +34,8 @@ class ClienteAdmin(admin.ModelAdmin):
     def dashboard_link(self, obj):
 
         url = reverse(
-            'detalhe_cliente',
-            args=[obj.id]
+            'clientes:dashboard_cliente',
+            args=[obj.pk]
         )
 
         return format_html(

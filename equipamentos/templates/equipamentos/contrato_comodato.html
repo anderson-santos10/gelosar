@@ -1,10 +1,20 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Contrato de Comodato | GELOSAR{% endblock %}
+{% block title %}Contrato {{ contrato.numero_contrato }} | GELOSAR{% endblock %}
+
+{% block body_class %} gs-print-comodato{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/contrato_comodato.css' %}">
+<style>
+@media print {
+    @page {
+        size: A4 portrait;
+        margin: 5mm;
+    }
+}
+</style>
 {% endblock %}
 
 {% block content %}
@@ -15,30 +25,39 @@
             <ol class="gs-breadcrumb">
                 <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
                 <li aria-hidden="true">/</li>
-                <li>Contrato de comodato</li>
+                <li><a href="{% url 'equipamentos:contrato_comodato' %}">Contratos de comodato</a></li>
+                <li aria-hidden="true">/</li>
+                <li>{{ contrato.numero_contrato }}</li>
             </ol>
             <h1 class="gs-page-header__title">Contrato de comodato</h1>
-            <p class="gs-page-header__desc">Modelo do instrumento. Não há contrato persistido no sistema.</p>
+            <p class="gs-page-header__desc">
+                {{ contrato.numero_contrato }} · {{ contrato.cliente.nome }} · {{ contrato.get_status_display }}
+                · início {{ contrato.data_inicio|date:"d/m/Y" }}
+                {% if contrato.data_fim %}· fim {{ contrato.data_fim|date:"d/m/Y" }}{% endif %}
+            </p>
         </div>
         <div class="gs-page-header__actions">
-            <a href="{% url 'equipamentos:listar_equipamentos' %}" class="gs-btn gs-btn-outline">Voltar</a>
-            <button type="button" class="gs-btn gs-btn-primary" data-gs-print>
+            <a href="{% url 'equipamentos:contrato_comodato' %}" class="gs-btn gs-btn-outline">Voltar</a>
+            {% if perms.equipamentos.change_contratocomodato %}
+            <a href="{% url 'equipamentos:contrato_comodato_editar' contrato.pk %}" class="gs-btn gs-btn-outline">Editar</a>
+            {% endif %}
+            <button type="button" class="gs-btn gs-btn-primary" onclick="window.print()">
                 <i class="bi bi-printer" aria-hidden="true"></i>
                 Imprimir
             </button>
         </div>
     </header>
 
+    {% if contrato.observacoes %}
     <div class="gs-alert gs-alert--info no-print mb-4" role="status">
         <div class="gs-alert__body">
             <i class="bi bi-info-circle-fill" aria-hidden="true"></i>
-            <span>
-                Esta tela exibe o modelo de contrato já existente. Não há cadastro, edição nem vínculo com cliente ou equipamento.
-            </span>
+            <span>{{ contrato.observacoes }}</span>
         </div>
     </div>
+    {% endif %}
 
-    <main class="contrato">
+    <article class="contrato contrato-comodato contrato-print">
 
         <header class="contrato-cabecalho">
             <div class="marca">
@@ -48,6 +67,7 @@
             <div class="titulo-documento">
                 <h1>CONTRATO DE COMODATO</h1>
                 <p>Cessão gratuita de uso de equipamento</p>
+                <p>{{ contrato.numero_contrato }}</p>
             </div>
         </header>
 
@@ -76,40 +96,27 @@
                 <div class="parte">
                     <div class="parte-titulo">COMODATÁRIO</div>
                     <p>
-                        <strong>{% firstof contrato.razao_social "________________" %}</strong>
-                        {% if contrato.nome_fantasia %}
-                            ({{ contrato.nome_fantasia }})
-                        {% endif %}
+                        <strong>{{ contrato.cliente.nome }}</strong>
+                        {% if contrato.cliente.cnpj %}
                         , inscrito(a) no CNPJ/CPF sob nº
-                        <strong>{% firstof contrato.cnpj_cpf "________________" %}</strong>
-                        {% if contrato.inscricao_estadual %}
-                            , IE nº {{ contrato.inscricao_estadual }}
+                        <strong>{{ contrato.cliente.cnpj }}</strong>
                         {% endif %}.
                     </p>
                     <p>
                         Endereço:
-                        {% firstof contrato.endereco "________________" %},
-                        nº {% firstof contrato.numero "____" %}
-                        {% if contrato.complemento %}, {{ contrato.complemento }}{% endif %},
-                        Bairro {% firstof contrato.bairro "________________" %},
-                        {% firstof contrato.cidade_uf "________________" %},
-                        CEP {% firstof contrato.cep "________" %}.
-                    </p>
-                    <p>
-                        Representado por:
-                        <strong>{% firstof contrato.responsavel_legal "________________" %}</strong>
-                        {% if contrato.cpf_responsavel %}
-                            , CPF nº {{ contrato.cpf_responsavel }}
+                        {% firstof contrato.cliente.endereco "________________" %}
+                        {% if contrato.cliente.cidade %}
+                        , {{ contrato.cliente.cidade }}
                         {% endif %}.
                     </p>
-                    {% if contrato.telefone or contrato.email %}
+                    {% if contrato.cliente.telefone or contrato.cliente.email %}
                     <p class="contato">
-                        {% if contrato.telefone %}
-                            <strong>Telefone:</strong> {{ contrato.telefone }}
+                        {% if contrato.cliente.telefone %}
+                            <strong>Telefone:</strong> {{ contrato.cliente.telefone }}
                         {% endif %}
-                        {% if contrato.telefone and contrato.email %}&nbsp;&nbsp;|&nbsp;&nbsp;{% endif %}
-                        {% if contrato.email %}
-                            <strong>E-mail:</strong> {{ contrato.email }}
+                        {% if contrato.cliente.telefone and contrato.cliente.email %}&nbsp;&nbsp;|&nbsp;&nbsp;{% endif %}
+                        {% if contrato.cliente.email %}
+                            <strong>E-mail:</strong> {{ contrato.cliente.email }}
                         {% endif %}
                     </p>
                     {% endif %}
@@ -122,6 +129,11 @@
                 <strong>CONTRATO DE COMODATO DE EQUIPAMENTO</strong>,
                 que será regido pelas cláusulas e condições seguintes.
             </p>
+            {% if contrato.observacoes %}
+            <p class="contrato-observacoes print-only">
+                <strong>Observações:</strong> {{ contrato.observacoes }}
+            </p>
+            {% endif %}
         </section>
 
         <section class="secao-documento">
@@ -141,18 +153,16 @@
             <div class="equipamento-box">
                 <div class="equipamento-item">
                     <span class="label">Equipamento</span>
-                    <strong>{% firstof contrato.descricao_equipamento "________________" %}</strong>
+                    <strong>{{ contrato.equipamento.nome }}</strong>
                 </div>
                 <div class="equipamento-item">
                     <span class="label">Número de série</span>
-                    <strong>{% firstof contrato.numero_serie "________________" %}</strong>
+                    <strong>{% firstof contrato.equipamento.numero_serie "________________" %}</strong>
                 </div>
-                {% if contrato.especificacoes %}
                 <div class="equipamento-item equipamento-full">
                     <span class="label">Especificações / identificação</span>
-                    <strong>{{ contrato.especificacoes }}</strong>
+                    <strong>{{ contrato.equipamento.get_tipo_display }}{% if contrato.equipamento.codigo %} · {{ contrato.equipamento.codigo }}{% endif %}</strong>
                 </div>
-                {% endif %}
             </div>
 
             <p>
@@ -177,12 +187,8 @@
             </p>
 
             <div class="endereco-box">
-                {% firstof contrato.endereco "________________" %},
-                nº {% firstof contrato.numero "____" %}
-                {% if contrato.complemento %}, {{ contrato.complemento }}{% endif %},
-                Bairro {% firstof contrato.bairro "________________" %},
-                {% firstof contrato.cidade_uf "________________" %},
-                CEP {% firstof contrato.cep "________" %}.
+                {% firstof contrato.cliente.endereco "________________" %}
+                {% if contrato.cliente.cidade %}, {{ contrato.cliente.cidade }}{% endif %}
             </div>
 
             <p>
@@ -252,7 +258,7 @@
             </div>
             <p>
                 Fica eleito o foro da comarca de
-                <strong>{% firstof contrato.foro_comarca "________________" %}</strong>
+                <strong>________________</strong>
                 para dirimir quaisquer dúvidas ou questões
                 decorrentes deste contrato, com renúncia a qualquer
                 outro, por mais privilegiado que seja.
@@ -267,13 +273,13 @@
                 para que produza seus efeitos legais.
             </p>
             <div class="data-documento">
-                {% if contrato.data_assinatura %}
-                    {{ contrato.cidade_uf }},
-                    {{ contrato.data_assinatura|date:"d" }}
+                {% if contrato.data_inicio %}
+                    {% firstof contrato.cliente.cidade "________________" %},
+                    {{ contrato.data_inicio|date:"d" }}
                     de
-                    {{ contrato.data_assinatura|date:"F" }}
+                    {{ contrato.data_inicio|date:"F" }}
                     de
-                    {{ contrato.data_assinatura|date:"Y" }}.
+                    {{ contrato.data_inicio|date:"Y" }}.
                 {% else %}
                     ________________________________,
                     ____ de __________________ de ______.
@@ -291,13 +297,11 @@
             </div>
             <div class="assinatura">
                 <div class="linha-assinatura"></div>
-                <strong>{% firstof contrato.razao_social "________________" %}</strong>
+                <strong>{{ contrato.cliente.nome }}</strong>
                 <span>COMODATÁRIO</span>
-                <p>CNPJ/CPF: {% firstof contrato.cnpj_cpf "________________" %}</p>
-                <p>
-                    Responsável legal:
-                    <strong>{% firstof contrato.responsavel_legal "________________" %}</strong>
-                </p>
+                {% if contrato.cliente.cnpj %}
+                <p>CNPJ/CPF: {{ contrato.cliente.cnpj }}</p>
+                {% endif %}
             </div>
         </section>
 
@@ -306,7 +310,7 @@
             <span>Contrato de Comodato de Equipamento</span>
         </footer>
 
-    </main>
+    </article>
 
 </div>
 {% endblock %}

@@ -15,7 +15,7 @@
             <ol class="gs-breadcrumb">
                 <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
                 <li aria-hidden="true">/</li>
-                <li><a href="{% url 'dashboard_cliente' venda.cliente.pk %}">{{ venda.cliente.nome }}</a></li>
+                <li><a href="{% url 'clientes:dashboard_cliente' venda.cliente.pk %}">{{ venda.cliente.nome }}</a></li>
                 <li aria-hidden="true">/</li>
                 <li>Pedido #{{ venda.id }}</li>
             </ol>
@@ -23,7 +23,7 @@
             <p class="gs-page-header__desc">Detalhes e produtos do pedido</p>
         </div>
         <div class="gs-page-header__actions">
-            <a href="{% url 'dashboard_cliente' venda.cliente.pk %}" class="gs-btn gs-btn-outline">Voltar</a>
+            <a href="{% url 'clientes:dashboard_cliente' venda.cliente.pk %}" class="gs-btn gs-btn-outline">Voltar</a>
             <button type="button" class="gs-btn gs-btn-primary" data-gs-print>
                 <i class="bi bi-printer" aria-hidden="true"></i>
                 Imprimir
@@ -41,7 +41,7 @@
             <div class="col-12 col-md-4">
                 <p class="gs-card__hint mb-1">Cliente</p>
                 <p class="mb-0 fw-semibold">
-                    <a href="{% url 'dashboard_cliente' venda.cliente.pk %}">{{ venda.cliente.nome }}</a>
+                    <a href="{% url 'clientes:dashboard_cliente' venda.cliente.pk %}">{{ venda.cliente.nome }}</a>
                 </p>
             </div>
             <div class="col-12 col-md-4">

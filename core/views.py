@@ -2,17 +2,17 @@ from datetime import timedelta
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Sum
-from django.utils import timezone
 from django.views.generic import TemplateView
 
 from equipamentos.models import Equipamento
 from estoque.services import (
-    calcular_estoque_insumo,
-    calcular_estoque_produto,
+    calcular_estoques_insumo_por_nome,
+    calcular_estoques_produto_por_peso,
 )
 from producao.models import Producao
 
 from .charts import producao_por_dia, vendas_por_dia
+from .periodo import dia_local_atual, intervalo_dia_local
 
 
 class DashboardView(LoginRequiredMixin, TemplateView):
@@ -21,9 +21,12 @@ class DashboardView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        hoje = timezone.localdate()
+        hoje = dia_local_atual()
         inicio_semana = hoje - timedelta(days=hoje.weekday())
         inicio_mes = hoje.replace(day=1)
+        inicio_hoje, fim_hoje = intervalo_dia_local(hoje)
+        inicio_semana_dt, _ = intervalo_dia_local(inicio_semana)
+        inicio_mes_dt, _ = intervalo_dia_local(inicio_mes)
 
         # ============================================================
         # EQUIPAMENTOS
@@ -33,13 +36,14 @@ class DashboardView(LoginRequiredMixin, TemplateView):
 
         context["total_equipamentos"] = equipamentos.count()
         context["ativos"] = equipamentos.filter(status="ativo").count()
-        context["parados"] = equipamentos.filter(status="parado").count()
         context["manutencao"] = equipamentos.filter(
             status="manutencao"
         ).count()
-        context["inativos"] = equipamentos.filter(
-            status="inativo"
-        ).count()
+        # Choices reais: ativo, manutencao, parado.
+        # O KPI "Parados" conta status=parado (único estado não ativo
+        # além da manutenção, já exibida à parte). Não existe status "inativo".
+        context["parados"] = equipamentos.filter(status="parado").count()
+        context["inativos"] = context["parados"]
 
         # ============================================================
         # PRODUÇÃO
@@ -49,7 +53,8 @@ class DashboardView(LoginRequiredMixin, TemplateView):
 
         producao_hoje = (
             producoes.filter(
-                data_hora__date=hoje
+                data_hora__gte=inicio_hoje,
+                data_hora__lt=fim_hoje,
             )
             .aggregate(total=Sum("quantidade"))["total"]
             or 0
@@ -57,8 +62,8 @@ class DashboardView(LoginRequiredMixin, TemplateView):
 
         producao_semana = (
             producoes.filter(
-                data_hora__date__gte=inicio_semana,
-                data_hora__date__lte=hoje,
+                data_hora__gte=inicio_semana_dt,
+                data_hora__lt=fim_hoje,
             )
             .aggregate(total=Sum("quantidade"))["total"]
             or 0
@@ -66,8 +71,8 @@ class DashboardView(LoginRequiredMixin, TemplateView):
 
         producao_mes = (
             producoes.filter(
-                data_hora__date__gte=inicio_mes,
-                data_hora__date__lte=hoje,
+                data_hora__gte=inicio_mes_dt,
+                data_hora__lt=fim_hoje,
             )
             .aggregate(total=Sum("quantidade"))["total"]
             or 0
@@ -81,8 +86,9 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         # ESTOQUE DE GELO
         # ============================================================
 
-        estoque_5kg = calcular_estoque_produto(peso_kg=5)
-        estoque_3kg = calcular_estoque_produto(peso_kg=3)
+        estoques = calcular_estoques_produto_por_peso(3, 5)
+        estoque_5kg = estoques[5]
+        estoque_3kg = estoques[3]
 
         total_estoque_gelo = estoque_5kg + estoque_3kg
 
@@ -94,13 +100,12 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         # ESTOQUE DE EMBALAGENS
         # ============================================================
 
-        estoque_embalagem_5kg = calcular_estoque_insumo(
-            nome="Embalagem Gelo 5k"
+        embalagens = calcular_estoques_insumo_por_nome(
+            "Embalagem Gelo 5k",
+            "Embalagem Gelo 3k",
         )
-
-        estoque_embalagem_3kg = calcular_estoque_insumo(
-            nome="Embalagem Gelo 3k"
-        )
+        estoque_embalagem_5kg = embalagens["Embalagem Gelo 5k"]
+        estoque_embalagem_3kg = embalagens["Embalagem Gelo 3k"]
 
         total_insumos = (
             estoque_embalagem_5kg

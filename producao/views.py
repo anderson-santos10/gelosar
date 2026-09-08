@@ -1,88 +1,64 @@
-from datetime import datetime, time, timedelta
+from datetime import timedelta
 
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db import transaction
 from django.db.models import Sum
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
-from django.utils import timezone
 from django.views.generic import CreateView, ListView
+
+from accounts.authz import ModulePermissionRequiredMixin
+from core.periodo import dia_local_atual, intervalo_dia_local
+from estoque.services import (
+    QuantidadeNaoInteira,
+    calcular_estoques_produto_por_peso,
+)
 
 from .forms import ProducaoForm
 from .models import Producao
-
-from estoque.models import (
-    MovimentacaoProduto,
-    MovimentacaoInsumo,
-)
-from estoque.services import calcular_estoque_produto
+from .services import ProdutoSemComposicao, registrar_producao
 
 
 # ============================================================
 # CADASTRAR PRODUÇÃO
 # ============================================================
 
-class ProducaoCreateView(LoginRequiredMixin, CreateView):
+class ProducaoCreateView(LoginRequiredMixin, ModulePermissionRequiredMixin, CreateView):
+
+    permission_required = "producao.add_producao"
 
     model = Producao
     form_class = ProducaoForm
     template_name = "producao/producao_form.html"
     success_url = reverse_lazy("producao:producao_list")
 
-    @transaction.atomic
     def form_valid(self, form):
 
-        # ========================================================
-        # SALVA A PRODUÇÃO
-        # ========================================================
-
-        self.object = form.save()
-
-        # ========================================================
-        # ENTRA PRODUTO ACABADO NO ESTOQUE
-        # ========================================================
-
-        MovimentacaoProduto.objects.create(
-            produto=self.object.produto,
-            tipo="ENTRADA",
-            quantidade=self.object.quantidade,
-            observacao=(
-                f"Entrada automática referente à "
-                f"produção #{self.object.id}"
+        try:
+            self.object = registrar_producao(
+                form,
+                criado_por=self.request.user,
             )
-        )
-
-        # ========================================================
-        # CONSOME OS INSUMOS DA COMPOSIÇÃO
-        # ========================================================
-
-        composicoes = self.object.produto.composicao.select_related(
-            "insumo"
-        )
-
-        for composicao in composicoes:
-
-            quantidade_consumida = (
-                composicao.quantidade *
-                self.object.quantidade
+        except ProdutoSemComposicao:
+            form.add_error(
+                "produto",
+                (
+                    "Não é possível registrar produção: o produto "
+                    "não possui composição de insumos. "
+                    "Nenhum estoque foi gerado."
+                ),
             )
-
-            # Como quantidade do insumo é inteira,
-            # convertemos para int.
-            quantidade_consumida = int(
-                quantidade_consumida
+            return self.form_invalid(form)
+        except QuantidadeNaoInteira:
+            form.add_error(
+                None,
+                (
+                    "A produção não foi registrada porque o consumo "
+                    "de insumo não resulta em quantidade inteira "
+                    "maior que zero."
+                ),
             )
-
-            MovimentacaoInsumo.objects.create(
-                insumo=composicao.insumo,
-                tipo="SAIDA",
-                quantidade=quantidade_consumida,
-                observacao=(
-                    f"Consumo automático referente à "
-                    f"produção #{self.object.id}"
-                )
-            )
+            return self.form_invalid(form)
 
         # ========================================================
         # MENSAGEM
@@ -106,11 +82,20 @@ class ProducaoCreateView(LoginRequiredMixin, CreateView):
 # LISTAGEM DE PRODUÇÕES
 # ============================================================
 
-class ProducaoListView(LoginRequiredMixin, ListView):
+class ProducaoListView(LoginRequiredMixin, ModulePermissionRequiredMixin, ListView):
+
+    permission_required = "producao.view_producao"
 
     model = Producao
     template_name = "producao/producao_list.html"
     context_object_name = "producoes"
+
+    def get_queryset(self):
+        return (
+            super()
+            .get_queryset()
+            .select_related("equipamento", "produto")
+        )
 
     def get_context_data(self, **kwargs):
 
@@ -120,21 +105,11 @@ class ProducaoListView(LoginRequiredMixin, ListView):
         # DATA/HORA ATUAL
         # ========================================================
 
-        agora = timezone.localtime()
-        hoje = agora.date()
-
-        # ========================================================
-        # HOJE
-        # ========================================================
-
-        inicio_hoje = timezone.make_aware(
-            datetime.combine(
-                hoje,
-                time.min
-            )
-        )
-
-        fim_hoje = inicio_hoje + timedelta(days=1)
+        hoje = dia_local_atual()
+        inicio_hoje, fim_hoje = intervalo_dia_local(hoje)
+        inicio_semana_data = hoje - timedelta(days=hoje.weekday())
+        inicio_semana, _ = intervalo_dia_local(inicio_semana_data)
+        inicio_mes, _ = intervalo_dia_local(hoje.replace(day=1))
 
         producao_hoje = (
             Producao.objects
@@ -148,21 +123,6 @@ class ProducaoListView(LoginRequiredMixin, ListView):
             ["total"] or 0
         )
 
-        # ========================================================
-        # SEMANA ATUAL
-        # ========================================================
-
-        inicio_semana_data = (
-            hoje - timedelta(days=hoje.weekday())
-        )
-
-        inicio_semana = timezone.make_aware(
-            datetime.combine(
-                inicio_semana_data,
-                time.min
-            )
-        )
-
         producao_semana = (
             Producao.objects
             .filter(
@@ -173,19 +133,6 @@ class ProducaoListView(LoginRequiredMixin, ListView):
                 total=Sum("quantidade")
             )
             ["total"] or 0
-        )
-
-        # ========================================================
-        # MÊS ATUAL
-        # ========================================================
-
-        inicio_mes_data = hoje.replace(day=1)
-
-        inicio_mes = timezone.make_aware(
-            datetime.combine(
-                inicio_mes_data,
-                time.min
-            )
         )
 
         producao_mes = (
@@ -204,8 +151,9 @@ class ProducaoListView(LoginRequiredMixin, ListView):
         # ESTOQUE OFICIAL (somente exibição; criação de produção inalterada)
         # ========================================================
 
-        estoque_3kg = calcular_estoque_produto(peso_kg=3)
-        estoque_5kg = calcular_estoque_produto(peso_kg=5)
+        estoques = calcular_estoques_produto_por_peso(3, 5)
+        estoque_3kg = estoques[3]
+        estoque_5kg = estoques[5]
 
         # ========================================================
         # CONTEXTO

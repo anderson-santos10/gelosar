@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+{% block title %}Insumos | GELOSAR{% endblock %}
+
+{% block content %}
+<div class="gs-page">
+    <header class="gs-page-header">
+        <div>
+            <ol class="gs-breadcrumb">
+                <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                <li aria-hidden="true">/</li>
+                <li>Insumos</li>
+            </ol>
+            <h1 class="gs-page-header__title">Insumos</h1>
+            <p class="gs-page-header__desc">Cadastro de insumos. Estoque mínimo é cadastral; não dispara alerta automático.</p>
+        </div>
+        <div class="gs-page-header__actions">
+            {% if perms.insumos.add_insumo %}
+            <a href="{% url 'insumos:cadastrar_insumo' %}" class="gs-btn gs-btn-primary">Cadastrar insumo</a>
+            {% endif %}
+        </div>
+    </header>
+
+    {% if insumos %}
+    <div class="gs-table-wrap">
+        <table class="gs-table">
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Unidade</th>
+                    <th>Estoque mín.</th>
+                    <th>Status</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for insumo in insumos %}
+                <tr>
+                    <td>{{ insumo.nome }}</td>
+                    <td>{{ insumo.unidade }}</td>
+                    <td>{{ insumo.estoque_minimo }}</td>
+                    <td>
+                        {% if insumo.ativo %}
+                        <span class="gs-badge gs-badge--ok">Ativo</span>
+                        {% else %}
+                        <span class="gs-badge gs-badge--neutral">Inativo</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if perms.insumos.change_insumo %}
+                        <a href="{% url 'insumos:editar_insumo' insumo.pk %}" class="gs-btn gs-btn-outline">Editar</a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="gs-empty">
+        <h2 class="gs-empty__title">Nenhum insumo cadastrado</h2>
+        {% if perms.insumos.add_insumo %}
+        <a href="{% url 'insumos:cadastrar_insumo' %}" class="gs-btn gs-btn-primary">Cadastrar insumo</a>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

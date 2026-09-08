@@ -52,4 +52,14 @@ urlpatterns = [
         include('estoque.urls')
     ),
 
+    path(
+        'produtos/',
+        include('produtos.urls')
+    ),
+
+    path(
+        'insumos/',
+        include('insumos.urls')
+    ),
+
 ]

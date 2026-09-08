@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block title %}{% if form.instance.pk %}Editar contrato | GELOSAR{% else %}Novo contrato | GELOSAR{% endif %}{% endblock %}
+
+{% block content %}
+<div class="gs-page">
+
+    <header class="gs-page-header">
+        <div>
+            <ol class="gs-breadcrumb">
+                <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                <li aria-hidden="true">/</li>
+                <li><a href="{% url 'equipamentos:contrato_comodato' %}">Contratos de comodato</a></li>
+                <li aria-hidden="true">/</li>
+                <li>{% if form.instance.pk %}Editar{% else %}Novo{% endif %}</li>
+            </ol>
+            <h1 class="gs-page-header__title">{% if form.instance.pk %}Editar contrato{% else %}Novo contrato{% endif %}</h1>
+            <p class="gs-page-header__desc">Vínculo entre cliente, equipamento e vigência operacional.</p>
+        </div>
+    </header>
+
+    <div class="row justify-content-center">
+        <div class="col-12 col-xl-8">
+            <div class="gs-card">
+                <form method="post" novalidate class="gs-form">
+                    {% csrf_token %}
+                    {% if form.non_field_errors %}
+                    <div class="gs-alert gs-alert--error" role="alert">
+                        <div class="gs-alert__body">
+                            <i class="bi bi-exclamation-octagon-fill" aria-hidden="true"></i>
+                            <span>{{ form.non_field_errors|striptags }}</span>
+                        </div>
+                    </div>
+                    {% endif %}
+                    <div class="row g-3">
+                        {% for field in form %}
+                        <div class="col-12{% if field.name != 'observacoes' %} col-md-6{% endif %}">
+                            <label class="gs-label" for="{{ field.id_for_label }}">
+                                {{ field.label }}{% if field.field.required %} *{% endif %}
+                            </label>
+                            {{ field }}
+                            {% if field.errors %}
+                            <p class="gs-field-error">{{ field.errors|striptags }}</p>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <div class="d-flex gap-2 mt-4">
+                        <button type="submit" class="gs-btn gs-btn-primary">Salvar</button>
+                        <a href="{% url 'equipamentos:contrato_comodato' %}" class="gs-btn gs-btn-outline">Cancelar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

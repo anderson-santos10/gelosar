@@ -4,15 +4,19 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import FileResponse, Http404
 from django.shortcuts import get_object_or_404
 from django.urls import reverse, reverse_lazy
+from django.utils.text import get_valid_filename
 from django.views import View
-from django.views.generic import DeleteView, DetailView, ListView, CreateView, UpdateView, TemplateView
+from django.views.generic import DeleteView, DetailView, ListView, CreateView, UpdateView
 
-from .models import Equipamento, DocumentoEquipamento
-from .forms import DocumentoEquipamentoForm
+from accounts.authz import ModulePermissionRequiredMixin
+
+from .models import ContratoComodato, Equipamento, DocumentoEquipamento
+from .forms import ContratoComodatoForm, DocumentoEquipamentoForm
 
 
 
-class EquipamentoCreateView(LoginRequiredMixin, CreateView):
+class EquipamentoCreateView(LoginRequiredMixin, ModulePermissionRequiredMixin, CreateView):
+    permission_required = "equipamentos.add_equipamento"
     model = Equipamento
     fields = [
         'nome',
@@ -32,13 +36,18 @@ class EquipamentoCreateView(LoginRequiredMixin, CreateView):
     success_url = reverse_lazy('equipamentos:listar_equipamentos')
     
 
-class EquipamentoListView(LoginRequiredMixin, ListView):
+class EquipamentoListView(LoginRequiredMixin, ModulePermissionRequiredMixin, ListView):
+    permission_required = "equipamentos.view_equipamento"
     model = Equipamento
     template_name = 'equipamentos/listar_equipamentos.html'
     context_object_name = 'equipamentos'
-    ordering = ['-id']  
+    ordering = ['-id']
+
+    def get_queryset(self):
+        return super().get_queryset().select_related("cliente")
     
-class DocumentoCreateView(LoginRequiredMixin, CreateView):
+class DocumentoCreateView(LoginRequiredMixin, ModulePermissionRequiredMixin, CreateView):
+    permission_required = "equipamentos.add_documentoequipamento"
     model = DocumentoEquipamento
     form_class = DocumentoEquipamentoForm
     template_name = 'equipamentos/upload_documento.html'
@@ -61,17 +70,68 @@ class DocumentoCreateView(LoginRequiredMixin, CreateView):
             kwargs={'pk': self.object.equipamento.id},
         )
     
-class ContratoComodatoView(LoginRequiredMixin, TemplateView):
+class ContratoComodatoListView(LoginRequiredMixin, ModulePermissionRequiredMixin, ListView):
+    permission_required = "equipamentos.view_contratocomodato"
+    model = ContratoComodato
+    template_name = "equipamentos/contrato_comodato_list.html"
+    context_object_name = "contratos"
+
+    def get_queryset(self):
+        return (
+            super()
+            .get_queryset()
+            .select_related("cliente", "equipamento")
+        )
+
+
+class ContratoComodatoCreateView(LoginRequiredMixin, ModulePermissionRequiredMixin, CreateView):
+    permission_required = "equipamentos.add_contratocomodato"
+    model = ContratoComodato
+    form_class = ContratoComodatoForm
+    template_name = "equipamentos/contrato_comodato_form.html"
+
+    def get_success_url(self):
+        return reverse(
+            "equipamentos:contrato_comodato_detalhe",
+            kwargs={"pk": self.object.pk},
+        )
+
+
+class ContratoComodatoDetailView(LoginRequiredMixin, ModulePermissionRequiredMixin, DetailView):
+    permission_required = "equipamentos.view_contratocomodato"
+    model = ContratoComodato
     template_name = "equipamentos/contrato_comodato.html"
+    context_object_name = "contrato"
+
+    def get_queryset(self):
+        return (
+            super()
+            .get_queryset()
+            .select_related("cliente", "equipamento")
+        )
+
+
+class ContratoComodatoUpdateView(LoginRequiredMixin, ModulePermissionRequiredMixin, UpdateView):
+    permission_required = "equipamentos.change_contratocomodato"
+    model = ContratoComodato
+    form_class = ContratoComodatoForm
+    template_name = "equipamentos/contrato_comodato_form.html"
+
+    def get_success_url(self):
+        return reverse(
+            "equipamentos:contrato_comodato_detalhe",
+            kwargs={"pk": self.object.pk},
+        )
     
-    
-class EquipamentoDetailView(LoginRequiredMixin, DetailView):
+class EquipamentoDetailView(LoginRequiredMixin, ModulePermissionRequiredMixin, DetailView):
+    permission_required = "equipamentos.view_equipamento"
     model = Equipamento
     template_name = 'equipamentos/equipamento_detail.html'
     context_object_name = 'equipamento'
     
     
-class EquipamentoUpdateView(LoginRequiredMixin, UpdateView):
+class EquipamentoUpdateView(LoginRequiredMixin, ModulePermissionRequiredMixin, UpdateView):
+    permission_required = "equipamentos.change_equipamento"
     model = Equipamento
     fields = [
         'nome',
@@ -91,13 +151,15 @@ class EquipamentoUpdateView(LoginRequiredMixin, UpdateView):
     success_url = reverse_lazy('equipamentos:listar_equipamentos')
     context_object_name = 'equipamento'
     
-class EquipamentoDeleteView(LoginRequiredMixin, DeleteView):
+class EquipamentoDeleteView(LoginRequiredMixin, ModulePermissionRequiredMixin, DeleteView):
+    permission_required = "equipamentos.delete_equipamento"
     model = Equipamento
     template_name = 'equipamentos/excluir_equipamento.html'
     success_url = reverse_lazy('equipamentos:listar_equipamentos')
     
     
-class DocumentoListView(LoginRequiredMixin, ListView):
+class DocumentoListView(LoginRequiredMixin, ModulePermissionRequiredMixin, ListView):
+    permission_required = "equipamentos.view_equipamento"
     model = DocumentoEquipamento
     template_name = 'equipamentos/documentos_list.html'
     context_object_name = 'documentos'
@@ -116,7 +178,8 @@ class DocumentoListView(LoginRequiredMixin, ListView):
         return context
 
 
-class DocumentoIndiceView(LoginRequiredMixin, ListView):
+class DocumentoIndiceView(LoginRequiredMixin, ModulePermissionRequiredMixin, ListView):
+    permission_required = "equipamentos.view_equipamento"
     model = DocumentoEquipamento
     template_name = 'equipamentos/documentos_indice.html'
     context_object_name = 'documentos'
@@ -129,7 +192,8 @@ class DocumentoIndiceView(LoginRequiredMixin, ListView):
         )
 
 
-class DocumentoDownloadView(LoginRequiredMixin, View):
+class DocumentoDownloadView(LoginRequiredMixin, ModulePermissionRequiredMixin, View):
+    permission_required = "equipamentos.view_equipamento"
 
     def get(self, request, pk):
         documento = get_object_or_404(DocumentoEquipamento, pk=pk)
@@ -147,9 +211,14 @@ class DocumentoDownloadView(LoginRequiredMixin, View):
         except Exception:
             raise Http404("Arquivo não encontrado.")
 
-        nome = Path(arquivo.name).name
-        return FileResponse(
+        nome_bruto = Path(arquivo.name).name.replace("\r", "").replace("\n", "")
+        nome = get_valid_filename(nome_bruto) or "documento"
+        response = FileResponse(
             handle,
-            as_attachment=False,
+            as_attachment=True,
             filename=nome,
+            content_type="application/octet-stream",
         )
+        response["Content-Type"] = "application/octet-stream"
+        response["X-Content-Type-Options"] = "nosniff"
+        return response

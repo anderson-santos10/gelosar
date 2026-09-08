@@ -7,7 +7,8 @@ def parse_data_corte(value):
     """
     Interpreta DJANGO_ESTOQUE_DATA_CORTE.
 
-    Ausente ou vazio → None (controle oficial não ativado).
+    Ausente ou vazio → None.
+    None é política válida: vendas não geram SAIDA até o corte ser definido.
     Formato válido → date (YYYY-MM-DD).
     Formato inválido → ImproperlyConfigured (não silenciar).
     """
@@ -28,7 +29,7 @@ def parse_data_corte(value):
 
 
 def get_data_corte():
-    """Data de corte configurada, ou None se o controle oficial não estiver ativo."""
+    """Data de corte, ou None (SAIDA automática de venda desligada)."""
     from django.conf import settings
 
     return getattr(settings, "ESTOQUE_DATA_CORTE", None)

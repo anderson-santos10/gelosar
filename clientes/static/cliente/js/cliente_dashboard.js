@@ -264,69 +264,57 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 
-/* ============================================================
-   HISTÓRICO DE COMPRAS
-============================================================ */
-
-document.addEventListener('DOMContentLoaded', function () {
-
-    const historyButtons =
-        document.querySelectorAll(
-            '.history-date'
-        );
-
-
-    historyButtons.forEach(button => {
-
-        button.addEventListener('click', function () {
-
-            const targetId =
-                button.getAttribute(
-                    'data-bs-target'
-                );
-
-
-            if (!targetId) return;
-
-
-            const target =
-                document.querySelector(targetId);
-
-
-            if (!target) return;
-
-
-            /*
-             * O Bootstrap controla a abertura/fechamento.
-             * Aqui apenas atualizamos o estado visual
-             * do botão.
-             */
-
-            target.addEventListener(
-                'shown.bs.collapse',
-                function () {
-                    button.setAttribute(
-                        'aria-expanded',
-                        'true'
-                    );
-                },
-                { once: true }
-            );
-
-
-            target.addEventListener(
-                'hidden.bs.collapse',
-                function () {
-                    button.setAttribute(
-                        'aria-expanded',
-                        'false'
-                    );
-                },
-                { once: true }
-            );
-
-        });
-
-    });
-
-});
+/* ============================================================
+   HISTÓRICO DE COMPRAS
+============================================================ */
+
+document.addEventListener('DOMContentLoaded', function () {
+
+    const historyButtons =
+        document.querySelectorAll(
+            '.history-header-btn, .history-date'
+        );
+
+    historyButtons.forEach(function (button) {
+
+        const targetId =
+            button.getAttribute(
+                'data-bs-target'
+            );
+
+        if (!targetId) return;
+
+        const target =
+            document.querySelector(targetId);
+
+        if (!target) return;
+
+        /*
+         * O Bootstrap controla a abertura/fechamento.
+         * Listeners permanentes sincronizam aria-expanded
+         * em todos os ciclos (abrir / fechar / reabrir).
+         */
+
+        target.addEventListener(
+            'shown.bs.collapse',
+            function () {
+                button.setAttribute(
+                    'aria-expanded',
+                    'true'
+                );
+            }
+        );
+
+        target.addEventListener(
+            'hidden.bs.collapse',
+            function () {
+                button.setAttribute(
+                    'aria-expanded',
+                    'false'
+                );
+            }
+        );
+
+    });
+
+});

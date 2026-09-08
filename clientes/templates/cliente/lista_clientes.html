@@ -17,7 +17,7 @@
             <p class="gs-page-header__desc">Gerencie os clientes cadastrados no sistema</p>
         </div>
         <div class="gs-page-header__actions">
-            <a href="{% url 'cadastrar_cliente' %}" class="gs-btn gs-btn-primary">
+            <a href="{% url 'clientes:cadastrar_cliente' %}" class="gs-btn gs-btn-primary">
                 <i class="bi bi-plus-lg" aria-hidden="true"></i>
                 Cadastrar cliente
             </a>
@@ -35,13 +35,14 @@
                     <th>Cidade</th>
                     <th>Status</th>
                     <th>Cadastro</th>
+                    <th>Ações</th>
                 </tr>
             </thead>
             <tbody>
                 {% for cliente in clientes %}
                 <tr>
                     <td>
-                        <a href="{% url 'dashboard_cliente' cliente.id %}" title="Abrir dashboard de {{ cliente.nome }}">
+                        <a href="{% url 'clientes:dashboard_cliente' cliente.id %}" title="Abrir dashboard de {{ cliente.nome }}">
                             {{ cliente.nome }}
                         </a>
                     </td>
@@ -56,6 +57,12 @@
                         {% endif %}
                     </td>
                     <td>{{ cliente.criado_em|date:"d/m/Y" }}</td>
+                    <td>
+                        <a href="{% url 'clientes:dashboard_cliente' cliente.id %}" class="gs-btn gs-btn-outline">Dashboard</a>
+                        {% if perms.clientes.change_cliente %}
+                        <a href="{% url 'clientes:editar_cliente' cliente.id %}" class="gs-btn gs-btn-outline">Editar</a>
+                        {% endif %}
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>
@@ -65,7 +72,7 @@
     <div class="gs-empty">
         <h2 class="gs-empty__title">Nenhum cliente cadastrado</h2>
         <p class="gs-empty__text">Ainda não existem clientes cadastrados no sistema.</p>
-        <a href="{% url 'cadastrar_cliente' %}" class="gs-btn gs-btn-primary">
+        <a href="{% url 'clientes:cadastrar_cliente' %}" class="gs-btn gs-btn-primary">
             <i class="bi bi-plus-lg" aria-hidden="true"></i>
             Cadastrar cliente
         </a>

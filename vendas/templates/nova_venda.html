@@ -95,6 +95,7 @@
                             {% for hidden in form.hidden_fields %}
                                 {{ hidden }}
                             {% endfor %}
+                            <span hidden>{{ form.DELETE }}</span>
                             <td>
                                 {{ form.produto }}
                                 {% for error in form.produto.errors %}
@@ -156,6 +157,7 @@
     {% for hidden in formset.empty_form.hidden_fields %}
         {{ hidden }}
     {% endfor %}
+    <span hidden>{{ formset.empty_form.DELETE }}</span>
     <td>
         {{ formset.empty_form.produto }}
     </td>

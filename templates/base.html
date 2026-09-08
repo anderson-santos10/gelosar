@@ -19,7 +19,7 @@
     {% block extra_head %}{% endblock %}
     {% block extra_css %}{% endblock %}
 </head>
-<body class="gs-app">
+<body class="gs-app{% block body_class %}{% endblock %}">
 
     {% with rn=request.resolver_match.url_name ns=request.resolver_match.namespace %}
 
@@ -72,38 +72,63 @@
                             </a>
                         </li>
 
-                        <li class="gs-nav__item has-dropdown{% if rn == 'lista_clientes' or rn == 'cadastrar_cliente' or rn == 'dashboard_cliente' or ns == 'equipamentos' and rn != 'contrato_comodato' and rn != 'indice_documentos' %} is-current{% endif %}">
+                        <li class="gs-nav__item has-dropdown{% if rn == 'lista_clientes' or rn == 'cadastrar_cliente' or rn == 'editar_cliente' or rn == 'dashboard_cliente' or ns == 'equipamentos' and rn != 'contrato_comodato' and rn != 'indice_documentos' or ns == 'produtos' or ns == 'insumos' %} is-current{% endif %}">
                             <button type="button" class="gs-nav__link gs-nav__trigger" aria-expanded="false" aria-haspopup="true" aria-controls="gsDropdownCadastros" id="gsTriggerCadastros">
                                 <i class="bi bi-folder2-open" aria-hidden="true"></i>
                                 <span>Cadastros</span>
                                 <i class="bi bi-chevron-down gs-nav__caret" aria-hidden="true"></i>
                             </button>
                             <ul class="gs-dropdown" id="gsDropdownCadastros" role="menu" aria-labelledby="gsTriggerCadastros">
+                                {% if perms.clientes.view_cliente %}
                                 <li role="none">
-                                    <a role="menuitem" href="{% url 'lista_clientes' %}" class="gs-dropdown__link{% if rn == 'lista_clientes' or rn == 'dashboard_cliente' %} is-active{% endif %}">
+                                    <a role="menuitem" href="{% url 'clientes:lista_clientes' %}" class="gs-dropdown__link{% if rn == 'lista_clientes' or rn == 'dashboard_cliente' %} is-active{% endif %}">
                                         <i class="bi bi-people" aria-hidden="true"></i>
                                         <span>Clientes</span>
                                     </a>
                                 </li>
+                                {% endif %}
+                                {% if perms.clientes.add_cliente %}
                                 <li role="none">
-                                    <a role="menuitem" href="{% url 'cadastrar_cliente' %}" class="gs-dropdown__link{% if rn == 'cadastrar_cliente' %} is-active{% endif %}">
+                                    <a role="menuitem" href="{% url 'clientes:cadastrar_cliente' %}" class="gs-dropdown__link{% if rn == 'cadastrar_cliente' %} is-active{% endif %}">
                                         <i class="bi bi-person-plus" aria-hidden="true"></i>
                                         <span>Novo cliente</span>
                                     </a>
                                 </li>
+                                {% endif %}
                                 <li role="none" class="gs-dropdown__sep" aria-hidden="true"></li>
+                                {% if perms.equipamentos.view_equipamento %}
                                 <li role="none">
                                     <a role="menuitem" href="{% url 'equipamentos:listar_equipamentos' %}" class="gs-dropdown__link{% if rn == 'listar_equipamentos' or rn == 'detalhe_equipamento' or rn == 'editar_equipamento' or rn == 'listar_documentos' or rn == 'upload_documento' %} is-active{% endif %}">
                                         <i class="bi bi-tools" aria-hidden="true"></i>
                                         <span>Equipamentos</span>
                                     </a>
                                 </li>
+                                {% endif %}
+                                {% if perms.equipamentos.add_equipamento %}
                                 <li role="none">
                                     <a role="menuitem" href="{% url 'equipamentos:cadastrar_equipamentos' %}" class="gs-dropdown__link{% if rn == 'cadastrar_equipamentos' %} is-active{% endif %}">
                                         <i class="bi bi-plus-square" aria-hidden="true"></i>
                                         <span>Novo equipamento</span>
                                     </a>
                                 </li>
+                                {% endif %}
+                                <li role="none" class="gs-dropdown__sep" aria-hidden="true"></li>
+                                {% if perms.produtos.view_produto %}
+                                <li role="none">
+                                    <a role="menuitem" href="{% url 'produtos:lista_produtos' %}" class="gs-dropdown__link{% if ns == 'produtos' %} is-active{% endif %}">
+                                        <i class="bi bi-box" aria-hidden="true"></i>
+                                        <span>Produtos</span>
+                                    </a>
+                                </li>
+                                {% endif %}
+                                {% if perms.insumos.view_insumo %}
+                                <li role="none">
+                                    <a role="menuitem" href="{% url 'insumos:lista_insumos' %}" class="gs-dropdown__link{% if ns == 'insumos' %} is-active{% endif %}">
+                                        <i class="bi bi-droplet" aria-hidden="true"></i>
+                                        <span>Insumos</span>
+                                    </a>
+                                </li>
+                                {% endif %}
                             </ul>
                         </li>
 
@@ -114,60 +139,82 @@
                                 <i class="bi bi-chevron-down gs-nav__caret" aria-hidden="true"></i>
                             </button>
                             <ul class="gs-dropdown" id="gsDropdownOperacoes" role="menu" aria-labelledby="gsTriggerOperacoes">
+                                {% if perms.estoque.view_movimentacaoproduto %}
                                 <li role="none">
                                     <a role="menuitem" href="{% url 'estoque:estoque' %}" class="gs-dropdown__link{% if rn == 'estoque' %} is-active{% endif %}">
                                         <i class="bi bi-boxes" aria-hidden="true"></i>
                                         <span>Estoque</span>
                                     </a>
                                 </li>
+                                {% endif %}
+                                {% if perms.estoque.add_movimentacaoproduto %}
+                                <li role="none">
+                                    <a role="menuitem" href="{% url 'estoque:ajuste_produto' %}" class="gs-dropdown__link{% if rn == 'ajuste_produto' %} is-active{% endif %}">
+                                        <i class="bi bi-sliders2" aria-hidden="true"></i>
+                                        <span>Ajuste de estoque</span>
+                                    </a>
+                                </li>
+                                {% endif %}
+                                {% if perms.estoque.add_movimentacaoinsumo %}
                                 <li role="none">
                                     <a role="menuitem" href="{% url 'estoque:entrada_insumo' %}" class="gs-dropdown__link{% if rn == 'entrada_insumo' %} is-active{% endif %}">
                                         <i class="bi bi-box-seam" aria-hidden="true"></i>
                                         <span>Entrada de insumos</span>
                                     </a>
                                 </li>
+                                {% endif %}
                                 <li role="none" class="gs-dropdown__sep" aria-hidden="true"></li>
+                                {% if perms.producao.view_producao %}
                                 <li role="none">
                                     <a role="menuitem" href="{% url 'producao:producao_list' %}" class="gs-dropdown__link{% if rn == 'producao_list' %} is-active{% endif %}">
                                         <i class="bi bi-lightning-charge" aria-hidden="true"></i>
                                         <span>Produção</span>
                                     </a>
                                 </li>
+                                {% endif %}
+                                {% if perms.producao.add_producao %}
                                 <li role="none">
                                     <a role="menuitem" href="{% url 'producao:new_producao' %}" class="gs-dropdown__link{% if rn == 'new_producao' %} is-active{% endif %}">
                                         <i class="bi bi-plus-circle" aria-hidden="true"></i>
                                         <span>Nova produção</span>
                                     </a>
                                 </li>
+                                {% endif %}
                                 <li role="none" class="gs-dropdown__sep" aria-hidden="true"></li>
+                                {% if perms.vendas.add_venda %}
                                 <li role="none">
                                     <a role="menuitem" href="{% url 'vendas:novo_pedido' %}" class="gs-dropdown__link{% if ns == 'vendas' %} is-active{% endif %}">
                                         <i class="bi bi-cart3" aria-hidden="true"></i>
                                         <span>Vendas</span>
                                     </a>
                                 </li>
+                                {% endif %}
                             </ul>
                         </li>
 
-                        <li class="gs-nav__item has-dropdown{% if rn == 'contrato_comodato' or rn == 'indice_documentos' %} is-current{% endif %}">
+                        <li class="gs-nav__item has-dropdown{% if rn == 'contrato_comodato' or rn == 'contrato_comodato_novo' or rn == 'contrato_comodato_detalhe' or rn == 'contrato_comodato_editar' or rn == 'indice_documentos' %} is-current{% endif %}">
                             <button type="button" class="gs-nav__link gs-nav__trigger" aria-expanded="false" aria-haspopup="true" aria-controls="gsDropdownDocumentos" id="gsTriggerDocumentos">
                                 <i class="bi bi-file-earmark-text" aria-hidden="true"></i>
                                 <span>Documentos</span>
                                 <i class="bi bi-chevron-down gs-nav__caret" aria-hidden="true"></i>
                             </button>
                             <ul class="gs-dropdown" id="gsDropdownDocumentos" role="menu" aria-labelledby="gsTriggerDocumentos">
+                                {% if perms.equipamentos.view_equipamento %}
                                 <li role="none">
                                     <a role="menuitem" href="{% url 'equipamentos:indice_documentos' %}" class="gs-dropdown__link{% if rn == 'indice_documentos' %} is-active{% endif %}">
                                         <i class="bi bi-folder2" aria-hidden="true"></i>
                                         <span>Índice de documentos</span>
                                     </a>
                                 </li>
+                                {% endif %}
+                                {% if perms.equipamentos.view_contratocomodato %}
                                 <li role="none">
-                                    <a role="menuitem" href="{% url 'equipamentos:contrato_comodato' %}" class="gs-dropdown__link{% if rn == 'contrato_comodato' %} is-active{% endif %}">
+                                    <a role="menuitem" href="{% url 'equipamentos:contrato_comodato' %}" class="gs-dropdown__link{% if rn == 'contrato_comodato' or rn == 'contrato_comodato_novo' or rn == 'contrato_comodato_detalhe' or rn == 'contrato_comodato_editar' %} is-active{% endif %}">
                                         <i class="bi bi-file-earmark-check" aria-hidden="true"></i>
                                         <span>Contrato de comodato</span>
                                     </a>
                                 </li>
+                                {% endif %}
                             </ul>
                         </li>
 

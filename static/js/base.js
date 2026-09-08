@@ -101,8 +101,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     document.addEventListener('click', (event) => {
-        if (event.target.closest('[data-gs-print]')) {
-            window.print();
-        }
+        const printTrigger = event.target.closest('[data-gs-print]');
+        if (!printTrigger) return;
+        event.preventDefault();
+        window.print();
     });
 });

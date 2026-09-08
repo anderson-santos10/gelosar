@@ -1,0 +1,22 @@
+{% load i18n %}
+<button type="button" class="sticky toggle-nav-sidebar" id="toggle-nav-sidebar" aria-label="{% translate 'Toggle navigation' %}"></button>
+<nav class="sticky gs-admin-sidebar" id="nav-sidebar" aria-label="{% translate 'Sidebar' %}">
+    <p class="gs-admin-sidebar__title">GELOSAR</p>
+    {% for group in gs_nav_groups %}
+    <div class="gs-admin-nav-group">
+        <p class="gs-admin-nav-group__label">{{ group.title }}</p>
+        <ul>
+            {% for item in group.items %}
+            <li>
+                <a href="{{ item.url }}" class="gs-admin-nav__link{% if item.current %} is-active{% endif %}"{% if item.current %} aria-current="page"{% endif %}>
+                    <i class="bi {{ item.icon }}" aria-hidden="true"></i>
+                    <span>{{ item.label }}</span>
+                </a>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% empty %}
+    <p class="gs-admin-nav-empty">Nenhum módulo disponível para o seu usuário.</p>
+    {% endfor %}
+</nav>

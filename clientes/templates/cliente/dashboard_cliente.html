@@ -15,7 +15,7 @@
             <ol class="gs-breadcrumb">
                 <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
                 <li aria-hidden="true">/</li>
-                <li><a href="{% url 'lista_clientes' %}">Clientes</a></li>
+                <li><a href="{% url 'clientes:lista_clientes' %}">Clientes</a></li>
                 <li aria-hidden="true">/</li>
                 <li>{{ cliente.nome }}</li>
             </ol>
@@ -31,6 +31,9 @@
                 <span class="gs-badge gs-badge--ok">Ativo</span>
             {% else %}
                 <span class="gs-badge gs-badge--neutral">Inativo</span>
+            {% endif %}
+            {% if perms.clientes.change_cliente %}
+            <a href="{% url 'clientes:editar_cliente' cliente.pk %}" class="gs-btn gs-btn-outline">Editar</a>
             {% endif %}
             <a href="{% url 'vendas:novo_pedido' %}" class="gs-btn gs-btn-primary">
                 <i class="bi bi-plus-lg" aria-hidden="true"></i>
@@ -170,19 +173,20 @@
                                     >
                                         {% if equipamento.valor_compra %}
                                         <div class="equipment-progress-content">
-                                            <div class="progress-circle" aria-label="Progresso do pagamento do equipamento">
+                                            <div class="progress-circle" aria-label="Estimativa gerencial de retorno do investimento">
                                                 <span class="progress-circle-value">0%</span>
                                             </div>
                                             <div class="equipment-progress-info">
-                                                <div class="equipment-progress-title">Retorno do investimento</div>
+                                                <div class="equipment-progress-title">ROI estimado</div>
+                                                <p class="gs-card__hint mb-2">Métrica gerencial com base nas compras e no valor de aquisição. Não é regra contratual de comodato.</p>
                                                 <div class="equipment-progress-main">
                                                     <span class="progress-paid">R$ 0,00</span>
                                                     <span>de</span>
                                                     <span class="progress-total">R$ {{ equipamento.valor_compra|floatformat:2 }}</span>
                                                 </div>
                                                 <div class="equipment-progress-details">
-                                                    <span>Pago: <strong class="progress-paid-detail">R$ 0,00</strong></span>
-                                                    <span>Falta: <strong class="progress-remaining">R$ {{ equipamento.valor_compra|floatformat:2 }}</strong></span>
+                                                    <span>Recuperado: <strong class="progress-paid-detail">R$ 0,00</strong></span>
+                                                    <span>Restante: <strong class="progress-remaining">R$ {{ equipamento.valor_compra|floatformat:2 }}</strong></span>
                                                 </div>
                                                 <div class="equipment-progress-bar">
                                                     <div class="equipment-progress-bar-fill"></div>
@@ -256,7 +260,7 @@
             <div class="history-body" id="accordionVendas">
                 {% if vendas %}
                     {% for venda in vendas %}
-                    <div class="history-item">
+                    <div class="history-item" id="historico-venda-{{ venda.pk }}">
                         <div class="history-item-header">
                             <button
                                 class="history-date"
@@ -272,7 +276,7 @@
                                 <span class="gs-badge gs-badge--ok sensitive-value d-none">R$ {{ venda.total|floatformat:2 }}</span>
                                 <span class="gs-badge gs-badge--neutral sensitive-masked">R$ ••••••</span>
                                 <a href="{% url 'vendas:detalhe_venda' venda.pk %}" class="gs-btn gs-btn-ghost">Ver pedido</a>
-                                <button type="button" class="gs-btn gs-btn-ghost gs-btn-icon btn-sensitive-toggle" data-gs-sensitive aria-label="Mostrar valor" title="Alternar visibilidade">
+                                <button type="button" class="gs-btn gs-btn-ghost gs-btn-icon btn-sensitive-toggle" data-gs-sensitive-container="historico-venda-{{ venda.pk }}" aria-label="Mostrar valores" title="Alternar visibilidade">
                                     <i class="bi bi-eye" aria-hidden="true"></i>
                                 </button>
                             </div>
@@ -322,7 +326,7 @@
 {% endblock %}
 
 {% block extra_js %}
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="{% static 'js/vendor/chart.umd.min.js' %}"></script>
 <script src="{% static 'js/dashboard_charts.js' %}"></script>
 <script src="{% static 'cliente/js/cliente_dashboard.js' %}"></script>
 {% endblock %}

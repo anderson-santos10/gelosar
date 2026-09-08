@@ -4,6 +4,7 @@ import os
 from django.core.exceptions import ImproperlyConfigured
 
 from estoque.data_corte import parse_data_corte
+from config.database import resolve_database
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -23,26 +24,84 @@ def _env_list(name, default):
     return [item.strip() for item in value.split(",") if item.strip()]
 
 
+_TRUE_VALUES = {"1", "true", "yes", "on"}
+_FALSE_VALUES = {"0", "false", "no", "off"}
+_DEV_SECRET_KEY = "dev-only-not-for-production"
+
+
+def parse_env_bool(value):
+    if value is None:
+        return None
+    normalized = str(value).strip().lower()
+    if normalized == "":
+        return None
+    if normalized in _TRUE_VALUES:
+        return True
+    if normalized in _FALSE_VALUES:
+        return False
+    raise ImproperlyConfigured(
+        f"Invalid boolean environment value: {value!r}. "
+        "Use true/false, 1/0, yes/no or on/off."
+    )
+
+
+def is_production_environment(environ):
+    raw = environ.get("DJANGO_ENVIRONMENT")
+    if raw is None or not str(raw).strip():
+        return False
+    return str(raw).strip().lower() in {"production", "prod"}
+
+
+def resolve_debug(environ):
+    """
+    DEBUG explícito via DJANGO_DEBUG (true/false, 1/0, yes/no, on/off).
+
+    Se DJANGO_DEBUG estiver ausente:
+      - desenvolvimento → True (runserver local)
+      - produção (DJANGO_ENVIRONMENT=production|prod) → False
+    """
+    parsed = parse_env_bool(environ.get("DJANGO_DEBUG"))
+    if parsed is not None:
+        return parsed
+    return not is_production_environment(environ)
+
+
+def resolve_secret_key(environ, *, debug, production):
+    """
+    SECRET_KEY só pode ter fallback no desenvolvimento com DEBUG=True.
+    Produção ou DEBUG=False exigem DJANGO_SECRET_KEY no ambiente.
+    """
+    raw = environ.get("DJANGO_SECRET_KEY")
+    secret = str(raw).strip() if raw is not None else ""
+    if secret:
+        return secret
+    if production or not debug:
+        raise ImproperlyConfigured(
+            "DJANGO_SECRET_KEY is required when DEBUG is false "
+            "or DJANGO_ENVIRONMENT is production."
+        )
+    return _DEV_SECRET_KEY
+
+
 # ============================================================
 # SECURITY
 # ============================================================
-# Desenvolvimento (padrão local):
-#   DJANGO_DEBUG=true  (ou omitido)
+# Desenvolvimento local (runserver sem variáveis):
+#   DJANGO_ENVIRONMENT omitido ou development
+#   DJANGO_DEBUG omitido ou true
 # Produção:
+#   DJANGO_ENVIRONMENT=production
 #   DJANGO_DEBUG=false
-#   DJANGO_SECRET_KEY=<chave forte>
+#   DJANGO_SECRET_KEY=<chave forte do ambiente>
 #   DJANGO_ALLOWED_HOSTS=dominio.exemplo
 
-DEBUG = _env_bool("DJANGO_DEBUG", True)
-
-SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY")
-if not SECRET_KEY:
-    if DEBUG:
-        SECRET_KEY = "dev-only-not-for-production"
-    else:
-        raise ImproperlyConfigured(
-            "DJANGO_SECRET_KEY is required when DJANGO_DEBUG is false."
-        )
+_PRODUCTION = is_production_environment(os.environ)
+DEBUG = resolve_debug(os.environ)
+SECRET_KEY = resolve_secret_key(
+    os.environ,
+    debug=DEBUG,
+    production=_PRODUCTION,
+)
 
 ALLOWED_HOSTS = _env_list(
     "DJANGO_ALLOWED_HOSTS",
@@ -55,7 +114,7 @@ ALLOWED_HOSTS = _env_list(
 # ============================================================
 
 INSTALLED_APPS = [
-    "django.contrib.admin",
+    "core.admin_config.GelosarAdminConfig",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
@@ -126,13 +185,16 @@ TEMPLATES = [
 # ============================================================
 # DATABASE
 # ============================================================
+# Desenvolvimento (sem DATABASE_URL): SQLite em db.sqlite3.
+# Produção: DATABASE_URL PostgreSQL obrigatória (ex. Railway).
+# CONN_MAX_AGE: 0 no SQLite; 60 no PostgreSQL, ou DJANGO_CONN_MAX_AGE.
+# SSL: query sslmode= na URL ou DJANGO_DATABASE_SSLMODE (só PostgreSQL).
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-    }
-}
+DATABASES = resolve_database(
+    os.environ,
+    production=_PRODUCTION,
+    base_dir=BASE_DIR,
+)
 
 
 # ============================================================
@@ -234,11 +296,17 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # ============================================================
 # ESTOQUE — DATA DE CORTE (opcional)
 # ============================================================
-# DJANGO_ESTOQUE_DATA_CORTE=YYYY-MM-DD
-# Ausente ou vazio → ESTOQUE_DATA_CORTE = None
-#   (comportamento legado; controle oficial ainda não ativado)
+# Variável: DJANGO_ESTOQUE_DATA_CORTE=YYYY-MM-DD
+#
+# Política de implantação (intencional, não é erro de configuração):
+#   Ausente ou vazio → ESTOQUE_DATA_CORTE = None
+#     → vendas NÃO geram SAIDA automática
+#     → produção continua gerando ENTRADA (fluxo independente)
+#     → não há backfill ao definir a data depois
+#   Definida → SAIDA automática só se venda.data >= data de corte
+#     (igualdade inclusiva; ver estoque.services.venda_deve_gerar_saida)
 # Valor inválido → ImproperlyConfigured na inicialização.
-# Não definir data fixa no código.
+# Não definir data fixa no código. A data de negócio é decisão operacional.
 
 ESTOQUE_DATA_CORTE = parse_data_corte(
     os.environ.get("DJANGO_ESTOQUE_DATA_CORTE")

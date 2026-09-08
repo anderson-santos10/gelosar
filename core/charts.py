@@ -5,9 +5,11 @@ from django.db.models import F, Sum
 from django.db.models.functions import TruncDate, TruncMonth
 from django.utils import timezone
 
-from estoque.services import calcular_estoque_produto
+from estoque.services import calcular_estoques_produto_por_peso
 from producao.models import Producao
 from vendas.models import ItemVenda
+
+from .periodo import dia_local_atual, intervalo_dia_local
 
 DIAS_GRAFICO = 7
 MESES_GRAFICO = 6
@@ -54,14 +56,17 @@ def vendas_por_dia(dias=DIAS_GRAFICO):
 
 
 def producao_por_dia(dias=DIAS_GRAFICO):
-    hoje = timezone.localdate()
-    inicio = hoje - timedelta(days=dias - 1)
+    hoje = dia_local_atual()
+    inicio_data = hoje - timedelta(days=dias - 1)
+    inicio, _ = intervalo_dia_local(inicio_data)
+    _, fim = intervalo_dia_local(hoje)
+    tz = timezone.get_current_timezone()
     rows = (
         Producao.objects.filter(
-            data_hora__date__gte=inicio,
-            data_hora__date__lte=hoje,
+            data_hora__gte=inicio,
+            data_hora__lt=fim,
         )
-        .annotate(dia=TruncDate("data_hora"))
+        .annotate(dia=TruncDate("data_hora", tzinfo=tz))
         .values("dia", "produto__peso_kg")
         .annotate(total=Sum("quantidade"))
         .order_by("dia")
@@ -79,7 +84,7 @@ def producao_por_dia(dias=DIAS_GRAFICO):
     serie_3 = []
     serie_5 = []
     for i in range(dias):
-        dia = inicio + timedelta(days=i)
+        dia = inicio_data + timedelta(days=i)
         labels.append(dia.strftime("%d/%m"))
         serie_3.append(int(lookup.get((dia, 3), 0)))
         serie_5.append(int(lookup.get((dia, 5), 0)))
@@ -96,13 +101,14 @@ def producao_por_dia(dias=DIAS_GRAFICO):
 
 
 def estoque_atual_gelo():
+    estoques = calcular_estoques_produto_por_peso(3, 5)
     return {
         "type": "bar",
         "label": "Sacos",
         "labels": ["Gelo 5kg", "Gelo 3kg"],
         "values": [
-            calcular_estoque_produto(peso_kg=5),
-            calcular_estoque_produto(peso_kg=3),
+            estoques[5],
+            estoques[3],
         ],
     }
 

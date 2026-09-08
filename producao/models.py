@@ -1,4 +1,4 @@
-from django.db import models
+from django.conf import settings
 from django.db import models
 from equipamentos.models import Equipamento
 from produtos.models import Produto
@@ -27,6 +27,15 @@ class Producao(models.Model):
 
     observacao = models.TextField(
         blank=True
+    )
+
+    criado_por = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="producoes_criadas",
+        editable=False,
     )
 
     class Meta:

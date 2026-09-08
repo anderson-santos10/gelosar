@@ -64,7 +64,7 @@
                     <div class="col-12">
                         <span class="gs-card__hint d-block">Cliente</span>
                         {% if equipamento.cliente %}
-                            <a href="{% url 'dashboard_cliente' equipamento.cliente.id %}">{{ equipamento.cliente.nome }}</a>
+                            <a href="{% url 'clientes:dashboard_cliente' equipamento.cliente.id %}">{{ equipamento.cliente.nome }}</a>
                         {% else %}
                             <span>—</span>
                         {% endif %}

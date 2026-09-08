@@ -65,8 +65,8 @@
 
                     <div class="col-4">
                         <div class="gs-stat gs-stat--neutral">
-                            <span class="gs-stat__label">Inativos</span>
-                            <span class="gs-stat__value">{{ inativos }}</span>
+                            <span class="gs-stat__label">Parados</span>
+                            <span class="gs-stat__value">{{ parados }}</span>
                         </div>
                     </div>
                 </div>
@@ -295,6 +295,6 @@
 {% endblock %}
 
 {% block extra_js %}
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="{% static 'js/vendor/chart.umd.min.js' %}"></script>
 <script src="{% static 'js/dashboard_charts.js' %}"></script>
 {% endblock %}

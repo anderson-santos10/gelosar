@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+
+{% block title %}Contratos de comodato | GELOSAR{% endblock %}
+
+{% block content %}
+<div class="gs-page">
+
+    <header class="gs-page-header">
+        <div>
+            <ol class="gs-breadcrumb">
+                <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                <li aria-hidden="true">/</li>
+                <li>Contratos de comodato</li>
+            </ol>
+            <h1 class="gs-page-header__title">Contratos de comodato</h1>
+            <p class="gs-page-header__desc">Cadastro operacional. O texto jurídico do instrumento permanece no modelo impresso.</p>
+        </div>
+        <div class="gs-page-header__actions">
+            {% if perms.equipamentos.add_contratocomodato %}
+            <a href="{% url 'equipamentos:contrato_comodato_novo' %}" class="gs-btn gs-btn-primary">
+                <i class="bi bi-plus-lg" aria-hidden="true"></i>
+                Novo contrato
+            </a>
+            {% endif %}
+        </div>
+    </header>
+
+    {% if contratos %}
+    <div class="gs-table-wrap">
+        <table class="gs-table">
+            <thead>
+                <tr>
+                    <th>Número</th>
+                    <th>Cliente</th>
+                    <th>Equipamento</th>
+                    <th>Início</th>
+                    <th>Fim</th>
+                    <th>Status</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for contrato in contratos %}
+                <tr>
+                    <td>
+                        <a href="{% url 'equipamentos:contrato_comodato_detalhe' contrato.pk %}">{{ contrato.numero_contrato }}</a>
+                    </td>
+                    <td>{{ contrato.cliente.nome }}</td>
+                    <td>{{ contrato.equipamento.nome }}</td>
+                    <td>{{ contrato.data_inicio|date:"d/m/Y" }}</td>
+                    <td>{{ contrato.data_fim|date:"d/m/Y"|default:"—" }}</td>
+                    <td>{{ contrato.get_status_display }}</td>
+                    <td>
+                        <a href="{% url 'equipamentos:contrato_comodato_detalhe' contrato.pk %}" class="gs-btn gs-btn-outline">Ver</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="gs-empty">
+        <h2 class="gs-empty__title">Nenhum contrato cadastrado</h2>
+        <p class="gs-empty__text">Ainda não há contratos de comodato persistidos.</p>
+        {% if perms.equipamentos.add_contratocomodato %}
+        <a href="{% url 'equipamentos:contrato_comodato_novo' %}" class="gs-btn gs-btn-primary">Novo contrato</a>
+        {% endif %}
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}

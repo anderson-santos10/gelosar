@@ -56,7 +56,7 @@
                     </td>
                     <td>
                         {% if equipamento.cliente %}
-                            <a href="{% url 'dashboard_cliente' equipamento.cliente.id %}">{{ equipamento.cliente.nome }}</a>
+                            <a href="{% url 'clientes:dashboard_cliente' equipamento.cliente.id %}">{{ equipamento.cliente.nome }}</a>
                         {% else %}
                             —
                         {% endif %}

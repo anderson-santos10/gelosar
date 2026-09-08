@@ -3,11 +3,17 @@ from django.views.generic import TemplateView
 from django.contrib import messages
 from django.urls import reverse_lazy
 from django.views.generic import CreateView
-from .models import MovimentacaoInsumo, MovimentacaoProduto
-from .forms import EntradaInsumoForm
-from .services import calcular_estoque_produto
 
-class EstoqueView(LoginRequiredMixin, TemplateView):
+from accounts.authz import ModulePermissionRequiredMixin
+
+from insumos.models import Insumo
+from .models import MovimentacaoInsumo, MovimentacaoProduto
+from .forms import AjusteProdutoForm, EntradaInsumoForm
+from .services import calcular_estoques_insumos, calcular_estoques_produto_por_peso
+
+class EstoqueView(LoginRequiredMixin, ModulePermissionRequiredMixin, TemplateView):
+
+    permission_required = "estoque.view_movimentacaoproduto"
 
     template_name = "estoque/estoque.html"
 
@@ -29,8 +35,9 @@ class EstoqueView(LoginRequiredMixin, TemplateView):
         # ESTOQUE OFICIAL (ENTRADA - SAIDA + AJUSTE)
         # ============================================================
 
-        estoque_5kg_sacos = calcular_estoque_produto(peso_kg=5)
-        estoque_3kg_sacos = calcular_estoque_produto(peso_kg=3)
+        estoques = calcular_estoques_produto_por_peso(5, 3)
+        estoque_5kg_sacos = estoques[5]
+        estoque_3kg_sacos = estoques[3]
 
         # ============================================================
         # PESO TOTAL
@@ -95,9 +102,19 @@ class EstoqueView(LoginRequiredMixin, TemplateView):
 
         context["movimentacoes"] = movimentacoes[:20]
 
+        insumos = list(Insumo.objects.all())
+        saldos = calcular_estoques_insumos(insumos)
+        saldos_insumos = [
+            {"insumo": insumo, "saldo": saldos[insumo]}
+            for insumo in insumos
+        ]
+        context["saldos_insumos"] = saldos_insumos
+
         return context
     
-class EntradaInsumoView(LoginRequiredMixin, CreateView):
+class EntradaInsumoView(LoginRequiredMixin, ModulePermissionRequiredMixin, CreateView):
+
+    permission_required = "estoque.add_movimentacaoinsumo"
 
     model = MovimentacaoInsumo
 
@@ -121,4 +138,25 @@ class EntradaInsumoView(LoginRequiredMixin, CreateView):
             )
         )
 
+        return response
+
+
+class AjusteProdutoView(LoginRequiredMixin, ModulePermissionRequiredMixin, CreateView):
+
+    permission_required = "estoque.add_movimentacaoproduto"
+
+    model = MovimentacaoProduto
+    form_class = AjusteProdutoForm
+    template_name = "estoque/ajuste_produto.html"
+    success_url = reverse_lazy("estoque:estoque")
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        messages.success(
+            self.request,
+            (
+                f"Ajuste de +{self.object.quantidade} sacos "
+                f"de {self.object.produto.nome} registrado."
+            ),
+        )
         return response

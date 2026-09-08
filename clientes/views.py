@@ -1,30 +1,38 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import DetailView, ListView, CreateView
-from django.urls import reverse_lazy
+from django.views.generic import DetailView, ListView, CreateView, UpdateView
+from django.urls import reverse, reverse_lazy
 
+from accounts.authz import ModulePermissionRequiredMixin
 from core.charts import compras_cliente_por_mes, mix_produtos_cliente
 
 from .models import Cliente
 
 
-class CriarClienteView(LoginRequiredMixin, CreateView):
+CAMPOS_CLIENTE = [
+    'nome',
+    'cnpj',
+    'telefone',
+    'email',
+    'endereco',
+    'cidade',
+    'ativo',
+    'observacoes',
+]
+
+
+class CriarClienteView(LoginRequiredMixin, ModulePermissionRequiredMixin, CreateView):
+
+    permission_required = "clientes.add_cliente"
 
     model = Cliente
     template_name = 'cliente/cliente_form.html'
-    fields = [
-        'nome',
-        'cnpj',
-        'telefone',
-        'email',
-        'endereco',
-        'cidade',
-        'ativo',
-        'observacoes',
-    ]
-    success_url = reverse_lazy('lista_clientes')
+    fields = CAMPOS_CLIENTE
+    success_url = reverse_lazy('clientes:lista_clientes')
 
 
-class ListaClientesView(LoginRequiredMixin, ListView):
+class ListaClientesView(LoginRequiredMixin, ModulePermissionRequiredMixin, ListView):
+
+    permission_required = "clientes.view_cliente"
 
     model = Cliente
 
@@ -33,7 +41,21 @@ class ListaClientesView(LoginRequiredMixin, ListView):
     context_object_name = 'clientes'
 
 
-class DashboardClienteView(LoginRequiredMixin, DetailView):
+class EditarClienteView(LoginRequiredMixin, ModulePermissionRequiredMixin, UpdateView):
+
+    permission_required = "clientes.change_cliente"
+
+    model = Cliente
+    template_name = 'cliente/cliente_form.html'
+    fields = CAMPOS_CLIENTE
+
+    def get_success_url(self):
+        return reverse('clientes:dashboard_cliente', args=[self.object.pk])
+
+
+class DashboardClienteView(LoginRequiredMixin, ModulePermissionRequiredMixin, DetailView):
+
+    permission_required = "clientes.view_cliente"
 
     model = Cliente
 
@@ -90,9 +112,8 @@ class DashboardClienteView(LoginRequiredMixin, DetailView):
 
         equipamentos = cliente.equipamentos.all()
 
-        # =====================================================
-        # INVESTIMENTO TOTAL NOS EQUIPAMENTOS
-        # =====================================================
+        # MÉTRICA GERENCIAL (não é regra de comodato):
+        # compara o total comprado com o valor de aquisição dos equipamentos.
 
         valor_investimento = sum(
             equipamento.valor_compra or 0

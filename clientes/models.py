@@ -23,7 +23,8 @@ class Cliente(models.Model):
         blank=True
     )
 
-    endereco = models.TextField(
+    endereco = models.TextField( 
+        max_length=255,
         blank=True
     )
 

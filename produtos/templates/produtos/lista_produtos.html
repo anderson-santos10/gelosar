@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block title %}Produtos | GELOSAR{% endblock %}
+
+{% block content %}
+<div class="gs-page">
+    <header class="gs-page-header">
+        <div>
+            <ol class="gs-breadcrumb">
+                <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                <li aria-hidden="true">/</li>
+                <li>Produtos</li>
+            </ol>
+            <h1 class="gs-page-header__title">Produtos</h1>
+            <p class="gs-page-header__desc">Cadastro de produtos acabados. Estoque mínimo é cadastral; não dispara alerta automático.</p>
+        </div>
+        <div class="gs-page-header__actions">
+            {% if perms.produtos.add_produto %}
+            <a href="{% url 'produtos:cadastrar_produto' %}" class="gs-btn gs-btn-primary">Cadastrar produto</a>
+            {% endif %}
+        </div>
+    </header>
+
+    {% if produtos %}
+    <div class="gs-table-wrap">
+        <table class="gs-table">
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Peso (kg)</th>
+                    <th>Preço</th>
+                    <th>Estoque mín.</th>
+                    <th>Status</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for produto in produtos %}
+                <tr>
+                    <td>{{ produto.nome }}</td>
+                    <td>{{ produto.peso_kg }}</td>
+                    <td>R$ {{ produto.preco_venda }}</td>
+                    <td>{{ produto.estoque_minimo }}</td>
+                    <td>
+                        {% if produto.ativo %}
+                        <span class="gs-badge gs-badge--ok">Ativo</span>
+                        {% else %}
+                        <span class="gs-badge gs-badge--neutral">Inativo</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if perms.produtos.change_produto %}
+                        <a href="{% url 'produtos:editar_produto' produto.pk %}" class="gs-btn gs-btn-outline">Editar</a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="gs-empty">
+        <h2 class="gs-empty__title">Nenhum produto cadastrado</h2>
+        {% if perms.produtos.add_produto %}
+        <a href="{% url 'produtos:cadastrar_produto' %}" class="gs-btn gs-btn-primary">Cadastrar produto</a>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

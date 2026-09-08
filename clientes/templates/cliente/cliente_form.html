@@ -1,21 +1,27 @@
 {% extends 'base.html' %}
+{% load static %}
 
-{% block title %}Novo Cliente | GELOSAR{% endblock %}
+{% block title %}{% if form.instance.pk %}Editar Cliente | GELOSAR{% else %}Novo Cliente | GELOSAR{% endif %}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'cliente/css/cliente_form.css' %}">
+{% endblock %}
+
 
 {% block content %}
-<div class="gs-page">
+<div class="gs-page cliente-form-page">
 
     <header class="gs-page-header">
         <div>
             <ol class="gs-breadcrumb">
                 <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
                 <li aria-hidden="true">/</li>
-                <li><a href="{% url 'lista_clientes' %}">Clientes</a></li>
+                <li><a href="{% url 'clientes:lista_clientes' %}">Clientes</a></li>
                 <li aria-hidden="true">/</li>
-                <li>Novo cliente</li>
+                <li>{% if form.instance.pk %}Editar cliente{% else %}Novo cliente{% endif %}</li>
             </ol>
-            <h1 class="gs-page-header__title">Novo cliente</h1>
-            <p class="gs-page-header__desc">Cadastre um cliente para pedidos, equipamentos e histórico comercial</p>
+            <h1 class="gs-page-header__title">{% if form.instance.pk %}Editar cliente{% else %}Novo cliente{% endif %}</h1>
+            <p class="gs-page-header__desc">{% if form.instance.pk %}Atualize os dados cadastrais de {{ form.instance.nome }}{% else %}Cadastre um cliente para pedidos, equipamentos e histórico comercial{% endif %}</p>
         </div>
     </header>
 
@@ -34,7 +40,7 @@
                     </div>
                     {% endif %}
 
-                    <div class="row g-3">
+                    <div class="row g-2">
                         <div class="col-12 col-md-6 col-lg-4">
                             <label class="gs-label" for="{{ form.nome.id_for_label }}">
                                 Nome / Razão Social{% if form.nome.field.required %} *{% endif %}
@@ -65,7 +71,7 @@
                             {% endif %}
                         </div>
 
-                        <div class="col-12 col-md-6 col-lg-4">
+                        <div class="col-12 col-md-6">
                             <label class="gs-label" for="{{ form.email.id_for_label }}">
                                 E-mail{% if form.email.field.required %} *{% endif %}
                             </label>
@@ -75,23 +81,23 @@
                             {% endif %}
                         </div>
 
-                        <div class="col-12 col-md-6 col-lg-4">
-                            <label class="gs-label" for="{{ form.endereco.id_for_label }}">
-                                Endereço{% if form.endereco.field.required %} *{% endif %}
-                            </label>
-                            {{ form.endereco }}
-                            {% if form.endereco.errors %}
-                            <p class="gs-field-error">{{ form.endereco.errors|striptags }}</p>
-                            {% endif %}
-                        </div>
-
-                        <div class="col-12 col-md-6 col-lg-4">
+                        <div class="col-12 col-md-6">
                             <label class="gs-label" for="{{ form.cidade.id_for_label }}">
                                 Cidade{% if form.cidade.field.required %} *{% endif %}
                             </label>
                             {{ form.cidade }}
                             {% if form.cidade.errors %}
                             <p class="gs-field-error">{{ form.cidade.errors|striptags }}</p>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-12">
+                            <label class="gs-label" for="{{ form.endereco.id_for_label }}">
+                                Endereço{% if form.endereco.field.required %} *{% endif %}
+                            </label>
+                            {{ form.endereco }}
+                            {% if form.endereco.errors %}
+                            <p class="gs-field-error">{{ form.endereco.errors|striptags }}</p>
                             {% endif %}
                         </div>
 
@@ -119,7 +125,7 @@
                     </div>
 
                     <div class="gs-form-actions">
-                        <a href="{% url 'lista_clientes' %}" class="gs-btn gs-btn-outline">Cancelar</a>
+                        <a href="{% url 'clientes:lista_clientes' %}" class="gs-btn gs-btn-outline">Cancelar</a>
                         <button type="submit" class="gs-btn gs-btn-primary">
                             <i class="bi bi-check-lg" aria-hidden="true"></i>
                             Salvar cliente

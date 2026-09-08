@@ -1,4 +1,7 @@
+from django.core.exceptions import ValidationError
 from django.db import models
+
+from .validators import validar_arquivo_documento
 
 
 class Equipamento(models.Model):
@@ -40,6 +43,8 @@ class Equipamento(models.Model):
     numero_serie = models.CharField(
         max_length=100,
         blank=True,
+        null=True,
+        unique=True,
     )
 
     valor_compra = models.DecimalField(
@@ -85,6 +90,11 @@ class Equipamento(models.Model):
     def __str__(self):
         return f'{self.codigo} - {self.nome}'
 
+    def save(self, *args, **kwargs):
+        if self.numero_serie == "":
+            self.numero_serie = None
+        super().save(*args, **kwargs)
+
     @property
     def codigo(self):
         return f'EQ{self.id:04d}' if self.id else 'Novo'
@@ -117,7 +127,56 @@ class DocumentoEquipamento(models.Model):
     def __str__(self):
         return self.nome
 
+    def clean(self):
+        super().clean()
+        if not self.arquivo:
+            return
+        try:
+            validar_arquivo_documento(self.arquivo)
+        except ValidationError as extra:
+            raise ValidationError({"arquivo": extra}) from extra
+
     class Meta:
         verbose_name = 'Documento do Equipamento'
         verbose_name_plural = 'Documentos dos Equipamentos'
         ordering = ['-data_upload']
+
+
+class ContratoComodato(models.Model):
+    """Registro operacional do comodato. Cláusulas jurídicas ficam no template."""
+
+    STATUS_CHOICES = [
+        ("ativo", "Ativo"),
+        ("encerrado", "Encerrado"),
+        ("cancelado", "Cancelado"),
+    ]
+
+    cliente = models.ForeignKey(
+        "clientes.Cliente",
+        on_delete=models.PROTECT,
+        related_name="contratos_comodato",
+    )
+    equipamento = models.ForeignKey(
+        Equipamento,
+        on_delete=models.PROTECT,
+        related_name="contratos_comodato",
+    )
+    numero_contrato = models.CharField(max_length=30, unique=True)
+    data_inicio = models.DateField()
+    data_fim = models.DateField(null=True, blank=True)
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default="ativo",
+    )
+    observacoes = models.TextField(blank=True)
+    criado_em = models.DateTimeField(auto_now_add=True)
+    atualizado_em = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Contrato de comodato"
+        verbose_name_plural = "Contratos de comodato"
+        ordering = ["-data_inicio", "-id"]
+
+    def __str__(self):
+        return f"{self.numero_contrato} — {self.cliente}"

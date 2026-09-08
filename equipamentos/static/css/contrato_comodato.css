@@ -209,7 +209,6 @@
     justify-content: space-between;
     gap: 40px;
     margin-top: 60px;
-    page-break-inside: avoid; /* Evita que a assinatura quebre no meio da página */
 }
 
 .assinatura {
@@ -256,61 +255,298 @@
     color: #9ca3af;
 }
 
-/* =====================================================
-   REGRAS DE IMPRESSÃO (O MÁGICO)
-===================================================== */
+.print-only {
+    display: none !important;
+}
+
+/*
+  Impressão do Comodato — causas reais de 3 páginas:
+  1) Bootstrap 5.3 @media print: @page size A3 e body { min-width: 992px !important }
+     (o layout fica mais largo que A4; o Chrome pagina como se fosse outra folha).
+  2) GELOSAR: .app-wrapper / body min-height: 100vh; .main-content flex + min-height calc(100vh - navbar);
+     .page-content { flex: 1; padding }; .gs-footer { margin-top: auto }.
+  3) Tela: .contrato { min-height: 297mm; padding: 25mm 20mm } — folha “falsa” A4.
+  4) body.gs-app { overflow-x: hidden } distorce a caixa de impressão.
+  5) <main> aninhado em <main class="page-content"> quebra o fluxo do documento.
+  Compactação e reset valem SÓ neste @media print, e só com body.gs-print-comodato.
+*/
 @media print {
-    .no-print,
-    .gs-skip-link,
-    .gs-nav-overlay,
-    .gs-navbar,
-    .gs-footer,
-    .gs-page-header,
-    .messages-container {
+    @page {
+        size: A4 portrait;
+        margin: 5mm;
+    }
+
+    .print-only {
+        display: block !important;
+    }
+
+    html {
+        width: 100% !important;
+        height: auto !important;
+        min-height: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: visible !important;
+    }
+
+    body.gs-print-comodato {
+        width: 100% !important;
+        min-width: 0 !important;
+        max-width: none !important;
+        min-height: 0 !important;
+        height: auto !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: visible !important;
+        overflow-x: visible !important;
+        background: #fff !important;
+        color: #000 !important;
+        font-size: 9pt !important;
+        line-height: 1.15 !important;
+    }
+
+    body.gs-print-comodato .no-print,
+    body.gs-print-comodato .gs-skip-link,
+    body.gs-print-comodato .gs-nav-overlay,
+    body.gs-print-comodato .gs-navbar,
+    body.gs-print-comodato .gs-nav-panel,
+    body.gs-print-comodato .gs-footer,
+    body.gs-print-comodato .gs-page-header,
+    body.gs-print-comodato .gs-alert,
+    body.gs-print-comodato .messages-container,
+    body.gs-print-comodato .gs-btn {
         display: none !important;
     }
 
-    body, html, .contrato-page,
-    .app-wrapper, .main-content, .page-content {
-        background: transparent !important;
-        padding: 0 !important;
-        margin: 0 !important;
-        box-shadow: none !important;
-    }
-
-    /* Ajusta a folha para preencher o papel real */
-    .contrato {
-        box-shadow: none !important;
-        margin: 0 !important;
-        padding: 0 !important;
+    body.gs-print-comodato .app-wrapper,
+    body.gs-print-comodato .main-content,
+    body.gs-print-comodato .page-content,
+    body.gs-print-comodato .gs-page,
+    body.gs-print-comodato .contrato-page {
+        display: block !important;
+        float: none !important;
+        position: static !important;
+        flex: none !important;
         width: 100% !important;
-        max-width: 100% !important;
-        min-height: auto !important;
+        min-width: 0 !important;
+        max-width: none !important;
+        min-height: 0 !important;
+        height: auto !important;
+        max-height: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: visible !important;
+        background: #fff !important;
+        box-shadow: none !important;
     }
 
-    /* Remove os fundos cinzas das caixas para ficar P&B perfeito */
-    .parte, .equipamento-box, .endereco-box {
-        background: transparent !important;
-        border-color: #000 !important;
+    body.gs-print-comodato a[href]::after,
+    body.gs-print-comodato a[href]::before {
+        content: none !important;
     }
 
-    .numero-secao {
+    body.gs-print-comodato .contrato,
+    body.gs-print-comodato .contrato-comodato,
+    body.gs-print-comodato .contrato-print {
+        display: block !important;
+        width: auto !important;
+        min-width: 0 !important;
+        max-width: none !important;
+        height: auto !important;
+        min-height: 0 !important;
+        max-height: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        box-shadow: none !important;
+        background: #fff !important;
+        color: #000 !important;
+        font-family: "Times New Roman", Times, serif !important;
+        font-size: 9pt !important;
+        line-height: 1.15 !important;
+        overflow: visible !important;
+    }
+
+    body.gs-print-comodato .contrato p,
+    body.gs-print-comodato .contrato li {
+        margin: 0 0 3px !important;
+        font-size: 9pt !important;
+        line-height: 1.15 !important;
+        color: #000 !important;
+    }
+
+    body.gs-print-comodato .contrato h1,
+    body.gs-print-comodato .contrato h2 {
+        margin: 0 !important;
+        padding: 0 !important;
+        line-height: 1.15 !important;
+        color: #000 !important;
+    }
+
+    body.gs-print-comodato .contrato-cabecalho {
+        display: flex !important;
+        margin: 0 0 4px !important;
+        align-items: flex-end !important;
+        gap: 8px !important;
+    }
+
+    body.gs-print-comodato .marca .logo-marca {
+        font-size: 12pt !important;
+        color: #000 !important;
+    }
+
+    body.gs-print-comodato .marca span {
+        font-size: 8pt !important;
+        color: #000 !important;
+    }
+
+    body.gs-print-comodato .titulo-documento h1 {
+        font-size: 12pt !important;
+        color: #000 !important;
+    }
+
+    body.gs-print-comodato .titulo-documento p {
+        font-size: 8.5pt !important;
+        color: #000 !important;
+        margin: 0 !important;
+    }
+
+    body.gs-print-comodato .documento-linha {
+        margin: 0 0 6px !important;
+        background: #000 !important;
+        height: 1px !important;
+    }
+
+    body.gs-print-comodato .secao-documento {
+        margin: 0 0 5px !important;
+        page-break-inside: auto;
+        break-inside: auto;
+        break-before: auto;
+        break-after: auto;
+    }
+
+    body.gs-print-comodato .secao-titulo {
+        display: flex !important;
+        gap: 6px !important;
+        margin: 0 0 3px !important;
+        align-items: baseline !important;
+    }
+
+    body.gs-print-comodato .numero-secao {
+        font-size: 10pt !important;
         color: #000 !important;
         border-color: #000 !important;
+        padding: 0 !important;
     }
 
-    /* Evita que blocos quebrem no meio de uma folha e outra */
-    .secao-documento {
+    body.gs-print-comodato .secao-titulo h2 {
+        font-size: 10pt !important;
+        color: #000 !important;
+    }
+
+    body.gs-print-comodato .secao-titulo p {
+        font-size: 8pt !important;
+        color: #000 !important;
+        margin: 0 !important;
+    }
+
+    body.gs-print-comodato .partes {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 6px !important;
+        margin: 0 0 4px !important;
+    }
+
+    body.gs-print-comodato .parte,
+    body.gs-print-comodato .equipamento-box,
+    body.gs-print-comodato .endereco-box {
+        background: transparent !important;
+        border: 1px solid #000 !important;
+        padding: 3px 5px !important;
+        margin: 0 0 4px !important;
+        border-radius: 0 !important;
+    }
+
+    body.gs-print-comodato .parte-titulo,
+    body.gs-print-comodato .equipamento-box .label {
+        color: #000 !important;
+        border-color: #000 !important;
+        font-size: 8pt !important;
+        margin: 0 0 2px !important;
+        padding: 0 0 2px !important;
+    }
+
+    body.gs-print-comodato .parte p {
+        font-size: 9pt !important;
+        margin: 0 0 2px !important;
+        color: #000 !important;
+    }
+
+    body.gs-print-comodato .texto-introdutorio {
+        margin: 4px 0 3px !important;
+        font-size: 9pt !important;
+    }
+
+    body.gs-print-comodato .equipamento-box {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 4px 8px !important;
+    }
+
+    body.gs-print-comodato .encerramento {
+        margin: 4px 0 0 !important;
+    }
+
+    body.gs-print-comodato .data-documento {
+        margin: 4px 0 6px !important;
+        color: #000 !important;
+        text-align: right !important;
+    }
+
+    body.gs-print-comodato .assinaturas {
+        display: flex !important;
+        justify-content: space-between !important;
+        gap: 16px !important;
+        margin: 8px 0 0 !important;
         page-break-inside: auto;
+        break-inside: auto;
+        break-before: auto;
+        break-after: auto;
     }
-    
-    .assinaturas, .equipamento-box {
-        page-break-inside: avoid;
+
+    body.gs-print-comodato .assinatura {
+        flex: 1 !important;
     }
-    
-    /* Configurações da página no navegador */
-    @page {
-        size: A4;
-        margin: 2cm;
+
+    body.gs-print-comodato .linha-assinatura {
+        border-color: #000 !important;
+        margin: 16px auto 4px !important;
+    }
+
+    body.gs-print-comodato .assinatura strong,
+    body.gs-print-comodato .assinatura span,
+    body.gs-print-comodato .assinatura p {
+        color: #000 !important;
+        margin: 0 !important;
+        font-size: 8.5pt !important;
+    }
+
+    body.gs-print-comodato .contrato-rodape {
+        margin: 6px 0 0 !important;
+        border-color: #000 !important;
+        color: #000 !important;
+        padding: 3px 0 0 !important;
+        display: flex !important;
+    }
+
+    body.gs-print-comodato .contrato table {
+        width: 100% !important;
+        max-width: 100% !important;
+        border-collapse: collapse;
+    }
+
+    body.gs-print-comodato .contrato td,
+    body.gs-print-comodato .contrato th {
+        padding: 2px 4px;
+        line-height: 1.1;
     }
 }

@@ -1,6 +1,11 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}Cadastrar Equipamento | GELOSAR{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/equipamento_form.css' %}">
+{% endblock %}
 
 {% block content %}
 <div class="gs-page">

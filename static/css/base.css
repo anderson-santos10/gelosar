@@ -84,9 +84,6 @@
     --gs-content-max: 1280px;
     --gs-control-min: 44px;
 
-    /* Compatibilidade com CSS legado (sidebar) */
-    --sidebar-width: 0px;
-    --sidebar-collapsed: 0px;
     --header-height: var(--gs-navbar-height);
     --primary-color: var(--gs-primary);
     --primary-hover: var(--gs-primary-hover);
@@ -469,18 +466,6 @@ body.gs-app .page-content:focus {
 
 .gs-nav-overlay {
     display: none;
-}
-
-.gs-sr-only {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border: 0;
 }
 
 
@@ -1171,24 +1156,6 @@ body.gs-app .table tbody tr:hover,
    15. UTILITY + LEGACY METRICS
 ================================ */
 
-.metric-bar-container {
-    width: 100%;
-    height: 8px;
-    background-color: var(--gs-border);
-    border-radius: 4px;
-    overflow: hidden;
-    margin-top: 0.5rem;
-}
-
-.metric-bar-fill {
-    height: 100%;
-    border-radius: 4px;
-}
-
-.metric-bar-blue { background-color: var(--gs-primary); }
-.metric-bar-cyan { background-color: var(--gs-cyan); }
-.metric-bar-navy { background-color: var(--gs-navy); }
-
 .dashboard-title {
     color: var(--gs-navy);
     font-weight: var(--gs-font-weight-bold);
@@ -1393,12 +1360,29 @@ body.gs-app .table tbody tr:hover,
         display: none !important;
     }
 
-    body.gs-app,
-    .app-wrapper,
-    .main-content,
-    .page-content {
+    html,
+    body.gs-app {
+        overflow: visible !important;
+        min-height: 0 !important;
+        min-width: 0 !important;
+        height: auto !important;
+        width: auto !important;
+        background: #fff;
+    }
+
+    body.gs-app .app-wrapper,
+    body.gs-app .main-content,
+    body.gs-app .page-content {
+        display: block !important;
+        flex: none !important;
+        min-height: 0 !important;
+        height: auto !important;
+        max-width: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
         background: #fff;
         box-shadow: none;
+        overflow: visible !important;
     }
 }
 

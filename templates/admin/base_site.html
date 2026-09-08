@@ -1,0 +1,46 @@
+{% extends "admin/base.html" %}
+{% load i18n static %}
+
+{% block title %}{% if subtitle %}{{ subtitle }} | {% endif %}{{ title }} | {{ site_title|default:_('Django site admin') }}{% endblock %}
+
+{% block dark-mode-vars %}{% endblock %}
+
+{% block extrahead %}
+{{ block.super }}
+<link rel="icon" href="{% static 'img/logo-gelosar.jpg' %}" type="image/jpeg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<link rel="stylesheet" href="{% static 'css/admin_gelosar.css' %}">
+<script src="{% static 'js/admin_gelosar.js' %}" defer></script>
+{% endblock %}
+
+{% block header %}
+<header id="header" class="gs-admin-header">
+    <div class="gs-admin-header__brand">
+        <a href="{% url 'admin:index' %}" class="gs-admin-logo" aria-label="GELOSAR Administração">
+            <img src="{% static 'img/logo-gelosar.jpg' %}" alt="" width="168" height="56">
+            <span>
+                <strong>GELOSAR</strong>
+                <small>Administração</small>
+            </span>
+        </a>
+    </div>
+    {% if has_permission %}
+    <div id="user-tools" class="gs-admin-header__tools">
+        <span class="gs-admin-user">{% firstof user.get_short_name user.get_username %}</span>
+        {% if gs_sistema_url %}
+        <a class="gs-admin-link" href="{{ gs_sistema_url }}">Voltar ao sistema</a>
+        {% endif %}
+        {% if user.has_usable_password %}
+        <a class="gs-admin-link" href="{% url 'admin:password_change' %}">{% translate 'Change password' %}</a>
+        {% endif %}
+        <form id="logout-form" method="post" action="{% url 'admin:logout' %}">
+            {% csrf_token %}
+            <button type="submit">{% translate 'Log out' %}</button>
+        </form>
+    </div>
+    {% endif %}
+</header>
+{% endblock %}

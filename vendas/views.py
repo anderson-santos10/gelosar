@@ -1,8 +1,9 @@
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
 from django.db import transaction
 from django.shortcuts import get_object_or_404, redirect, render
 
+from accounts.authz import module_permission_required
+from core.auditoria import atribuir_criado_por
 from estoque.services import QuantidadeNaoInteira, registrar_saidas_venda
 from produtos.models import Produto
 
@@ -21,7 +22,7 @@ class _ItensVendaInvalidos(Exception):
     pass
 
 
-@login_required
+@module_permission_required("vendas.add_venda")
 def nova_venda(request):
 
     if request.method == 'POST':
@@ -34,7 +35,9 @@ def nova_venda(request):
 
             try:
                 with transaction.atomic():
-                    venda = venda_form.save()
+                    venda = venda_form.save(commit=False)
+                    atribuir_criado_por(venda, request.user)
+                    venda.save()
                     formset = ItemVendaFormSet(
                         request.POST,
                         instance=venda
@@ -43,8 +46,15 @@ def nova_venda(request):
                         raise _ItensVendaInvalidos()
                     formset.save()
                     registrar_saidas_venda(venda)
-            except (_ItensVendaInvalidos, QuantidadeNaoInteira):
-                pass
+            except _ItensVendaInvalidos:
+                if formset is not None and not formset.non_form_errors():
+                    messages.error(
+                        request,
+                        "Os itens do pedido são inválidos. "
+                        "Corrija os produtos e as quantidades informados.",
+                    )
+            except QuantidadeNaoInteira as exc:
+                messages.error(request, str(exc))
             else:
                 messages.success(
                     request,
@@ -75,11 +85,13 @@ def nova_venda(request):
     )
 
 
-@login_required
+@module_permission_required("vendas.view_venda")
 def detalhe_venda(request, pk):
 
     venda = get_object_or_404(
-        Venda,
+        Venda.objects.select_related("cliente").prefetch_related(
+            "itens__produto"
+        ),
         pk=pk
     )
 

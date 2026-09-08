@@ -91,18 +91,31 @@
             }
         };
 
+        const garantirCampoDelete = (row) => {
+            let deleteInput = row.querySelector('input[name$="-DELETE"]');
+            if (deleteInput) return deleteInput;
+
+            const produtoSelect =
+                row.querySelector('.produto-select') ||
+                row.querySelector('select[name$="-produto"]');
+            if (!produtoSelect || !produtoSelect.name) return null;
+
+            deleteInput = document.createElement('input');
+            deleteInput.type = 'hidden';
+            deleteInput.name = produtoSelect.name.replace(/-produto$/, '-DELETE');
+            row.prepend(deleteInput);
+            return deleteInput;
+        };
+
         const removerItem = (row) => {
             if (!row) return;
 
-            const deleteInput = row.querySelector('input[name$="-DELETE"]');
+            const deleteInput = garantirCampoDelete(row);
+            if (!deleteInput) return;
 
-            if (deleteInput) {
-                deleteInput.value = 'on';
-                deleteInput.checked = true;
-                row.style.display = 'none';
-            } else {
-                row.remove();
-            }
+            deleteInput.value = 'on';
+            deleteInput.checked = true;
+            row.style.display = 'none';
 
             atualizarTotal();
         };
