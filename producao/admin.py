@@ -1,6 +1,6 @@
 from django.contrib import admin
+from django.contrib.auth import get_permission_codename
 
-from core.auditoria import atribuir_criado_por
 from .models import Producao
 
 
@@ -23,7 +23,20 @@ class ProducaoAdmin(admin.ModelAdmin):
         "data_hora",
     )
 
-    def save_model(self, request, obj, form, change):
-        if not change:
-            atribuir_criado_por(obj, request.user)
-        super().save_model(request, obj, form, change)
+    def has_add_permission(self, request):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+    def has_view_permission(self, request, obj=None):
+        """Consulta segue view ou change. A gravação continua bloqueada."""
+        opts = self.opts
+        view_perm = f"{opts.app_label}.{get_permission_codename('view', opts)}"
+        change_perm = f"{opts.app_label}.{get_permission_codename('change', opts)}"
+        return request.user.has_perm(view_perm) or request.user.has_perm(
+            change_perm
+        )

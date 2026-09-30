@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Planos de manutenção | GELOSAR{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'financeiro/css/financeiro_list.css' %}">
+<link rel="stylesheet" href="{% static 'financeiro/css/veiculos.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="gs-page">
+    <header class="gs-page-header">
+        <div>
+            <ol class="gs-breadcrumb">
+                <li><a href="{% url 'financeiro:lista_veiculos' %}">Veículos</a></li>
+                <li aria-hidden="true">/</li>
+                <li><a href="{% url 'financeiro:detalhe_veiculo' veiculo.pk %}">{{ veiculo.placa_formatada }}</a></li>
+                <li aria-hidden="true">/</li>
+                <li>Planos</li>
+            </ol>
+            <h1 class="gs-page-header__title">Planos de {{ veiculo.marca }} {{ veiculo.modelo }}</h1>
+        </div>
+        <div class="gs-page-header__actions">
+            {% if perms.financeiro.add_planomanutencao %}
+            <a href="{% url 'financeiro:cadastrar_plano_veiculo' veiculo.pk %}" class="gs-btn gs-btn-primary">Novo plano</a>
+            {% endif %}
+        </div>
+    </header>
+    {% if situacoes %}
+    <div class="gs-table-wrap">
+        <table class="gs-table">
+            <thead>
+                <tr>
+                    <th>Plano</th>
+                    <th>Intervalo</th>
+                    <th>Próxima</th>
+                    <th>Situação</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in situacoes %}
+                <tr>
+                    <td>{{ item.plano.nome }}</td>
+                    <td>
+                        {% if item.plano.intervalo_km %}{{ item.plano.intervalo_km }} km{% endif %}
+                        {% if item.plano.intervalo_km and item.plano.intervalo_meses %} / {% endif %}
+                        {% if item.plano.intervalo_meses %}{{ item.plano.intervalo_meses }} meses{% endif %}
+                    </td>
+                    <td>
+                        {% if item.proxima_km %}{{ item.proxima_km }} km{% endif %}
+                        {% if item.proxima_data %} · {{ item.proxima_data|date:"d/m/Y" }}{% endif %}
+                    </td>
+                    <td><span class="gs-badge {% if item.situacao == 'atrasada' %}gs-badge--danger{% elif item.situacao == 'proxima' %}gs-badge--warning{% elif item.situacao == 'em_dia' %}gs-badge--ok{% else %}gs-badge--neutral{% endif %}">{{ item.rotulo }}</span></td>
+                    <td>
+                        {% if perms.financeiro.change_planomanutencao %}
+                        <a href="{% url 'financeiro:editar_plano_veiculo' veiculo.pk item.plano.pk %}" class="gs-btn gs-btn-outline">Editar</a>
+                        <form method="post" action="{% url 'financeiro:alternar_ativo_plano' veiculo.pk item.plano.pk %}" class="gs-inline-form">
+                            {% csrf_token %}
+                            <button type="submit" class="gs-btn gs-btn-outline">{% if item.plano.ativo %}Desativar{% else %}Ativar{% endif %}</button>
+                        </form>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="gs-empty">
+        <h2 class="gs-empty__title">Nenhum plano cadastrado</h2>
+        {% if perms.financeiro.add_planomanutencao %}
+        <a href="{% url 'financeiro:cadastrar_plano_veiculo' veiculo.pk %}" class="gs-btn gs-btn-primary">Novo plano</a>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

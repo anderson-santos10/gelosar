@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Contas a pagar | GELOSAR{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'financeiro/css/financeiro_list.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="gs-page" data-lista-dinamica>
+    <header class="gs-page-header">
+        <div>
+            <ol class="gs-breadcrumb">
+                <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                <li aria-hidden="true">/</li>
+                <li>Contas a pagar</li>
+            </ol>
+            <h1 class="gs-page-header__title">Contas a pagar</h1>
+            <p class="gs-page-header__desc">Acompanhe vencimentos, pagamentos e o comprometido do período.</p>
+        </div>
+        <div class="gs-page-header__actions">
+            {% if perms.financeiro.add_contapagar %}
+            <a href="{% url 'financeiro:cadastrar_conta_pagar' %}" class="gs-btn gs-btn-primary">
+                <i class="bi bi-plus-lg" aria-hidden="true"></i>
+                Nova conta
+            </a>
+            {% endif %}
+        </div>
+    </header>
+
+    <div class="gs-card gs-filter-card mb-3">
+        <form method="get" class="gs-form gs-filter-form" data-lista-filtros>
+            <div class="row g-2 align-items-end">
+                <div class="col-12 col-lg-4">
+                    <label class="gs-label" for="filtro-q">Buscar contas</label>
+                    <input class="form-control gs-input" type="search" id="filtro-q" name="q" value="{{ filtros.q }}" placeholder="Buscar contas..." autocomplete="off" data-lista-debounce>
+                </div>
+                <div class="col-6 col-md-4 col-lg-2">
+                    <label class="gs-label" for="filtro-status">Status</label>
+                    <select class="form-select gs-input" id="filtro-status" name="status">
+                        <option value="">Todos</option>
+                        <option value="pendente"{% if filtros.status == 'pendente' %} selected{% endif %}>Pendente</option>
+                        <option value="vencida"{% if filtros.status == 'vencida' %} selected{% endif %}>Vencida</option>
+                        <option value="pago"{% if filtros.status == 'pago' %} selected{% endif %}>Paga</option>
+                        <option value="cancelado"{% if filtros.status == 'cancelado' %} selected{% endif %}>Cancelada</option>
+                    </select>
+                </div>
+                <div class="col-6 col-md-4 col-lg-3">
+                    <label class="gs-label" for="filtro-categoria">Categoria</label>
+                    <select class="form-select gs-input" id="filtro-categoria" name="categoria">
+                        <option value="">Todas</option>
+                        {% for categoria in categorias_filtro %}
+                        <option value="{{ categoria.pk }}"{% if filtros.categoria == categoria.pk|stringformat:'s' %} selected{% endif %}>{{ categoria.nome }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-6 col-md-4 col-lg-3">
+                    <label class="gs-label" for="filtro-fornecedor">Fornecedor</label>
+                    <select class="form-select gs-input" id="filtro-fornecedor" name="fornecedor">
+                        <option value="">Todos</option>
+                        <option value="sem"{% if filtros.fornecedor == 'sem' %} selected{% endif %}>Sem fornecedor</option>
+                        {% for fornecedor in fornecedores_filtro %}
+                        <option value="{{ fornecedor.pk }}"{% if filtros.fornecedor == fornecedor.pk|stringformat:'s' %} selected{% endif %}>{{ fornecedor.nome }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-6 col-md-4 col-lg-3">
+                    <label class="gs-label" for="filtro-veiculo">Veículo</label>
+                    <select class="form-select gs-input" id="filtro-veiculo" name="veiculo">
+                        <option value="">Todos</option>
+                        <option value="sem"{% if filtros.veiculo == 'sem' %} selected{% endif %}>Sem veículo</option>
+                        {% for veiculo in veiculos_filtro %}
+                        <option value="{{ veiculo.pk }}"{% if filtros.veiculo == veiculo.pk|stringformat:'s' %} selected{% endif %}>{{ veiculo.marca }} {{ veiculo.modelo }} ({{ veiculo.placa_formatada }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-6 col-md-4 col-lg-3">
+                    <label class="gs-label" for="filtro-forma">Forma de pagamento</label>
+                    <select class="form-select gs-input" id="filtro-forma" name="forma_pagamento">
+                        <option value="">Todas</option>
+                        {% for codigo, rotulo in formas_pagamento %}
+                        <option value="{{ codigo }}"{% if filtros.forma_pagamento == codigo %} selected{% endif %}>{{ rotulo }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-6 col-lg-2">
+                    <label class="gs-label" for="filtro-comp-ini">Competência de</label>
+                    <input class="form-control gs-input" type="date" id="filtro-comp-ini" name="competencia_inicio" value="{{ filtros.competencia_inicio }}">
+                </div>
+                <div class="col-6 col-lg-2">
+                    <label class="gs-label" for="filtro-comp-fim">até</label>
+                    <input class="form-control gs-input" type="date" id="filtro-comp-fim" name="competencia_fim" value="{{ filtros.competencia_fim }}">
+                </div>
+                <div class="col-6 col-lg-2">
+                    <label class="gs-label" for="filtro-venc-ini">Vencimento de</label>
+                    <input class="form-control gs-input" type="date" id="filtro-venc-ini" name="vencimento_inicio" value="{{ filtros.vencimento_inicio }}">
+                </div>
+                <div class="col-6 col-lg-2">
+                    <label class="gs-label" for="filtro-venc-fim">até</label>
+                    <input class="form-control gs-input" type="date" id="filtro-venc-fim" name="vencimento_fim" value="{{ filtros.vencimento_fim }}">
+                </div>
+                <div class="col-6 col-md-4 col-lg-2">
+                    <button type="submit" class="gs-btn gs-btn-primary">Filtrar</button>
+                </div>
+                <div class="col-6 col-md-4 col-lg-2">
+                    <a href="{% url 'financeiro:lista_contas_pagar' %}" class="gs-btn gs-btn-outline"{% if not filtros_ativos %} hidden{% endif %} data-lista-limpar>Limpar filtros</a>
+                </div>
+                <div class="col-12 col-lg-4">
+                    <p class="gs-muted gs-filter-count" data-filtros-contador aria-live="polite">
+                        {% if filtros_ativos %}{{ filtros_ativos }} filtro{{ filtros_ativos|pluralize }} ativo{{ filtros_ativos|pluralize }}{% endif %}
+                    </p>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="gs-lista-feedback" data-lista-erro hidden>
+        <div class="gs-alert gs-alert--error" role="alert">
+            <div class="gs-alert__body">
+                <i class="bi bi-exclamation-octagon-fill" aria-hidden="true"></i>
+                <span>Não foi possível atualizar as contas. Tente novamente.</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="gs-lista-live" data-lista-resultados aria-live="polite">
+        <p class="gs-lista-live__status" data-lista-status hidden>Atualizando...</p>
+        {% include "financeiro/lista_contas_pagar_resultados.html" %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'financeiro/js/lista_filtros.js' %}"></script>
+{% endblock %}

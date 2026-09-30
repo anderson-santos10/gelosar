@@ -1,0 +1,143 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Contas recorrentes | GELOSAR{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'financeiro/css/financeiro_list.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="gs-page">
+    <header class="gs-page-header">
+        <div>
+            <ol class="gs-breadcrumb">
+                <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                <li aria-hidden="true">/</li>
+                <li>Contas recorrentes</li>
+            </ol>
+            <h1 class="gs-page-header__title">Contas recorrentes</h1>
+            <p class="gs-page-header__desc">Regras mensais que geram contas a pagar por competência, sem alterar lançamentos já criados.</p>
+        </div>
+        <div class="gs-page-header__actions">
+            {% if perms.financeiro.change_contarecorrente and perms.financeiro.add_contapagar %}
+            <a href="{% url 'financeiro:gerar_contas_recorrentes' %}" class="gs-btn gs-btn-outline">Gerar competência</a>
+            {% endif %}
+            {% if perms.financeiro.add_contarecorrente %}
+            <a href="{% url 'financeiro:cadastrar_conta_recorrente' %}" class="gs-btn gs-btn-primary">
+                <i class="bi bi-plus-lg" aria-hidden="true"></i>
+                Nova recorrência
+            </a>
+            {% endif %}
+        </div>
+    </header>
+
+    <div class="gs-card gs-filter-card mb-3">
+        <form method="get" class="gs-form gs-filter-form">
+            <div class="row g-2 align-items-end">
+                <div class="col-12 col-md-4">
+                    <label class="gs-label" for="filtro-q">Busca</label>
+                    <input class="form-control gs-input" type="search" id="filtro-q" name="q" value="{{ filtros.q }}" placeholder="Descrição">
+                </div>
+                <div class="col-12 col-md-3">
+                    <label class="gs-label" for="filtro-categoria">Categoria</label>
+                    <select class="form-select gs-input" id="filtro-categoria" name="categoria">
+                        <option value="">Todas</option>
+                        {% for categoria in categorias_filtro %}
+                        <option value="{{ categoria.pk }}"{% if filtros.categoria == categoria.pk|stringformat:'s' %} selected{% endif %}>{{ categoria.nome }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-12 col-md-3">
+                    <label class="gs-label" for="filtro-fornecedor">Fornecedor</label>
+                    <select class="form-select gs-input" id="filtro-fornecedor" name="fornecedor">
+                        <option value="">Todos</option>
+                        {% for fornecedor in fornecedores_filtro %}
+                        <option value="{{ fornecedor.pk }}"{% if filtros.fornecedor == fornecedor.pk|stringformat:'s' %} selected{% endif %}>{{ fornecedor.nome }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-12 col-md-2">
+                    <label class="gs-label" for="filtro-ativa">Situação</label>
+                    <select class="form-select gs-input" id="filtro-ativa" name="ativa">
+                        <option value="">Todas</option>
+                        <option value="1"{% if filtros.ativa == '1' %} selected{% endif %}>Ativa</option>
+                        <option value="0"{% if filtros.ativa == '0' %} selected{% endif %}>Inativa</option>
+                    </select>
+                </div>
+                <div class="col-12">
+                    <button type="submit" class="gs-btn gs-btn-primary">Filtrar</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    {% if recorrentes %}
+    <div class="gs-table-wrap">
+        <table class="gs-table">
+            <thead>
+                <tr>
+                    <th>Descrição</th>
+                    <th>Categoria</th>
+                    <th>Fornecedor</th>
+                    <th>Valor</th>
+                    <th>Periodicidade</th>
+                    <th>Dia</th>
+                    <th>Início</th>
+                    <th>Fim</th>
+                    <th>Status</th>
+                    <th>Contas geradas</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in recorrentes %}
+                <tr>
+                    <td>{{ item.descricao }}</td>
+                    <td>{{ item.categoria.nome }}</td>
+                    <td>{{ item.fornecedor.nome|default:"-" }}</td>
+                    <td>
+                        R$ {{ item.valor|floatformat:2 }}
+                        {% if item.valor_estimado %}
+                        <span class="gs-badge gs-badge--warning">Estimado</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ item.get_periodicidade_display }}</td>
+                    <td>{{ item.dia_vencimento }}</td>
+                    <td>{{ item.data_inicio|date:"d/m/Y" }}</td>
+                    <td>{{ item.data_fim|date:"d/m/Y"|default:"-" }}</td>
+                    <td>
+                        {% if item.ativa %}
+                        <span class="gs-badge gs-badge--ok">Ativa</span>
+                        {% else %}
+                        <span class="gs-badge gs-badge--neutral">Inativa</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ item.qtd_contas }}</td>
+                    <td>
+                        {% if perms.financeiro.change_contarecorrente %}
+                        <a href="{% url 'financeiro:editar_conta_recorrente' item.pk %}" class="gs-btn gs-btn-outline">Editar</a>
+                        <form method="post" action="{% url 'financeiro:alternar_ativo_conta_recorrente' item.pk %}" class="gs-inline-form">
+                            {% csrf_token %}
+                            <button type="submit" class="gs-btn gs-btn-outline">
+                                {% if item.ativa %}Desativar{% else %}Ativar{% endif %}
+                            </button>
+                        </form>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="gs-empty">
+        <h2 class="gs-empty__title">Nenhuma recorrência cadastrada</h2>
+        <p class="gs-empty__text">Cadastre aluguel, internet e outras obrigações que se repetem todo mês.</p>
+        {% if perms.financeiro.add_contarecorrente %}
+        <a href="{% url 'financeiro:cadastrar_conta_recorrente' %}" class="gs-btn gs-btn-primary">Nova recorrência</a>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

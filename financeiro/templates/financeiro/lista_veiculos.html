@@ -1,0 +1,142 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Veículos | GELOSAR{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'financeiro/css/financeiro_list.css' %}">
+<link rel="stylesheet" href="{% static 'financeiro/css/veiculos.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="gs-page">
+    <header class="gs-page-header">
+        <div>
+            <ol class="gs-breadcrumb">
+                <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                <li aria-hidden="true">/</li>
+                <li>Veículos</li>
+            </ol>
+            <h1 class="gs-page-header__title">Veículos</h1>
+            <p class="gs-page-header__desc">Cadastro, manutenção preventiva e obrigações documentais da frota.</p>
+        </div>
+        <div class="gs-page-header__actions">
+            {% if perms.financeiro.view_obrigacaoveiculo %}
+            <a href="{% url 'financeiro:lista_obrigacoes' %}" class="gs-btn gs-btn-outline">Obrigações</a>
+            {% endif %}
+            {% if perms.financeiro.add_veiculo %}
+            <a href="{% url 'financeiro:cadastrar_veiculo' %}" class="gs-btn gs-btn-primary">
+                <i class="bi bi-plus-lg" aria-hidden="true"></i>
+                Cadastrar veículo
+            </a>
+            {% endif %}
+        </div>
+    </header>
+
+    <div class="gs-card gs-filter-card mb-3">
+        <form method="get" class="gs-form gs-filter-form">
+            <div class="row g-2 align-items-end">
+                <div class="col-12 col-md-4 col-lg-3">
+                    <label class="gs-label" for="filtro-q">Busca</label>
+                    <input class="form-control gs-input" type="search" id="filtro-q" name="q" value="{{ filtros.q }}" placeholder="Marca, modelo ou placa">
+                </div>
+                <div class="col-12 col-md-4 col-lg-2">
+                    <label class="gs-label" for="filtro-marca">Marca</label>
+                    <input class="form-control gs-input" type="text" id="filtro-marca" name="marca" value="{{ filtros.marca }}">
+                </div>
+                <div class="col-12 col-md-4 col-lg-2">
+                    <label class="gs-label" for="filtro-modelo">Modelo</label>
+                    <input class="form-control gs-input" type="text" id="filtro-modelo" name="modelo" value="{{ filtros.modelo }}">
+                </div>
+                <div class="col-12 col-md-4 col-lg-2">
+                    <label class="gs-label" for="filtro-placa">Placa</label>
+                    <input class="form-control gs-input" type="text" id="filtro-placa" name="placa" value="{{ filtros.placa }}">
+                </div>
+                <div class="col-12 col-md-4 col-lg-2">
+                    <label class="gs-label" for="filtro-ativo">Status</label>
+                    <select class="form-select gs-input" id="filtro-ativo" name="ativo">
+                        <option value="">Todos</option>
+                        <option value="1"{% if filtros.ativo == '1' %} selected{% endif %}>Ativo</option>
+                        <option value="0"{% if filtros.ativo == '0' %} selected{% endif %}>Inativo</option>
+                    </select>
+                </div>
+                <div class="col-12 col-md-4 col-lg-1">
+                    <button type="submit" class="gs-btn gs-btn-outline">Filtrar</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    {% if linhas %}
+    <div class="gs-table-wrap">
+        <table class="gs-table">
+            <thead>
+                <tr>
+                    <th>Veículo</th>
+                    <th>Placa</th>
+                    <th>Ano</th>
+                    <th>Km atual</th>
+                    <th>Status</th>
+                    <th>Manutenção</th>
+                    <th>Próxima obrigação</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for linha in linhas %}
+                <tr>
+                    <td>{{ linha.veiculo.marca }} {{ linha.veiculo.modelo }}</td>
+                    <td>{{ linha.veiculo.placa_formatada }}</td>
+                    <td>{{ linha.veiculo.ano_modelo }}</td>
+                    <td>{{ linha.veiculo.km_atual }}</td>
+                    <td>
+                        {% if linha.veiculo.ativo %}
+                        <span class="gs-badge gs-badge--ok">Ativo</span>
+                        {% else %}
+                        <span class="gs-badge gs-badge--neutral">Inativo</span>
+                        {% endif %}
+                    </td>
+                    <td><span class="gs-badge {{ linha.manutencao_badge }}">{{ linha.manutencao_rotulo }}</span></td>
+                    <td>
+                        {% if linha.proxima_obrigacao %}
+                        {{ linha.proxima_obrigacao.get_tipo_display }} {{ linha.proxima_obrigacao.exercicio }}
+                        {% if linha.proxima_obrigacao.data_vencimento %}
+                        <span class="gs-muted">{{ linha.proxima_obrigacao.data_vencimento|date:"d/m/Y" }}</span>
+                        {% endif %}
+                        {% else %}
+                        —
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{% url 'financeiro:detalhe_veiculo' linha.veiculo.pk %}" class="gs-btn gs-btn-outline">Abrir</a>
+                        {% if perms.financeiro.change_veiculo %}
+                        <a href="{% url 'financeiro:editar_veiculo' linha.veiculo.pk %}" class="gs-btn gs-btn-outline">Editar</a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% if page_obj.has_other_pages %}
+    <nav class="gs-pagination" aria-label="Paginação de veículos">
+        {% if page_obj.has_previous %}
+        <a class="gs-btn gs-btn-outline" href="?page={{ page_obj.previous_page_number }}{% if filtro_querystring %}&amp;{{ filtro_querystring }}{% endif %}">Anterior</a>
+        {% endif %}
+        <span class="gs-pagination__info">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+        {% if page_obj.has_next %}
+        <a class="gs-btn gs-btn-outline" href="?page={{ page_obj.next_page_number }}{% if filtro_querystring %}&amp;{{ filtro_querystring }}{% endif %}">Próxima</a>
+        {% endif %}
+    </nav>
+    {% endif %}
+    {% else %}
+    <div class="gs-empty">
+        <h2 class="gs-empty__title">Nenhum veículo encontrado</h2>
+        <p class="gs-empty__text">Cadastre a frota para controlar manutenção, IPVA e licenciamento.</p>
+        {% if perms.financeiro.add_veiculo %}
+        <a href="{% url 'financeiro:cadastrar_veiculo' %}" class="gs-btn gs-btn-primary">Cadastrar veículo</a>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

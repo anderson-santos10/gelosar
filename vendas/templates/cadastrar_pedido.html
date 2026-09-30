@@ -1,0 +1,181 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Novo pedido | GELOSAR{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'venda/css/pedido.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="gs-page pedido-flow">
+
+    <header class="gs-page-header">
+        <div>
+            <ol class="gs-breadcrumb">
+                <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                <li aria-hidden="true">/</li>
+                {% if perms.vendas.view_pedido %}
+                <li><a href="{% url 'vendas:pedidos_abertos' %}">Pedidos</a></li>
+                {% else %}
+                <li>Pedidos</li>
+                {% endif %}
+                <li aria-hidden="true">/</li>
+                <li>Novo pedido</li>
+            </ol>
+            <h1 class="gs-page-header__title">Novo pedido</h1>
+            <p class="gs-page-header__desc">O pedido fica em aberto até a entrega. A venda só nasce depois.</p>
+        </div>
+    </header>
+
+    <form method="post" id="pedido-form" novalidate class="gs-form">
+        {% csrf_token %}
+
+        {% if pedido_form.non_field_errors %}
+        <div class="gs-alert gs-alert--error" role="alert">
+            <div class="gs-alert__body">
+                <i class="bi bi-exclamation-octagon-fill" aria-hidden="true"></i>
+                <span>{{ pedido_form.non_field_errors|striptags }}</span>
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="gs-card mb-4">
+            <p class="gs-card__title">Cliente</p>
+            <div class="pedido-campo">
+                <label class="gs-label" for="busca-cliente">Buscar cliente</label>
+                <input id="busca-cliente" type="search" class="form-control gs-input" autocomplete="off" placeholder="Digite o nome para filtrar a lista">
+            </div>
+            <div class="pedido-campo">
+                <label class="gs-label" for="{{ pedido_form.cliente.id_for_label }}">Cliente *</label>
+                {{ pedido_form.cliente }}
+                {% for error in pedido_form.cliente.errors %}
+                <p class="gs-field-error">{{ error }}</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="gs-card mb-4">
+            <p class="gs-card__title">Endereço desta entrega</p>
+            <p id="endereco-ajuda" class="gs-card__hint">O endereço começa com o cadastro do cliente e pode ser ajustado. Essa alteração vale só para este pedido.</p>
+            <div class="pedido-campo">
+                <label class="gs-label" for="{{ pedido_form.endereco.id_for_label }}">Endereço *</label>
+                {{ pedido_form.endereco }}
+                {% for error in pedido_form.endereco.errors %}
+                <p class="gs-field-error">{{ error }}</p>
+                {% endfor %}
+            </div>
+            <div class="pedido-campo">
+                <label class="gs-label" for="{{ pedido_form.cidade.id_for_label }}">Cidade</label>
+                {{ pedido_form.cidade }}
+                {% for error in pedido_form.cidade.errors %}
+                <p class="gs-field-error">{{ error }}</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="gs-card mb-4">
+            <p class="gs-card__title">Sacos</p>
+            <p class="gs-card__hint">Informe cada produto separado. Gelo de 3 kg e gelo de 5 kg não se somam. A linha que não for usada pode ficar em branco.</p>
+
+            {% if formset.non_form_errors %}
+            <div class="gs-alert gs-alert--error" role="alert">
+                <div class="gs-alert__body">
+                    <i class="bi bi-exclamation-octagon-fill" aria-hidden="true"></i>
+                    <span>{% for error in formset.non_form_errors %}{{ error }} {% endfor %}</span>
+                </div>
+            </div>
+            {% endif %}
+
+            {{ formset.management_form }}
+
+            <div id="itens-container">
+                {% for form in formset %}
+                <div class="pedido-item item-row">
+                    {% for hidden in form.hidden_fields %}{{ hidden }}{% endfor %}
+                    <span hidden>{{ form.DELETE }}</span>
+                    <div class="pedido-campo">
+                        <label class="gs-label" for="{{ form.produto.id_for_label }}">Produto</label>
+                        {{ form.produto }}
+                        {% for error in form.produto.errors %}
+                        <p class="gs-field-error">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                    <div class="pedido-campo">
+                        <label class="gs-label" for="{{ form.quantidade.id_for_label }}">Quantidade de sacos</label>
+                        {{ form.quantidade }}
+                        {% for error in form.quantidade.errors %}
+                        <p class="gs-field-error">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                    <p class="pedido-valor-linha">
+                        <span class="gs-card__hint">Valor unitário</span>
+                        <strong class="preco-unitario">R$ 0,00</strong>
+                    </p>
+                    <p class="pedido-valor-linha">
+                        <span class="gs-card__hint">Subtotal</span>
+                        <strong class="subtotal">R$ 0,00</strong>
+                    </p>
+                    <button type="button" class="gs-btn gs-btn-outline btn-remover">Remover produto</button>
+                </div>
+                {% endfor %}
+            </div>
+
+            <button type="button" class="gs-btn gs-btn-outline" id="btn-adicionar-produto">Adicionar outro produto</button>
+
+            <div class="pedido-total" aria-live="polite">
+                <span>Valor do pedido</span>
+                <strong id="total-pedido">R$ 0,00</strong>
+            </div>
+        </div>
+
+        <div class="gs-card mb-4">
+            <p class="gs-card__title">Observações</p>
+            <div class="pedido-campo">
+                <label class="gs-label" for="{{ pedido_form.observacoes.id_for_label }}">Observações</label>
+                {{ pedido_form.observacoes }}
+                {% for error in pedido_form.observacoes.errors %}
+                <p class="gs-field-error">{{ error }}</p>
+                {% endfor %}
+            </div>
+            <div class="gs-form-actions">
+                {% if perms.vendas.view_pedido %}
+                <a href="{% url 'vendas:pedidos_abertos' %}" class="gs-btn gs-btn-outline">Voltar à lista</a>
+                {% endif %}
+                <button type="submit" class="gs-btn gs-btn-primary">Salvar pedido</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<template id="empty-form-template">
+<div class="pedido-item item-row">
+    {% for hidden in formset.empty_form.hidden_fields %}{{ hidden }}{% endfor %}
+    <span hidden>{{ formset.empty_form.DELETE }}</span>
+    <div class="pedido-campo">
+        <label class="gs-label" for="{{ formset.empty_form.produto.id_for_label }}">Produto</label>
+        {{ formset.empty_form.produto }}
+    </div>
+    <div class="pedido-campo">
+        <label class="gs-label" for="{{ formset.empty_form.quantidade.id_for_label }}">Quantidade de sacos</label>
+        {{ formset.empty_form.quantidade }}
+    </div>
+    <p class="pedido-valor-linha">
+        <span class="gs-card__hint">Valor unitário</span>
+        <strong class="preco-unitario">R$ 0,00</strong>
+    </p>
+    <p class="pedido-valor-linha">
+        <span class="gs-card__hint">Subtotal</span>
+        <strong class="subtotal">R$ 0,00</strong>
+    </p>
+    <button type="button" class="gs-btn gs-btn-outline btn-remover">Remover produto</button>
+</div>
+</template>
+
+{{ clientes_enderecos|json_script:"clientes-enderecos-data" }}
+{{ produtos_precos_json|json_script:"produtos-precos-data" }}
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'venda/js/pedido_form.js' %}"></script>
+{% endblock %}

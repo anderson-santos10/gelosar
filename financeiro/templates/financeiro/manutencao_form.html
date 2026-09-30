@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Manutenção | GELOSAR{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'financeiro/css/financeiro_form.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="gs-page financeiro-form-page">
+    <header class="gs-page-header">
+        <div>
+            <ol class="gs-breadcrumb">
+                <li><a href="{% url 'financeiro:lista_manutencoes' veiculo.pk %}">Manutenções</a></li>
+                <li aria-hidden="true">/</li>
+                <li>{% if form.instance.pk %}Editar{% else %}Registrar{% endif %}</li>
+            </ol>
+            <h1 class="gs-page-header__title">{% if form.instance.pk %}Editar manutenção{% else %}Registrar manutenção{% endif %}</h1>
+        </div>
+    </header>
+    <div class="row justify-content-center">
+        <div class="col-12 col-xl-10">
+            <div class="gs-card">
+                <form method="post" novalidate class="gs-form" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {% if form.non_field_errors %}
+                    <div class="gs-alert gs-alert--error" role="alert">
+                        <div class="gs-alert__body"><span>{{ form.non_field_errors|striptags }}</span></div>
+                    </div>
+                    {% endif %}
+                    <div class="row g-2">
+                        <div class="col-12 col-md-6">
+                            <label class="gs-label" for="{{ form.plano.id_for_label }}">Plano</label>
+                            {{ form.plano }}
+                            {% if form.plano.errors %}<p class="gs-field-error">{{ form.plano.errors|striptags }}</p>{% endif %}
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label class="gs-label" for="{{ form.fornecedor.id_for_label }}">Fornecedor</label>
+                            {{ form.fornecedor }}
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <label class="gs-label" for="{{ form.data_realizacao.id_for_label }}">Data *</label>
+                            {{ form.data_realizacao }}
+                            {% if form.data_realizacao.errors %}<p class="gs-field-error">{{ form.data_realizacao.errors|striptags }}</p>{% endif %}
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <label class="gs-label" for="{{ form.km_realizacao.id_for_label }}">Km *</label>
+                            {{ form.km_realizacao }}
+                            {% if form.km_realizacao.errors %}<p class="gs-field-error">{{ form.km_realizacao.errors|striptags }}</p>{% endif %}
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <label class="gs-label" for="{{ form.anexo.id_for_label }}">Anexo</label>
+                            {{ form.anexo }}
+                            {% if form.anexo.errors %}<p class="gs-field-error">{{ form.anexo.errors|striptags }}</p>{% endif %}
+                        </div>
+                        <div class="col-12">
+                            <label class="gs-label" for="{{ form.descricao.id_for_label }}">Descrição *</label>
+                            {{ form.descricao }}
+                            {% if form.descricao.errors %}<p class="gs-field-error">{{ form.descricao.errors|striptags }}</p>{% endif %}
+                        </div>
+                        <div class="col-12">
+                            <label class="gs-label" for="{{ form.observacoes.id_for_label }}">Observações</label>
+                            {{ form.observacoes }}
+                        </div>
+                    </div>
+                    <div class="gs-form-actions">
+                        <a href="{% url 'financeiro:lista_manutencoes' veiculo.pk %}" class="gs-btn gs-btn-outline">Cancelar</a>
+                        <button type="submit" class="gs-btn gs-btn-primary">Salvar manutenção</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

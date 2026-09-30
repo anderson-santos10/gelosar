@@ -62,4 +62,9 @@ urlpatterns = [
         include('insumos.urls')
     ),
 
+    path(
+        'financeiro/',
+        include('financeiro.urls')
+    ),
+
 ]

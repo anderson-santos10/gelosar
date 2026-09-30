@@ -15,7 +15,12 @@ from clientes.models import Cliente
 from equipamentos.admin import ContratoComodatoAdmin
 from equipamentos.forms import ContratoComodatoForm, DocumentoEquipamentoForm
 from equipamentos.models import ContratoComodato, DocumentoEquipamento, Equipamento
-from equipamentos.validators import MENSAGEM_CONTEUDO_INVALIDO, MENSAGEM_TIPO_NAO_PERMITIDO
+from equipamentos.validators import (
+    MENSAGEM_CONTEUDO_INVALIDO,
+    MENSAGEM_TAMANHO_EXCEDIDO,
+    MENSAGEM_TIPO_NAO_PERMITIDO,
+    TAMANHO_MAXIMO_BYTES,
+)
 
 PDF_MINIMO = b"%PDF-1.4\n1 0 obj\n<<>>\nendobj\ntrailer\n%%EOF\n"
 PNG_MINIMO = (
@@ -81,6 +86,27 @@ class DocumentoUploadValidacaoTests(TestCase):
         self.assertFalse(form.is_valid())
         self.assertIn(MENSAGEM_CONTEUDO_INVALIDO, form.errors["arquivo"][0])
         self.assertEqual(DocumentoEquipamento.objects.count(), 0)
+
+    def test_arquivo_acima_do_limite(self):
+        from io import BytesIO
+
+        from django.core.files.uploadedfile import InMemoryUploadedFile
+
+        arquivo = InMemoryUploadedFile(
+            BytesIO(PDF_MINIMO),
+            "arquivo",
+            "nota.pdf",
+            "application/pdf",
+            TAMANHO_MAXIMO_BYTES + 1,
+            None,
+        )
+        form = DocumentoEquipamentoForm(
+            data={"nome": "Manual"},
+            files={"arquivo": arquivo},
+        )
+        form.instance.equipamento = self.equipamento
+        self.assertFalse(form.is_valid())
+        self.assertIn(MENSAGEM_TAMANHO_EXCEDIDO, form.errors["arquivo"][0])
 
 
 class DocumentoDownloadSegurancaTests(TestCase):

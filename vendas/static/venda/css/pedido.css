@@ -1,0 +1,130 @@
+body.gs-app .pedido-flow .form-control,
+body.gs-app .pedido-flow .gs-input,
+body.gs-app .pedido-flow select,
+body.gs-app .pedido-flow textarea.form-control,
+body.gs-app .pedido-flow .gs-textarea {
+    min-height: 48px;
+    font-size: 1rem;
+}
+
+body.gs-app .pedido-flow textarea.form-control,
+body.gs-app .pedido-flow .gs-textarea {
+    min-height: 96px;
+}
+
+body.gs-app .pedido-flow .gs-btn {
+    min-height: 48px;
+    font-size: 1rem;
+}
+
+.pedido-campo {
+    margin-top: 1rem;
+}
+
+.pedido-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin: 1rem 0;
+    padding: 1rem;
+    border: 1px solid var(--gs-border);
+    border-radius: var(--gs-radius-md);
+    background: var(--gs-ice);
+}
+
+.pedido-item .pedido-campo,
+.pedido-item .pedido-valor-linha {
+    margin: 0;
+}
+
+.pedido-valor-linha {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.pedido-item .btn-remover,
+.pedido-flow #btn-adicionar-produto,
+.pedido-card__acao .gs-btn {
+    width: 100%;
+}
+
+.pedido-total {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1rem;
+    padding: 1rem;
+    border-radius: var(--gs-radius-md);
+    background: var(--gs-ice);
+    color: var(--gs-navy);
+    font-size: 1.15rem;
+}
+
+.pedido-card {
+    margin-bottom: 1rem;
+}
+
+.pedido-card__cliente {
+    margin: 0 0 0.75rem;
+    color: var(--gs-navy);
+    font-size: 1.35rem;
+    line-height: 1.3;
+}
+
+.pedido-card__cliente a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.pedido-itens {
+    list-style: none;
+    margin: 0 0 1rem;
+    padding: 0;
+}
+
+.pedido-itens li {
+    padding: 0.75rem 0;
+    border-top: 1px solid var(--gs-border);
+    font-size: 1.05rem;
+    font-weight: var(--gs-font-weight-semibold);
+}
+
+.pedido-endereco,
+.pedido-cidade,
+.pedido-observacao,
+.pedido-valor {
+    margin: 0 0 1rem;
+    font-size: 1.05rem;
+    line-height: 1.45;
+    white-space: pre-wrap;
+}
+
+.pedido-valor {
+    font-weight: var(--gs-font-weight-bold);
+    color: var(--gs-navy);
+}
+
+.pedido-paginacao {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+}
+
+.pedido-paginacao__info {
+    margin: 0;
+}
+
+@media (max-width: 768px) {
+    body.gs-app .pedido-flow .gs-form-actions {
+        flex-direction: column-reverse;
+    }
+
+    body.gs-app .pedido-flow .gs-form-actions .gs-btn,
+    body.gs-app .pedido-flow .gs-page-header__actions .gs-btn,
+    body.gs-app .pedido-flow .pedido-paginacao .gs-btn {
+        width: 100%;
+    }
+}

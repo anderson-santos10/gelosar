@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Pedidos em aberto | GELOSAR{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'venda/css/pedido.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="gs-page pedido-flow">
+    <header class="gs-page-header">
+        <div>
+            <ol class="gs-breadcrumb">
+                <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                <li aria-hidden="true">/</li>
+                <li>Pedidos em aberto</li>
+            </ol>
+            <h1 class="gs-page-header__title">Pedidos em aberto</h1>
+            <p class="gs-page-header__desc">Pedidos que ainda precisam ser entregues</p>
+        </div>
+        {% if perms.vendas.add_venda %}
+        <div class="gs-page-header__actions">
+            <a href="{% url 'vendas:novo_pedido' %}" class="gs-btn gs-btn-primary">
+                <i class="bi bi-plus-lg" aria-hidden="true"></i>
+                Novo pedido
+            </a>
+        </div>
+        {% endif %}
+    </header>
+
+    {% if pedidos %}
+        {% for pedido in pedidos %}
+        <article class="gs-card pedido-card">
+            <p class="gs-card__hint">Pedido #{{ pedido.pk }}</p>
+            <p><span class="gs-badge gs-badge--warning">Aberto</span></p>
+            <h2 class="pedido-card__cliente">
+                <a href="{% url 'vendas:detalhe_pedido' pedido.pk %}">{{ pedido.cliente.nome }}</a>
+            </h2>
+            <p class="gs-label">Endereço</p>
+            <p class="pedido-endereco">{{ pedido.endereco }}</p>
+            {% if pedido.cidade %}
+            <p class="pedido-cidade">{{ pedido.cidade }}</p>
+            {% endif %}
+
+            <p class="gs-label">Pedido</p>
+            <ul class="pedido-itens">
+                {% for item in pedido.itens.all %}
+                <li>{{ item.quantidade }} × {{ item.produto.nome }}</li>
+                {% endfor %}
+            </ul>
+
+            <p class="pedido-valor">Valor: R$ {{ pedido.total|floatformat:2 }}</p>
+
+            <p class="gs-label">Observação</p>
+            {% if pedido.observacoes %}
+            <p class="pedido-observacao">{{ pedido.observacoes }}</p>
+            {% else %}
+            <p class="gs-card__hint">Sem observações.</p>
+            {% endif %}
+
+            <p class="gs-card__hint">
+                Pedido criado: {{ pedido.criado_em|date:"d/m/Y H:i" }}
+                {% if pedido.criado_por %}
+                por {{ pedido.criado_por.get_full_name|default:pedido.criado_por.username }}
+                {% endif %}
+            </p>
+
+            {% if perms.vendas.entregar_pedido %}
+            <form method="post" action="{% url 'vendas:entregar_pedido' pedido.pk %}" class="pedido-card__acao">
+                {% csrf_token %}
+                <button type="submit" class="gs-btn gs-btn-success" aria-label="Marcar pedido {{ pedido.pk }} como entregue">
+                    Pedido entregue
+                </button>
+            </form>
+            {% endif %}
+        </article>
+        {% endfor %}
+
+        {% if page_obj.has_other_pages %}
+        <nav class="pedido-paginacao" aria-label="Paginação de pedidos em aberto">
+            {% if page_obj.has_previous %}
+            <a class="gs-btn gs-btn-outline" href="?page={{ page_obj.previous_page_number }}">Anterior</a>
+            {% endif %}
+            <p class="pedido-paginacao__info">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</p>
+            {% if page_obj.has_next %}
+            <a class="gs-btn gs-btn-outline" href="?page={{ page_obj.next_page_number }}">Próxima</a>
+            {% endif %}
+        </nav>
+        {% endif %}
+    {% else %}
+    <div class="gs-empty">
+        <h2 class="gs-empty__title">Nenhum pedido em aberto</h2>
+        <p class="gs-empty__text">Quando um pedido é entregue, ele sai desta lista e vira uma venda.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

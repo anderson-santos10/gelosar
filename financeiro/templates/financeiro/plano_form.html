@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Plano de manutenção | GELOSAR{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'financeiro/css/financeiro_form.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="gs-page financeiro-form-page">
+    <header class="gs-page-header">
+        <div>
+            <ol class="gs-breadcrumb">
+                <li><a href="{% url 'financeiro:detalhe_veiculo' veiculo.pk %}">{{ veiculo.placa_formatada }}</a></li>
+                <li aria-hidden="true">/</li>
+                <li><a href="{% url 'financeiro:lista_planos_veiculo' veiculo.pk %}">Planos</a></li>
+                <li aria-hidden="true">/</li>
+                <li>{% if form.instance.pk %}Editar plano{% else %}Novo plano{% endif %}</li>
+            </ol>
+            <h1 class="gs-page-header__title">{% if form.instance.pk %}Editar plano{% else %}Novo plano de manutenção{% endif %}</h1>
+            <p class="gs-page-header__desc">Use km, meses ou ambos. O sistema considera o que ocorrer primeiro.</p>
+        </div>
+    </header>
+    <div class="row justify-content-center">
+        <div class="col-12 col-xl-10">
+            <div class="gs-card">
+                <form method="post" novalidate class="gs-form">
+                    {% csrf_token %}
+                    {% if form.non_field_errors %}
+                    <div class="gs-alert gs-alert--error" role="alert">
+                        <div class="gs-alert__body"><span>{{ form.non_field_errors|striptags }}</span></div>
+                    </div>
+                    {% endif %}
+                    <div class="row g-2">
+                        <div class="col-12">
+                            <label class="gs-label" for="{{ form.nome.id_for_label }}">Nome *</label>
+                            {{ form.nome }}
+                            {% if form.nome.errors %}<p class="gs-field-error">{{ form.nome.errors|striptags }}</p>{% endif %}
+                        </div>
+                        <div class="col-12">
+                            <label class="gs-label" for="{{ form.descricao.id_for_label }}">Descrição</label>
+                            {{ form.descricao }}
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label class="gs-label" for="{{ form.intervalo_km.id_for_label }}">Intervalo (km)</label>
+                            {{ form.intervalo_km }}
+                            {% if form.intervalo_km.help_text %}<p class="gs-field-hint">{{ form.intervalo_km.help_text }}</p>{% endif %}
+                            {% if form.intervalo_km.errors %}<p class="gs-field-error">{{ form.intervalo_km.errors|striptags }}</p>{% endif %}
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label class="gs-label" for="{{ form.intervalo_meses.id_for_label }}">Intervalo (meses)</label>
+                            {{ form.intervalo_meses }}
+                            {% if form.intervalo_meses.errors %}<p class="gs-field-error">{{ form.intervalo_meses.errors|striptags }}</p>{% endif %}
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label class="gs-label" for="{{ form.antecedencia_alerta_km.id_for_label }}">Alerta (km)</label>
+                            {{ form.antecedencia_alerta_km }}
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label class="gs-label" for="{{ form.antecedencia_alerta_dias.id_for_label }}">Alerta (dias)</label>
+                            {{ form.antecedencia_alerta_dias }}
+                        </div>
+                        <div class="col-12">
+                            <div class="gs-check-wrapper">
+                                <label class="gs-check" for="{{ form.ativo.id_for_label }}">
+                                    {{ form.ativo }}
+                                    <span>Plano ativo</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <label class="gs-label" for="{{ form.observacoes.id_for_label }}">Observações</label>
+                            {{ form.observacoes }}
+                        </div>
+                    </div>
+                    <div class="gs-form-actions">
+                        <a href="{% url 'financeiro:lista_planos_veiculo' veiculo.pk %}" class="gs-btn gs-btn-outline">Cancelar</a>
+                        <button type="submit" class="gs-btn gs-btn-primary">Salvar plano</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

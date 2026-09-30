@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Gerar contas recorrentes | GELOSAR{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'financeiro/css/financeiro_form.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="gs-page financeiro-form-page">
+    <header class="gs-page-header">
+        <div>
+            <ol class="gs-breadcrumb">
+                <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                <li aria-hidden="true">/</li>
+                <li><a href="{% url 'financeiro:lista_contas_recorrentes' %}">Contas recorrentes</a></li>
+                <li aria-hidden="true">/</li>
+                <li>Gerar competência</li>
+            </ol>
+            <h1 class="gs-page-header__title">Gerar contas recorrentes</h1>
+            <p class="gs-page-header__desc">As contas serão geradas apenas para recorrências ativas dentro do período de vigência. Contas já geradas para a competência selecionada não serão duplicadas.</p>
+        </div>
+    </header>
+
+    <div class="row justify-content-center">
+        <div class="col-12 col-lg-7">
+            <div class="gs-card">
+                <form method="post" novalidate class="gs-form">
+                    {% csrf_token %}
+                    {% if form.non_field_errors %}
+                    <div class="gs-alert gs-alert--error" role="alert">
+                        <div class="gs-alert__body">
+                            <span>{{ form.non_field_errors|striptags }}</span>
+                        </div>
+                    </div>
+                    {% endif %}
+                    <div class="row g-2">
+                        <div class="col-12 col-md-6">
+                            <label class="gs-label" for="{{ form.mes.id_for_label }}">Mês</label>
+                            {{ form.mes }}
+                            {% if form.mes.errors %}<p class="gs-field-error">{{ form.mes.errors|striptags }}</p>{% endif %}
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label class="gs-label" for="{{ form.ano.id_for_label }}">Ano</label>
+                            {{ form.ano }}
+                            {% if form.ano.errors %}<p class="gs-field-error">{{ form.ano.errors|striptags }}</p>{% endif %}
+                        </div>
+                    </div>
+                    <div class="gs-form-actions">
+                        <a href="{% url 'financeiro:lista_contas_recorrentes' %}" class="gs-btn gs-btn-outline">Voltar</a>
+                        <button type="submit" class="gs-btn gs-btn-primary">Gerar competência</button>
+                    </div>
+                </form>
+            </div>
+
+            {% if resumo %}
+            <div class="gs-card mt-3">
+                <p class="gs-card__title">Resumo da competência {{ resumo.competencia|date:"m/Y" }}</p>
+                <p class="gs-card__hint mb-0">
+                    {{ resumo.criadas }} contas criadas<br>
+                    {{ resumo.existentes }} contas já existentes<br>
+                    {{ resumo.inativas }} recorrências ignoradas por estarem inativas<br>
+                    {{ resumo.fora_vigencia }} recorrências fora do período de vigência<br>
+                    {{ resumo.erros|length }} recorrências com erro
+                </p>
+                {% if resumo.erros %}
+                <ul class="gs-field-error mt-2 mb-0">
+                    {% for erro in resumo.erros %}
+                    <li>{{ erro.descricao }}: {{ erro.motivo }}</li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

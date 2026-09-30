@@ -1,0 +1,84 @@
+.gs-table td .gs-inline-form {
+    display: inline-block;
+    margin: 0.15rem 0.15rem 0.15rem 0;
+}
+
+.gs-table td .gs-btn {
+    margin: 0.15rem 0.15rem 0.15rem 0;
+}
+
+@media (max-width: 768px) {
+    .gs-table td .gs-inline-form,
+    .gs-table td .gs-btn {
+        display: block;
+        width: 100%;
+        margin-left: 0;
+    }
+
+    .gs-table td .gs-inline-form .gs-btn {
+        width: 100%;
+    }
+}
+
+.gs-filter-card {
+    padding: 1rem 1.15rem;
+}
+
+.gs-filter-form .gs-btn {
+    width: 100%;
+}
+
+.gs-pagination {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.65rem;
+    margin-top: 1rem;
+}
+
+.gs-pagination__info {
+    color: var(--gs-text-muted);
+    font-size: var(--gs-font-size-sm);
+}
+
+.gs-muted {
+    color: var(--gs-text-muted);
+    font-size: var(--gs-font-size-sm);
+}
+
+.gs-table td .gs-muted {
+    display: inline-block;
+    margin: 0.15rem 0;
+}
+
+.gs-table-wrap {
+    overflow-x: auto;
+}
+
+.gs-filter-count {
+    margin: 0.35rem 0 0;
+    min-height: 1.25rem;
+}
+
+.gs-lista-feedback {
+    margin-bottom: 0.75rem;
+}
+
+.gs-lista-live {
+    position: relative;
+}
+
+.gs-lista-live.is-loading {
+    opacity: 0.7;
+}
+
+.gs-lista-live__status {
+    margin: 0 0 0.75rem;
+    color: var(--gs-text-muted);
+    font-size: var(--gs-font-size-sm);
+}
+
+.gs-indicadores .gs-card {
+    padding: 0.85rem 1rem;
+}

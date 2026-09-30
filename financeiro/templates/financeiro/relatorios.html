@@ -1,0 +1,583 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Relatórios financeiros | GELOSAR{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'financeiro/css/financeiro_list.css' %}">
+<link rel="stylesheet" href="{% static 'financeiro/css/dashboard.css' %}">
+<link rel="stylesheet" href="{% static 'financeiro/css/relatorios.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="gs-page gs-fin-dashboard gs-fin-relatorios">
+    <header class="gs-page-header">
+        <div>
+            <ol class="gs-breadcrumb">
+                <li><a href="{% url 'financeiro:dashboard' %}">Financeiro</a></li>
+                <li aria-hidden="true">/</li>
+                <li>Relatórios</li>
+            </ol>
+            <h1 class="gs-page-header__title">Relatórios financeiros</h1>
+            <p class="gs-page-header__desc">Análise das despesas realizadas e dos compromissos em aberto</p>
+        </div>
+    </header>
+
+    <div class="gs-card gs-filter-card mb-3">
+        <form method="get" class="gs-form gs-filter-form" data-periodo-form>
+            <div class="row g-2 align-items-end">
+                <div class="col-12 col-md-6 col-lg-3">
+                    <label class="gs-label" for="filtro-periodo">Período</label>
+                    <select class="form-select gs-input" id="filtro-periodo" name="periodo" data-periodo-select>
+                        {% for valor, rotulo in periodo_opcoes %}
+                        <option value="{{ valor }}"{% if relatorio.periodo == valor %} selected{% endif %}>{{ rotulo }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-12 col-md-6 col-lg-2" data-periodo-custom>
+                    <label class="gs-label" for="filtro-inicio">Data inicial</label>
+                    <input class="form-control gs-input" type="date" id="filtro-inicio" name="inicio" value="{{ relatorio.inicio|date:'Y-m-d' }}">
+                </div>
+                <div class="col-12 col-md-6 col-lg-2" data-periodo-custom>
+                    <label class="gs-label" for="filtro-fim">Data final</label>
+                    <input class="form-control gs-input" type="date" id="filtro-fim" name="fim" value="{{ relatorio.fim|date:'Y-m-d' }}">
+                </div>
+                <div class="col-12 col-md-6 col-lg-3">
+                    <label class="gs-label" for="filtro-categoria">Categoria</label>
+                    <select class="form-select gs-input" id="filtro-categoria" name="categoria">
+                        <option value="">Todas</option>
+                        {% for item in relatorio.categorias_filtro %}
+                        <option value="{{ item.pk }}"{% if relatorio.filtros.categoria == item.pk|stringformat:"s" %} selected{% endif %}>{{ item.nome }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-12 col-md-6 col-lg-3">
+                    <label class="gs-label" for="filtro-fornecedor">Fornecedor</label>
+                    <select class="form-select gs-input" id="filtro-fornecedor" name="fornecedor">
+                        <option value="">Todos</option>
+                        {% for item in relatorio.fornecedores_filtro %}
+                        <option value="{{ item.pk }}"{% if relatorio.filtros.fornecedor == item.pk|stringformat:"s" %} selected{% endif %}>{{ item.nome }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                {% if relatorio.veiculos_filtro %}
+                <div class="col-12 col-md-6 col-lg-3">
+                    <label class="gs-label" for="filtro-veiculo">Veículo</label>
+                    <select class="form-select gs-input" id="filtro-veiculo" name="veiculo">
+                        <option value="">Todos</option>
+                        {% for item in relatorio.veiculos_filtro %}
+                        <option value="{{ item.pk }}"{% if relatorio.filtros.veiculo == item.pk|stringformat:"s" %} selected{% endif %}>{{ item }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                {% endif %}
+                <div class="col-12 col-md-6 col-lg-2">
+                    <label class="gs-label" for="filtro-forma">Forma</label>
+                    <select class="form-select gs-input" id="filtro-forma" name="forma">
+                        <option value="">Todas</option>
+                        {% for valor, rotulo in formas_pagamento %}
+                        <option value="{{ valor }}"{% if relatorio.filtros.forma == valor %} selected{% endif %}>{{ rotulo }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-12 col-md-6 col-lg-2">
+                    <button type="submit" class="gs-btn gs-btn-primary">Aplicar</button>
+                </div>
+                <div class="col-12 col-md-6 col-lg-2">
+                    <a href="{% url 'financeiro:relatorios' %}" class="gs-btn gs-btn-outline">Limpar</a>
+                </div>
+            </div>
+        </form>
+        <p class="gs-muted">Despesas realizadas de {{ relatorio.inicio|date:"d/m/Y" }} a {{ relatorio.fim|date:"d/m/Y" }}, pela data de pagamento.</p>
+    </div>
+
+    {% if relatorio.tem_despesas %}
+    <div class="row g-3 mb-3">
+        <div class="col-12 col-md-6 col-xl-3">
+            <div class="gs-card">
+                <p class="gs-card__title">Total pago</p>
+                <p class="gs-card__value">R$ {{ relatorio.total|floatformat:2 }}</p>
+            </div>
+        </div>
+        <div class="col-12 col-md-6 col-xl-3">
+            <div class="gs-card">
+                <p class="gs-card__title">Lançamentos</p>
+                <p class="gs-card__value">{{ relatorio.quantidade }}</p>
+            </div>
+        </div>
+        {% if relatorio.media != None %}
+        <div class="col-12 col-md-6 col-xl-3">
+            <div class="gs-card">
+                <p class="gs-card__title">Média por lançamento</p>
+                <p class="gs-card__value">R$ {{ relatorio.media|floatformat:2 }}</p>
+            </div>
+        </div>
+        {% endif %}
+        {% if relatorio.maior != None %}
+        <div class="col-12 col-md-6 col-xl-3">
+            <div class="gs-card">
+                <p class="gs-card__title">Maior despesa</p>
+                <p class="gs-card__value">R$ {{ relatorio.maior|floatformat:2 }}</p>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    {% if relatorio.comparacao_atual or relatorio.comparacao_anterior %}
+    <section class="gs-card mb-3">
+        <h2 class="gs-section-title">Comparação com o período anterior</h2>
+        <p class="gs-muted">{{ relatorio.anterior_inicio|date:"d/m/Y" }} a {{ relatorio.anterior_fim|date:"d/m/Y" }}</p>
+        <div class="row g-3 mt-1">
+            <div class="col-12 col-md-3">
+                <p class="gs-card__title">Atual</p>
+                <p class="gs-card__value">R$ {{ relatorio.comparacao_atual|floatformat:2 }}</p>
+            </div>
+            <div class="col-12 col-md-3">
+                <p class="gs-card__title">Anterior</p>
+                <p class="gs-card__value">R$ {{ relatorio.comparacao_anterior|floatformat:2 }}</p>
+            </div>
+            <div class="col-12 col-md-3">
+                <p class="gs-card__title">Diferença</p>
+                <p class="gs-card__value">{% if relatorio.comparacao_diferenca > 0 %}+{% endif %}R$ {{ relatorio.comparacao_diferenca|floatformat:2 }}</p>
+            </div>
+            <div class="col-12 col-md-3">
+                <p class="gs-card__title">Variação</p>
+                {% if relatorio.comparacao_percentual != None %}
+                    {% if relatorio.comparacao_percentual > 0 %}
+                    <span class="gs-badge gs-badge--warning">+{{ relatorio.comparacao_percentual|floatformat:2 }}%</span>
+                    {% elif relatorio.comparacao_percentual < 0 %}
+                    <span class="gs-badge gs-badge--ok">{{ relatorio.comparacao_percentual|floatformat:2 }}%</span>
+                    {% else %}
+                    <span class="gs-badge gs-badge--neutral">0,00%</span>
+                    {% endif %}
+                {% else %}
+                <p class="gs-muted">Sem histórico comparável</p>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+    {% endif %}
+
+    <div class="row g-3 mb-3">
+        <div class="col-12 col-xl-6">
+            <section class="gs-card gs-hud h-100">
+                <h2 class="gs-section-title">Despesas por categoria</h2>
+                <div class="gs-chart-wrap">
+                    <canvas data-gs-chart="chart-rel-categorias-data" aria-label="Despesas por categoria"></canvas>
+                </div>
+            </section>
+        </div>
+        <div class="col-12 col-xl-6">
+            <section class="gs-card gs-hud h-100">
+                <h2 class="gs-section-title">Evolução</h2>
+                <div class="gs-chart-wrap">
+                    <canvas data-gs-chart="chart-rel-evolucao-data" aria-label="Evolução das despesas"></canvas>
+                </div>
+            </section>
+        </div>
+    </div>
+    {{ relatorio.chart_categorias|json_script:"chart-rel-categorias-data" }}
+    {{ relatorio.chart_evolucao|json_script:"chart-rel-evolucao-data" }}
+
+    <section class="gs-card mb-3">
+        <h2 class="gs-section-title">Por categoria</h2>
+        <div class="gs-table-wrap">
+            <table class="gs-table">
+                <thead>
+                    <tr>
+                        <th>Categoria</th>
+                        <th>Quantidade</th>
+                        <th>Total</th>
+                        <th>%</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for linha in relatorio.categorias %}
+                    <tr>
+                        <td>{{ linha.nome }}</td>
+                        <td>{{ linha.quantidade }}</td>
+                        <td>R$ {{ linha.total|floatformat:2 }}</td>
+                        <td>{{ linha.percentual|floatformat:2 }}%</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="gs-card mb-3">
+        <h2 class="gs-section-title">Evolução do período</h2>
+        <div class="gs-table-wrap">
+            <table class="gs-table">
+                <thead>
+                    <tr>
+                        <th>Período</th>
+                        <th>Quantidade</th>
+                        <th>Total pago</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for linha in relatorio.evolucao %}
+                    {% if linha.quantidade %}
+                    <tr>
+                        <td>{{ linha.rotulo }}</td>
+                        <td>{{ linha.quantidade }}</td>
+                        <td>R$ {{ linha.total|floatformat:2 }}</td>
+                    </tr>
+                    {% endif %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    {% if relatorio.mensal %}
+    <section class="gs-card mb-3">
+        <h2 class="gs-section-title">Consolidado mensal</h2>
+        <div class="gs-table-wrap">
+            <table class="gs-table">
+                <thead>
+                    <tr>
+                        <th>Mês</th>
+                        <th>Quantidade</th>
+                        <th>Total pago</th>
+                        <th>Maior categoria</th>
+                        <th>Maior fornecedor</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for linha in relatorio.mensal %}
+                    <tr>
+                        <td>{{ linha.rotulo }}</td>
+                        <td>{{ linha.quantidade }}</td>
+                        <td>R$ {{ linha.total|floatformat:2 }}</td>
+                        <td>{{ linha.maior_categoria }}</td>
+                        <td>{{ linha.maior_fornecedor }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+    {% endif %}
+
+    <section class="gs-card mb-3">
+        <h2 class="gs-section-title">Fornecedores</h2>
+        {% if relatorio.fornecedores %}
+        {% if relatorio.top_fornecedores %}
+        <ol class="gs-ranking">
+            {% for item in relatorio.top_fornecedores %}
+            <li>
+                <a href="?periodo={{ relatorio.periodo }}&inicio={{ relatorio.inicio|date:'Y-m-d' }}&fim={{ relatorio.fim|date:'Y-m-d' }}&categoria={{ relatorio.filtros.categoria }}&veiculo={{ relatorio.filtros.veiculo }}&forma={{ relatorio.filtros.forma }}&fornecedor={{ item.id }}">
+                    {{ item.nome }} — R$ {{ item.total|floatformat:2 }}
+                </a>
+            </li>
+            {% endfor %}
+        </ol>
+        {% endif %}
+        <div class="gs-table-wrap">
+            <table class="gs-table">
+                <thead>
+                    <tr>
+                        <th>Fornecedor</th>
+                        <th>Quantidade</th>
+                        <th>Total pago</th>
+                        <th>%</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for linha in relatorio.fornecedores %}
+                    <tr>
+                        <td>{{ linha.nome }}</td>
+                        <td>{{ linha.quantidade }}</td>
+                        <td>R$ {{ linha.total|floatformat:2 }}</td>
+                        <td>{{ linha.percentual|floatformat:2 }}%</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p class="gs-muted">Não há dados por fornecedor.</p>
+        {% endif %}
+    </section>
+
+    {% if relatorio.formas %}
+    <section class="gs-card mb-3">
+        <h2 class="gs-section-title">Formas de pagamento</h2>
+        <div class="gs-table-wrap">
+            <table class="gs-table">
+                <thead>
+                    <tr>
+                        <th>Forma</th>
+                        <th>Quantidade</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for linha in relatorio.formas %}
+                    <tr>
+                        <td>{{ linha.nome }}</td>
+                        <td>{{ linha.quantidade }}</td>
+                        <td>R$ {{ linha.total|floatformat:2 }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+    {% endif %}
+
+    {% if perms.financeiro.view_veiculo %}
+    <section class="gs-card mb-3">
+        <h2 class="gs-section-title">Veículos</h2>
+        {% if relatorio.veiculos %}
+        <div class="gs-table-wrap">
+            <table class="gs-table">
+                <thead>
+                    <tr>
+                        <th>Veículo</th>
+                        <th>Placa</th>
+                        <th>Lançamentos</th>
+                        <th>Total gasto</th>
+                        <th>%</th>
+                        <th>Por categoria</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for linha in relatorio.veiculos %}
+                    <tr>
+                        <td>{{ linha.nome }}</td>
+                        <td>{{ linha.placa }}</td>
+                        <td>{{ linha.quantidade }}</td>
+                        <td>R$ {{ linha.total|floatformat:2 }}</td>
+                        <td>{{ linha.percentual|floatformat:2 }}%</td>
+                        <td>
+                            {% for cat in linha.categorias %}
+                            {{ cat.nome }} R$ {{ cat.total|floatformat:2 }}{% if not forloop.last %}; {% endif %}
+                            {% endfor %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p class="gs-muted">Não há despesas vinculadas a veículos.</p>
+        {% endif %}
+    </section>
+
+    <section class="gs-card mb-3">
+        <h2 class="gs-section-title">Manutenção de veículos</h2>
+        {% if relatorio.manutencoes %}
+        <div class="gs-table-wrap">
+            <table class="gs-table">
+                <thead>
+                    <tr>
+                        <th>Veículo</th>
+                        <th>Manutenções</th>
+                        <th>Contas financeiras</th>
+                        <th>Total gasto</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for linha in relatorio.manutencoes %}
+                    <tr>
+                        <td>{{ linha.nome }} ({{ linha.placa }})</td>
+                        <td>{{ linha.qtd_manutencoes }}</td>
+                        <td>{{ linha.qtd_contas }}</td>
+                        <td>R$ {{ linha.total|floatformat:2 }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p class="gs-muted">Não há manutenções com contas pagas no período.</p>
+        {% endif %}
+    </section>
+    {% endif %}
+
+    {% else %}
+    <div class="gs-empty mb-3">
+        <h2 class="gs-empty__title">Não há despesas no período selecionado.</h2>
+        <p class="gs-empty__text">Ajuste os filtros ou registre pagamentos para gerar o relatório de despesas realizadas.</p>
+    </div>
+    {% endif %}
+
+    <section class="gs-card mb-3">
+        <h2 class="gs-section-title">Compromissos financeiros</h2>
+        <p class="gs-muted">Contas ainda não pagas. Estes valores não entram no total de despesas realizadas.</p>
+        <div class="row g-3 mb-2">
+            {% if relatorio.compromissos.pendentes_qtd %}
+            <div class="col-12 col-md-4">
+                <div class="gs-card">
+                    <p class="gs-card__title">Pendentes</p>
+                    <p class="gs-card__value">R$ {{ relatorio.compromissos.pendentes_total|floatformat:2 }}</p>
+                    <p class="gs-muted">{{ relatorio.compromissos.pendentes_qtd }} conta{{ relatorio.compromissos.pendentes_qtd|pluralize }}</p>
+                </div>
+            </div>
+            {% endif %}
+            {% if relatorio.compromissos.vencidas_qtd %}
+            <div class="col-12 col-md-4">
+                <div class="gs-card gs-card-alert">
+                    <p class="gs-card__title">Vencidas</p>
+                    <p class="gs-card__value">R$ {{ relatorio.compromissos.vencidas_total|floatformat:2 }}</p>
+                    <p class="gs-muted">{{ relatorio.compromissos.vencidas_qtd }} conta{{ relatorio.compromissos.vencidas_qtd|pluralize }}</p>
+                </div>
+            </div>
+            {% endif %}
+            {% if relatorio.compromissos.vencendo_qtd %}
+            <div class="col-12 col-md-4">
+                <div class="gs-card">
+                    <p class="gs-card__title">Próximas do vencimento</p>
+                    <p class="gs-card__value">R$ {{ relatorio.compromissos.vencendo_total|floatformat:2 }}</p>
+                    <p class="gs-muted">{{ relatorio.compromissos.janela_dias }} dias</p>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        {% if relatorio.compromissos.proximos %}
+        <h3 class="gs-subtitle">Pendentes</h3>
+        <div class="gs-table-wrap">
+            <table class="gs-table">
+                <thead>
+                    <tr>
+                        <th>Descrição</th>
+                        <th>Categoria</th>
+                        <th>Vencimento</th>
+                        <th>Valor</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for conta in relatorio.compromissos.proximos %}
+                    <tr>
+                        <td>{{ conta.descricao }}</td>
+                        <td>{{ conta.categoria.nome }}</td>
+                        <td>{{ conta.data_vencimento|date:"d/m/Y" }}</td>
+                        <td>R$ {{ conta.valor|floatformat:2 }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+        {% if relatorio.compromissos.vencidas %}
+        <h3 class="gs-subtitle">Vencidas</h3>
+        <div class="gs-table-wrap">
+            <table class="gs-table">
+                <thead>
+                    <tr>
+                        <th>Descrição</th>
+                        <th>Atraso</th>
+                        <th>Valor</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for conta in relatorio.compromissos.vencidas %}
+                    <tr>
+                        <td>{{ conta.descricao }}</td>
+                        <td>{{ conta.dias_atraso }} d</td>
+                        <td>R$ {{ conta.valor|floatformat:2 }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+        {% if not relatorio.compromissos.pendentes_qtd and not relatorio.compromissos.vencidas_qtd %}
+        <p class="gs-muted">Não há compromissos em aberto para os filtros atuais.</p>
+        {% endif %}
+    </section>
+
+    {% if perms.financeiro.view_obrigacaoveiculo %}
+    <section class="gs-card">
+        <div class="gs-section-head">
+            <h2 class="gs-section-title">Obrigações de veículos</h2>
+        </div>
+        <form method="get" class="gs-form gs-filter-form mb-3">
+            <input type="hidden" name="periodo" value="{{ relatorio.periodo }}">
+            <input type="hidden" name="inicio" value="{{ relatorio.inicio|date:'Y-m-d' }}">
+            <input type="hidden" name="fim" value="{{ relatorio.fim|date:'Y-m-d' }}">
+            <input type="hidden" name="categoria" value="{{ relatorio.filtros.categoria }}">
+            <input type="hidden" name="fornecedor" value="{{ relatorio.filtros.fornecedor }}">
+            <input type="hidden" name="veiculo" value="{{ relatorio.filtros.veiculo }}">
+            <input type="hidden" name="forma" value="{{ relatorio.filtros.forma }}">
+            <div class="row g-2 align-items-end">
+                <div class="col-12 col-md-3">
+                    <label class="gs-label" for="filtro-exercicio">Exercício</label>
+                    <input class="form-control gs-input" type="number" id="filtro-exercicio" name="exercicio" value="{{ relatorio.filtros.exercicio }}">
+                </div>
+                <div class="col-12 col-md-3">
+                    <label class="gs-label" for="filtro-tipo">Tipo</label>
+                    <select class="form-select gs-input" id="filtro-tipo" name="tipo">
+                        <option value="">Todos</option>
+                        {% for valor, rotulo in tipos_obrigacao %}
+                        <option value="{{ valor }}"{% if relatorio.filtros.tipo == valor %} selected{% endif %}>{{ rotulo }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-12 col-md-3">
+                    <label class="gs-label" for="filtro-status-obr">Status</label>
+                    <select class="form-select gs-input" id="filtro-status-obr" name="status_obrigacao">
+                        <option value="">Todos</option>
+                        {% for valor, rotulo in status_obrigacao %}
+                        <option value="{{ valor }}"{% if relatorio.filtros.status_obrigacao == valor %} selected{% endif %}>{{ rotulo }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-12 col-md-3">
+                    <button type="submit" class="gs-btn gs-btn-outline">Filtrar obrigações</button>
+                </div>
+            </div>
+        </form>
+        {% if relatorio.obrigacoes %}
+        <div class="gs-table-wrap">
+            <table class="gs-table">
+                <thead>
+                    <tr>
+                        <th>Veículo</th>
+                        <th>Tipo</th>
+                        <th>Exercício</th>
+                        <th>Status</th>
+                        <th>Vencimento</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in relatorio.obrigacoes %}
+                    <tr>
+                        <td>{{ item.obrigacao.veiculo }}</td>
+                        <td>{{ item.obrigacao.get_tipo_display }}</td>
+                        <td>{{ item.obrigacao.exercicio }}</td>
+                        <td>
+                            {% if item.vencida %}
+                            <span class="gs-badge gs-badge--danger">Atrasada</span>
+                            {% elif item.obrigacao.status == 'isento' %}
+                            <span class="gs-badge gs-badge--ok">Isento</span>
+                            {% elif item.obrigacao.status == 'pago' %}
+                            <span class="gs-badge gs-badge--ok">Pago</span>
+                            {% elif item.obrigacao.status == 'pendente' %}
+                            <span class="gs-badge gs-badge--warning">Pendente</span>
+                            {% else %}
+                            <span class="gs-badge gs-badge--neutral">{{ item.obrigacao.get_status_display }}</span>
+                            {% endif %}
+                        </td>
+                        <td>{% if item.obrigacao.data_vencimento %}{{ item.obrigacao.data_vencimento|date:"d/m/Y" }}{% else %}—{% endif %}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p class="gs-muted">Não há obrigações para os filtros atuais.</p>
+        {% endif %}
+    </section>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/vendor/chart.umd.min.js' %}"></script>
+<script src="{% static 'js/gs_charts.js' %}"></script>
+<script src="{% static 'financeiro/js/dashboard.js' %}"></script>
+{% endblock %}

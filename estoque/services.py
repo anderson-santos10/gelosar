@@ -1,5 +1,6 @@
 from decimal import Decimal
 
+from django.db import transaction
 from django.db.models import Case, IntegerField, Sum, Value, When
 from django.db.models.functions import Coalesce
 
@@ -209,6 +210,10 @@ def registrar_saidas_venda(venda):
     """
     Cria uma MovimentacaoProduto SAIDA por item persistido da venda.
 
+    A segunda chamada da mesma venda não cria outra série. Dentro da
+    transação, a venda é travada e a observação automática é comparada
+    por igualdade. Se já existir uma SAIDA com esse texto, retorna [].
+
     Não faz backfill: só age se for chamado na criação da venda.
     Configurar ESTOQUE_DATA_CORTE depois não cria SAIDA histórica.
     Não deve ser chamado em edição/exclusão.
@@ -219,18 +224,26 @@ def registrar_saidas_venda(venda):
     if not venda_deve_gerar_saida(venda):
         return []
 
-    criadas = []
-    for item in venda.itens.select_related("produto"):
-        if not item.produto_id:
-            continue
-        quantidade = quantidade_para_movimento(item.quantidade)
-        movimento = MovimentacaoProduto.objects.create(
-            produto=item.produto,
+    observacao = f"Saída automática referente à venda #{venda.id}"
+
+    with transaction.atomic():
+        type(venda).objects.select_for_update().get(pk=venda.pk)
+        if MovimentacaoProduto.objects.filter(
             tipo=TIPO_SAIDA,
-            quantidade=quantidade,
-            observacao=(
-                f"Saída automática referente à venda #{venda.id}"
-            ),
-        )
-        criadas.append(movimento)
-    return criadas
+            observacao=observacao,
+        ).exists():
+            return []
+
+        criadas = []
+        for item in venda.itens.select_related("produto"):
+            if not item.produto_id:
+                continue
+            quantidade = quantidade_para_movimento(item.quantidade)
+            movimento = MovimentacaoProduto.objects.create(
+                produto=item.produto,
+                tipo=TIPO_SAIDA,
+                quantidade=quantidade,
+                observacao=observacao,
+            )
+            criadas.append(movimento)
+        return criadas

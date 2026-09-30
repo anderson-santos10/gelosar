@@ -58,6 +58,44 @@
     min-height: 0;
 }
 
+.cliente-form-page .gs-choice-group {
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+.cliente-form-page .gs-choice-group legend {
+    padding: 0;
+}
+
+.cliente-form-page .gs-choice-group > div {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem 1.25rem;
+}
+
+.cliente-form-page .gs-choice-group label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 42px;
+    margin: 0;
+    font-weight: var(--gs-font-weight-medium);
+    color: var(--gs-text);
+}
+
+.cliente-form-page .gs-choice-group input[type="radio"] {
+    width: 1.05rem;
+    height: 1.05rem;
+    accent-color: var(--gs-primary);
+}
+
+.cliente-form-page .gs-field-hint {
+    margin: 0.25rem 0 0;
+    color: var(--gs-text-muted);
+    font-size: var(--gs-font-size-sm);
+}
+
 .cliente-form-page .gs-form-actions {
     margin-top: 0.9rem;
     padding-top: 0.85rem;

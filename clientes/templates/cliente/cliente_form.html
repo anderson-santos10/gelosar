@@ -102,6 +102,19 @@
                         </div>
 
                         <div class="col-12">
+                            <fieldset class="gs-choice-group">
+                                <legend class="gs-label">{{ form.possui_equipamento_comodato.label }}</legend>
+                                {{ form.possui_equipamento_comodato }}
+                            </fieldset>
+                            {% if form.vinculo_comodato_existente %}
+                            <p class="gs-field-hint">Este cliente já possui equipamento ou contrato de comodato vinculado. A listagem permanece como Sim enquanto esses vínculos existirem.</p>
+                            {% endif %}
+                            {% if form.possui_equipamento_comodato.errors %}
+                            <p class="gs-field-error">{{ form.possui_equipamento_comodato.errors|striptags }}</p>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-12">
                             <div class="gs-check-wrapper">
                                 <label class="gs-check" for="{{ form.ativo.id_for_label }}">
                                     {{ form.ativo }}
@@ -137,4 +150,8 @@
     </div>
 
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'cliente/js/cliente_form.js' %}"></script>
 {% endblock %}

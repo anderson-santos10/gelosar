@@ -250,7 +250,7 @@
 
     <div class="row g-4 mt-1">
         <div class="col-12 col-xl-4">
-            <div class="card card-gs shadow-sm h-100 p-4">
+            <div class="card card-gs gs-hud shadow-sm h-100 p-4">
                 <h2 class="gs-section-label mb-3">Vendas (7 dias)</h2>
                 <div class="gs-chart-wrap">
                     <canvas
@@ -262,7 +262,7 @@
             </div>
         </div>
         <div class="col-12 col-xl-4">
-            <div class="card card-gs shadow-sm h-100 p-4">
+            <div class="card card-gs gs-hud shadow-sm h-100 p-4">
                 <h2 class="gs-section-label mb-3">Produção (7 dias)</h2>
                 <div class="gs-chart-wrap">
                     <canvas
@@ -274,7 +274,7 @@
             </div>
         </div>
         <div class="col-12 col-xl-4">
-            <div class="card card-gs shadow-sm h-100 p-4">
+            <div class="card card-gs gs-hud shadow-sm h-100 p-4">
                 <h2 class="gs-section-label mb-3">Estoque atual</h2>
                 <div class="gs-chart-wrap">
                     <canvas
@@ -296,5 +296,6 @@
 
 {% block extra_js %}
 <script src="{% static 'js/vendor/chart.umd.min.js' %}"></script>
+<script src="{% static 'js/gs_charts.js' %}"></script>
 <script src="{% static 'js/dashboard_charts.js' %}"></script>
 {% endblock %}

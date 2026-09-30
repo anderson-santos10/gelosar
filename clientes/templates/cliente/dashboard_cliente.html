@@ -21,7 +21,7 @@
             </ol>
             <h1 class="gs-page-header__title">{{ cliente.nome }}</h1>
             <p class="gs-page-header__desc">
-                {{ cliente.cnpj|default:"CNPJ/CPF não informado" }}
+                {{ cliente.cnpj_formatado|default:"CNPJ/CPF não informado" }}
                 · {{ cliente.telefone|default:"Sem telefone" }}
                 · {{ cliente.cidade|default:"Cidade não informada" }}
             </p>
@@ -215,7 +215,7 @@
 
     <div class="row g-3 mb-4">
         <div class="col-12 col-lg-6">
-            <div class="gs-card">
+            <div class="gs-card gs-hud">
                 <p class="gs-card__title">Compras (6 meses)</p>
                 <div class="gs-chart-wrap">
                     <canvas
@@ -227,7 +227,7 @@
             </div>
         </div>
         <div class="col-12 col-lg-6">
-            <div class="gs-card">
+            <div class="gs-card gs-hud">
                 <p class="gs-card__title">Produtos comprados</p>
                 <div class="gs-chart-wrap">
                     <canvas
@@ -327,6 +327,7 @@
 
 {% block extra_js %}
 <script src="{% static 'js/vendor/chart.umd.min.js' %}"></script>
+<script src="{% static 'js/gs_charts.js' %}"></script>
 <script src="{% static 'js/dashboard_charts.js' %}"></script>
 <script src="{% static 'cliente/js/cliente_dashboard.js' %}"></script>
 {% endblock %}

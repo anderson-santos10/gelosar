@@ -37,6 +37,37 @@
         if (iniciado) return;
         iniciado = true;
 
+        const preencherEnderecoDoCliente = () => {
+            const select = document.querySelector('.js-cliente-pedido');
+            const endereco = document.getElementById('id_endereco');
+            const cidade = document.getElementById('id_cidade');
+            const dadosElemento = document.getElementById('clientes-enderecos-data');
+            if (!select || !endereco || !dadosElemento) return;
+
+            let enderecos = {};
+            try {
+                const dados = JSON.parse(dadosElemento.textContent);
+                if (dados && typeof dados === 'object' && !Array.isArray(dados)) {
+                    enderecos = dados;
+                }
+            } catch (erro) {
+                return;
+            }
+
+            const aplicar = () => {
+                const cadastro = enderecos[String(select.value)];
+                if (!cadastro) return;
+                endereco.value = cadastro.endereco || '';
+                if (cidade) cidade.value = cadastro.cidade || '';
+            };
+
+            select.addEventListener('change', aplicar);
+            select.addEventListener('input', aplicar);
+            if (select.value) aplicar();
+        };
+
+        preencherEnderecoDoCliente();
+
         const precosProdutos = carregarPrecos();
         const container = document.getElementById('itens-container');
         const totalForms = document.querySelector('input[name$="-TOTAL_FORMS"]');
@@ -107,8 +138,26 @@
             return deleteInput;
         };
 
+        const linhasVisiveis = () => {
+            return [...document.querySelectorAll('#itens-container .item-row')].filter((row) => {
+                return row.style.display !== 'none';
+            });
+        };
+
+        const atualizarBotoesRemover = () => {
+            const visiveis = linhasVisiveis();
+            const unica = visiveis.length <= 1;
+            document.querySelectorAll('#itens-container .btn-remover').forEach((botao) => {
+                const row = botao.closest('.item-row');
+                const oculta = !row || row.style.display === 'none';
+                const esconder = oculta || unica;
+                botao.hidden = esconder;
+                botao.disabled = esconder;
+            });
+        };
+
         const removerItem = (row) => {
-            if (!row) return;
+            if (!row || linhasVisiveis().length <= 1) return;
 
             const deleteInput = garantirCampoDelete(row);
             if (!deleteInput) return;
@@ -118,6 +167,7 @@
             row.style.display = 'none';
 
             atualizarTotal();
+            atualizarBotoesRemover();
         };
 
         const configurarLinha = (row) => {
@@ -162,17 +212,19 @@
             totalForms.value = count + 1;
 
             configurarLinha(novaLinha);
+            atualizarBotoesRemover();
         };
 
         if (btnAdicionar) {
             btnAdicionar.addEventListener('click', adicionarItem);
         }
 
-        document.querySelectorAll('.item-row').forEach(row => {
+        document.querySelectorAll('#itens-container .item-row').forEach(row => {
             configurarLinha(row);
         });
 
         atualizarTotal();
+        atualizarBotoesRemover();
     };
 
     if (document.readyState === 'loading') {

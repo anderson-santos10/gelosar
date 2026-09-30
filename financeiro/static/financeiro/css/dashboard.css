@@ -1,0 +1,68 @@
+.gs-fin-dashboard .gs-card-link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+}
+
+.gs-fin-dashboard .gs-card-link:hover {
+    border-color: var(--gs-primary);
+}
+
+.gs-fin-dashboard .gs-card-alert {
+    border-color: var(--gs-danger, #b42318);
+}
+
+.gs-fin-dashboard .gs-section-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-bottom: 0.85rem;
+}
+
+.gs-fin-dashboard .gs-section-title {
+    margin: 0 0 0.75rem;
+    font-size: 1.05rem;
+}
+
+.gs-fin-dashboard .gs-section-head .gs-section-title {
+    margin: 0;
+}
+
+.gs-fin-dashboard .gs-muted {
+    color: var(--gs-text-muted);
+    font-size: var(--gs-font-size-sm);
+    margin: 0.35rem 0 0;
+}
+
+.gs-fin-dashboard .gs-chart-wrap {
+    position: relative;
+    width: 100%;
+    height: 240px;
+}
+
+.gs-fin-dashboard .gs-ranking {
+    margin: 0.65rem 0 0;
+    padding-left: 1.1rem;
+    color: var(--gs-text-muted);
+    font-size: var(--gs-font-size-sm);
+}
+
+.gs-fin-dashboard .gs-filter-form .gs-btn {
+    width: 100%;
+}
+
+.gs-fin-dashboard .is-hidden {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .gs-fin-dashboard .gs-section-head {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .gs-fin-dashboard .gs-chart-wrap {
+        height: 220px;
+    }
+}

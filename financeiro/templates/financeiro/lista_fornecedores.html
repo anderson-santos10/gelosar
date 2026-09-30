@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Fornecedores | GELOSAR{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'financeiro/css/financeiro_list.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="gs-page">
+    <header class="gs-page-header">
+        <div>
+            <ol class="gs-breadcrumb">
+                <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                <li aria-hidden="true">/</li>
+                <li>Fornecedores</li>
+            </ol>
+            <h1 class="gs-page-header__title">Fornecedores</h1>
+            <p class="gs-page-header__desc">Cadastro de fornecedores para contas a pagar e, no futuro, compras.</p>
+        </div>
+        <div class="gs-page-header__actions">
+            {% if perms.financeiro.add_fornecedor %}
+            <a href="{% url 'financeiro:cadastrar_fornecedor' %}" class="gs-btn gs-btn-primary">
+                <i class="bi bi-plus-lg" aria-hidden="true"></i>
+                Cadastrar fornecedor
+            </a>
+            {% endif %}
+        </div>
+    </header>
+
+    {% if fornecedores %}
+    <div class="gs-table-wrap">
+        <table class="gs-table">
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>CNPJ</th>
+                    <th>Telefone</th>
+                    <th>E-mail</th>
+                    <th>Status</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for fornecedor in fornecedores %}
+                <tr>
+                    <td>{{ fornecedor.nome }}</td>
+                    <td>{{ fornecedor.cnpj_formatado|default:"-" }}</td>
+                    <td>{{ fornecedor.telefone|default:"-" }}</td>
+                    <td>{{ fornecedor.email|default:"-" }}</td>
+                    <td>
+                        {% if fornecedor.ativo %}
+                        <span class="gs-badge gs-badge--ok">Ativo</span>
+                        {% else %}
+                        <span class="gs-badge gs-badge--neutral">Inativo</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if perms.financeiro.change_fornecedor %}
+                        <a href="{% url 'financeiro:editar_fornecedor' fornecedor.pk %}" class="gs-btn gs-btn-outline">Editar</a>
+                        <form method="post" action="{% url 'financeiro:alternar_ativo_fornecedor' fornecedor.pk %}" class="gs-inline-form">
+                            {% csrf_token %}
+                            <button type="submit" class="gs-btn gs-btn-outline">
+                                {% if fornecedor.ativo %}Desativar{% else %}Ativar{% endif %}
+                            </button>
+                        </form>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="gs-empty">
+        <h2 class="gs-empty__title">Nenhum fornecedor cadastrado</h2>
+        <p class="gs-empty__text">Cadastre um fornecedor para usar nas contas a pagar.</p>
+        {% if perms.financeiro.add_fornecedor %}
+        <a href="{% url 'financeiro:cadastrar_fornecedor' %}" class="gs-btn gs-btn-primary">Cadastrar fornecedor</a>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

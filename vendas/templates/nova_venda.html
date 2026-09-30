@@ -55,6 +55,24 @@
                     <p class="gs-field-error">{{ error }}</p>
                     {% endfor %}
                 </div>
+                <div class="col-12">
+                    <label class="gs-label" for="{{ venda_form.endereco.id_for_label }}">
+                        Endereço{% if venda_form.endereco.field.required %} *{% endif %}
+                    </label>
+                    {{ venda_form.endereco }}
+                    {% for error in venda_form.endereco.errors %}
+                    <p class="gs-field-error">{{ error }}</p>
+                    {% endfor %}
+                </div>
+                <div class="col-12 col-md-6">
+                    <label class="gs-label" for="{{ venda_form.cidade.id_for_label }}">
+                        Cidade
+                    </label>
+                    {{ venda_form.cidade }}
+                    {% for error in venda_form.cidade.errors %}
+                    <p class="gs-field-error">{{ error }}</p>
+                    {% endfor %}
+                </div>
             </div>
         </div>
 
@@ -89,23 +107,23 @@
                     <tbody id="itens-container">
                         {% for form in formset %}
                         <tr class="item-row">
-                            {% for hidden in form.hidden_fields %}
-                                {{ hidden }}
-                            {% endfor %}
-                            <span hidden>{{ form.DELETE }}</span>
-                            <td>
+                            <td data-label="Produto">
+                                {% for hidden in form.hidden_fields %}
+                                    {{ hidden }}
+                                {% endfor %}
+                                <span hidden>{{ form.DELETE }}</span>
                                 {{ form.produto }}
                                 {% for error in form.produto.errors %}
                                 <p class="gs-field-error">{{ error }}</p>
                                 {% endfor %}
                             </td>
-                            <td>
+                            <td data-label="Quantidade">
                                 {{ form.quantidade }}
                                 {% for error in form.quantidade.errors %}
                                 <p class="gs-field-error">{{ error }}</p>
                                 {% endfor %}
                             </td>
-                            <td>
+                            <td data-label="Preço unitário">
                                 <input
                                     type="text"
                                     class="form-control preco-input"
@@ -113,13 +131,11 @@
                                     readonly
                                 >
                             </td>
-                            <td>
+                            <td data-label="Subtotal">
                                 <span class="subtotal">R$ 0,00</span>
                             </td>
                             <td class="remover">
-                                <button type="button" class="btn-remover" title="Remover produto" aria-label="Remover produto">
-                                    &times;
-                                </button>
+                                <button type="button" class="btn-remover" title="Remover produto" aria-label="Remover produto" hidden>×</button>
                             </td>
                         </tr>
                         {% endfor %}
@@ -151,17 +167,17 @@
 
 <template id="empty-form-template">
 <tr class="item-row">
-    {% for hidden in formset.empty_form.hidden_fields %}
-        {{ hidden }}
-    {% endfor %}
-    <span hidden>{{ formset.empty_form.DELETE }}</span>
-    <td>
+    <td data-label="Produto">
+        {% for hidden in formset.empty_form.hidden_fields %}
+            {{ hidden }}
+        {% endfor %}
+        <span hidden>{{ formset.empty_form.DELETE }}</span>
         {{ formset.empty_form.produto }}
     </td>
-    <td>
+    <td data-label="Quantidade">
         {{ formset.empty_form.quantidade }}
     </td>
-    <td>
+    <td data-label="Preço unitário">
         <input
             type="text"
             class="form-control preco-input"
@@ -169,17 +185,16 @@
             readonly
         >
     </td>
-    <td>
+    <td data-label="Subtotal">
         <span class="subtotal">R$ 0,00</span>
     </td>
     <td class="remover">
-        <button type="button" class="btn-remover" title="Remover produto" aria-label="Remover produto">
-            &times;
-        </button>
+        <button type="button" class="btn-remover" title="Remover produto" aria-label="Remover produto">×</button>
     </td>
 </tr>
 </template>
 
+{{ clientes_enderecos|json_script:"clientes-enderecos-data" }}
 {{ produtos_precos_json|json_script:"produtos-precos-data" }}
 {% endblock %}
 

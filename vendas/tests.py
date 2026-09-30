@@ -17,7 +17,7 @@ from estoque.services import (
 )
 from produtos.models import Produto
 from vendas.forms import ItemVendaForm
-from vendas.models import ItemVenda, Venda
+from vendas.models import ItemPedido, ItemVenda, Pedido, Venda
 
 
 class IntegracaoVendaEstoqueTests(TestCase):
@@ -204,6 +204,8 @@ class NovaVendaViewEstoqueTests(TestCase):
     def _payload(self, quantidade=10):
         return {
             "cliente": self.cliente.pk,
+            "endereco": "Rua dos Testes, 10",
+            "cidade": "Marília",
             "observacoes": "",
             "itens-TOTAL_FORMS": "1",
             "itens-INITIAL_FORMS": "0",
@@ -220,7 +222,9 @@ class NovaVendaViewEstoqueTests(TestCase):
             self._payload(),
         )
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(Venda.objects.count(), 1)
+        self.assertEqual(Pedido.objects.count(), 1)
+        self.assertEqual(Pedido.objects.get().status, Pedido.STATUS_ABERTO)
+        self.assertEqual(Venda.objects.count(), 0)
         self.assertEqual(
             MovimentacaoProduto.objects.filter(tipo="SAIDA").count(),
             0,
@@ -233,26 +237,21 @@ class NovaVendaViewEstoqueTests(TestCase):
             self._payload(quantidade=7),
         )
         self.assertEqual(response.status_code, 302)
-        venda = Venda.objects.get()
-        self.assertGreaterEqual(venda.data, date(2000, 1, 1))
-        movimentos = MovimentacaoProduto.objects.filter(
-            tipo="SAIDA",
-            produto=self.produto,
+        self.assertEqual(Pedido.objects.count(), 1)
+        self.assertEqual(Venda.objects.count(), 0)
+        self.assertEqual(
+            MovimentacaoProduto.objects.filter(tipo="SAIDA").count(),
+            0,
         )
-        self.assertEqual(movimentos.count(), 1)
-        self.assertEqual(movimentos.get().quantidade, 7)
 
     @override_settings(ESTOQUE_DATA_CORTE=date(2000, 1, 1))
     def test_view_falha_na_saida_desfaz_venda(self):
-        with patch(
-            "estoque.services.MovimentacaoProduto.objects.create",
-            side_effect=RuntimeError("falha de teste"),
-        ):
-            with self.assertRaises(RuntimeError):
-                self.http.post(
-                    reverse("vendas:novo_pedido"),
-                    self._payload(),
-                )
+        response = self.http.post(
+            reverse("vendas:novo_pedido"),
+            self._payload(),
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(Pedido.objects.count(), 1)
         self.assertEqual(Venda.objects.count(), 0)
         self.assertEqual(ItemVenda.objects.count(), 0)
         self.assertEqual(MovimentacaoProduto.objects.count(), 0)
@@ -299,6 +298,8 @@ class NovaVendaViewEstoqueTests(TestCase):
         )
         payload = {
             "cliente": self.cliente.pk,
+            "endereco": "Rua dos Testes, 10",
+            "cidade": "Marília",
             "observacoes": "",
             "itens-TOTAL_FORMS": "2",
             "itens-INITIAL_FORMS": "0",
@@ -347,6 +348,8 @@ class NovaVendaExcecoesNaoSilenciosasTests(TestCase):
     def _payload(self, quantidade="10"):
         return {
             "cliente": self.cliente.pk,
+            "endereco": "Rua dos Testes, 10",
+            "cidade": "Marília",
             "observacoes": "",
             "itens-TOTAL_FORMS": "1",
             "itens-INITIAL_FORMS": "0",
@@ -358,23 +361,18 @@ class NovaVendaExcecoesNaoSilenciosasTests(TestCase):
 
     @override_settings(ESTOQUE_DATA_CORTE=date(2000, 1, 1))
     def test_quantidade_nao_inteira_no_estoque_mostra_mensagem(self):
-        with patch(
-            "vendas.views.registrar_saidas_venda",
-            side_effect=QuantidadeNaoInteira(
-                "A quantidade deve ser um número inteiro de sacos."
-            ),
-        ):
-            response = self.http.post(
-                reverse("vendas:novo_pedido"),
-                self._payload(quantidade="10"),
-            )
+        response = self.http.post(
+            reverse("vendas:novo_pedido"),
+            self._payload(quantidade="10.50"),
+        )
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(Pedido.objects.count(), 0)
         self.assertEqual(Venda.objects.count(), 0)
         self.assertEqual(ItemVenda.objects.count(), 0)
         self.assertEqual(MovimentacaoProduto.objects.count(), 0)
         self.assertContains(
             response,
-            "A quantidade deve ser um número inteiro de sacos.",
+            "Informe a quantidade em sacos inteiros.",
         )
 
     @override_settings(ESTOQUE_DATA_CORTE=date(2000, 1, 1))
@@ -403,11 +401,13 @@ class NovaVendaExcecoesNaoSilenciosasTests(TestCase):
             self._payload(quantidade="4"),
         )
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(Venda.objects.count(), 1)
-        self.assertEqual(ItemVenda.objects.count(), 1)
+        self.assertEqual(Pedido.objects.count(), 1)
+        self.assertEqual(ItemPedido.objects.count(), 1)
+        self.assertEqual(Venda.objects.count(), 0)
+        self.assertEqual(ItemVenda.objects.count(), 0)
         self.assertEqual(
             MovimentacaoProduto.objects.filter(tipo="SAIDA").count(),
-            1,
+            0,
         )
 
 
@@ -437,6 +437,8 @@ class ItemVendaFormsetPostTests(TestCase):
     def _management(self, total_forms):
         return {
             "cliente": self.cliente.pk,
+            "endereco": "Rua dos Testes, 10",
+            "cidade": "Marília",
             "observacoes": "",
             "itens-TOTAL_FORMS": str(total_forms),
             "itens-INITIAL_FORMS": "0",
@@ -460,8 +462,10 @@ class ItemVendaFormsetPostTests(TestCase):
         })
         response = self.http.post(reverse("vendas:novo_pedido"), payload)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(Venda.objects.count(), 1)
-        self.assertEqual(ItemVenda.objects.count(), 1)
+        self.assertEqual(Pedido.objects.count(), 1)
+        self.assertEqual(ItemPedido.objects.count(), 1)
+        self.assertEqual(Venda.objects.count(), 0)
+        self.assertEqual(ItemVenda.objects.count(), 0)
 
     @override_settings(ESTOQUE_DATA_CORTE=None)
     def test_dois_itens_validos_sao_persistidos(self):
@@ -474,12 +478,13 @@ class ItemVendaFormsetPostTests(TestCase):
         })
         response = self.http.post(reverse("vendas:novo_pedido"), payload)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(Venda.objects.count(), 1)
-        self.assertEqual(ItemVenda.objects.count(), 2)
+        self.assertEqual(Pedido.objects.count(), 1)
+        self.assertEqual(ItemPedido.objects.count(), 2)
+        self.assertEqual(Venda.objects.count(), 0)
         quantidades = set(
-            ItemVenda.objects.values_list("quantidade", flat=True)
+            ItemPedido.objects.values_list("quantidade", flat=True)
         )
-        self.assertEqual(quantidades, {Decimal("3"), Decimal("4")})
+        self.assertEqual(quantidades, {3, 4})
 
     @override_settings(ESTOQUE_DATA_CORTE=None)
     def test_item_marcado_delete_nao_e_persistido(self):
@@ -493,11 +498,12 @@ class ItemVendaFormsetPostTests(TestCase):
         })
         response = self.http.post(reverse("vendas:novo_pedido"), payload)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(Venda.objects.count(), 1)
-        itens = list(ItemVenda.objects.all())
+        self.assertEqual(Pedido.objects.count(), 1)
+        self.assertEqual(Venda.objects.count(), 0)
+        itens = list(ItemPedido.objects.all())
         self.assertEqual(len(itens), 1)
         self.assertEqual(itens[0].produto_id, self.produto_b.pk)
-        self.assertEqual(itens[0].quantidade, Decimal("8"))
+        self.assertEqual(itens[0].quantidade, 8)
 
     @override_settings(ESTOQUE_DATA_CORTE=None)
     def test_total_forms_com_indices_consecutivos_apos_adicionar_linha(self):
@@ -511,8 +517,9 @@ class ItemVendaFormsetPostTests(TestCase):
         })
         response = self.http.post(reverse("vendas:novo_pedido"), payload)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(ItemVenda.objects.count(), 1)
-        self.assertEqual(ItemVenda.objects.get().quantidade, Decimal("2"))
+        self.assertEqual(ItemPedido.objects.count(), 1)
+        self.assertEqual(ItemPedido.objects.get().quantidade, 2)
+        self.assertEqual(Venda.objects.count(), 0)
 
 
 class VendaMinimoUmItemTests(TestCase):
@@ -541,6 +548,8 @@ class VendaMinimoUmItemTests(TestCase):
     def _management(self, total_forms):
         return {
             "cliente": self.cliente.pk,
+            "endereco": "Rua dos Testes, 10",
+            "cidade": "Marília",
             "observacoes": "",
             "itens-TOTAL_FORMS": str(total_forms),
             "itens-INITIAL_FORMS": "0",
@@ -569,7 +578,7 @@ class VendaMinimoUmItemTests(TestCase):
         self.assertEqual(ItemVenda.objects.count(), 0)
         self.assertContains(
             response,
-            "A venda deve possuir pelo menos um item.",
+            "Informe pelo menos 1 produto e a quantidade de sacos.",
         )
 
     @override_settings(ESTOQUE_DATA_CORTE=None)
@@ -581,8 +590,9 @@ class VendaMinimoUmItemTests(TestCase):
         })
         response = self.http.post(reverse("vendas:novo_pedido"), payload)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(Venda.objects.count(), 1)
-        self.assertEqual(ItemVenda.objects.count(), 1)
+        self.assertEqual(Pedido.objects.count(), 1)
+        self.assertEqual(ItemPedido.objects.count(), 1)
+        self.assertEqual(Venda.objects.count(), 0)
 
     @override_settings(ESTOQUE_DATA_CORTE=None)
     def test_dois_itens_validos_cria_venda(self):
@@ -595,8 +605,9 @@ class VendaMinimoUmItemTests(TestCase):
         })
         response = self.http.post(reverse("vendas:novo_pedido"), payload)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(Venda.objects.count(), 1)
-        self.assertEqual(ItemVenda.objects.count(), 2)
+        self.assertEqual(Pedido.objects.count(), 1)
+        self.assertEqual(ItemPedido.objects.count(), 2)
+        self.assertEqual(Venda.objects.count(), 0)
 
     @override_settings(ESTOQUE_DATA_CORTE=None)
     def test_unico_item_com_delete_nao_cria_venda(self):
@@ -613,7 +624,7 @@ class VendaMinimoUmItemTests(TestCase):
         self.assertEqual(MovimentacaoProduto.objects.count(), 0)
         self.assertContains(
             response,
-            "A venda deve possuir pelo menos um item.",
+            "Informe pelo menos 1 produto e a quantidade de sacos.",
         )
 
     @override_settings(ESTOQUE_DATA_CORTE=None)
@@ -627,9 +638,10 @@ class VendaMinimoUmItemTests(TestCase):
         })
         response = self.http.post(reverse("vendas:novo_pedido"), payload)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(Venda.objects.count(), 1)
-        self.assertEqual(ItemVenda.objects.count(), 1)
-        self.assertEqual(ItemVenda.objects.get().quantidade, Decimal("4"))
+        self.assertEqual(Pedido.objects.count(), 1)
+        self.assertEqual(ItemPedido.objects.count(), 1)
+        self.assertEqual(ItemPedido.objects.get().quantidade, 4)
+        self.assertEqual(Venda.objects.count(), 0)
 
     @override_settings(ESTOQUE_DATA_CORTE=None)
     def test_item_valido_mais_delete_persiste_somente_o_valido(self):
@@ -643,9 +655,10 @@ class VendaMinimoUmItemTests(TestCase):
         })
         response = self.http.post(reverse("vendas:novo_pedido"), payload)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(Venda.objects.count(), 1)
-        self.assertEqual(ItemVenda.objects.count(), 1)
-        self.assertEqual(ItemVenda.objects.get().produto_id, self.produto_b.pk)
+        self.assertEqual(Pedido.objects.count(), 1)
+        self.assertEqual(ItemPedido.objects.count(), 1)
+        self.assertEqual(ItemPedido.objects.get().produto_id, self.produto_b.pk)
+        self.assertEqual(Venda.objects.count(), 0)
 
 
 class VendaAdminSaidaTests(TestCase):
@@ -678,84 +691,18 @@ class VendaAdminSaidaTests(TestCase):
             "_save": "Salvar",
         }
 
-    @override_settings(ESTOQUE_DATA_CORTE=date(2000, 1, 1))
-    def test_admin_cria_saida_com_produto_e_quantidade(self):
-        response = self.http.post(
+    def test_admin_nao_cria_venda_direta(self):
+        resposta = self.http.get(reverse("admin:vendas_venda_changelist"))
+        self.assertEqual(resposta.status_code, 200)
+        self.assertEqual(self.http.get(reverse("admin:vendas_venda_add")).status_code, 403)
+        resposta = self.http.post(
             reverse("admin:vendas_venda_add"),
             self._payload_add(quantidade=5),
         )
-        self.assertEqual(response.status_code, 302)
-        venda = Venda.objects.get()
-        item = ItemVenda.objects.get(venda=venda)
-        saidas = MovimentacaoProduto.objects.filter(tipo="SAIDA")
-        self.assertEqual(saidas.count(), 1)
-        saida = saidas.get()
-        self.assertEqual(saida.produto_id, self.produto.pk)
-        self.assertEqual(saida.quantidade, 5)
-        self.assertIn(f"venda #{venda.id}", saida.observacao)
-        self.assertEqual(item.quantidade, Decimal("5"))
-
-    @override_settings(ESTOQUE_DATA_CORTE=None)
-    def test_admin_respeita_corte_ausente_e_nao_gera_saida(self):
-        response = self.http.post(
-            reverse("admin:vendas_venda_add"),
-            self._payload_add(quantidade=5),
-        )
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(Venda.objects.count(), 1)
-        self.assertEqual(
-            MovimentacaoProduto.objects.filter(tipo="SAIDA").count(),
-            0,
-        )
-
-    @override_settings(ESTOQUE_DATA_CORTE=date(2099, 1, 1))
-    def test_admin_respeita_corte_futuro_e_nao_gera_saida(self):
-        response = self.http.post(
-            reverse("admin:vendas_venda_add"),
-            self._payload_add(quantidade=5),
-        )
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(Venda.objects.count(), 1)
-        self.assertEqual(
-            MovimentacaoProduto.objects.filter(tipo="SAIDA").count(),
-            0,
-        )
-
-    @override_settings(ESTOQUE_DATA_CORTE=date(2000, 1, 1))
-    def test_admin_nao_duplica_saida_na_criacao(self):
-        self.http.post(
-            reverse("admin:vendas_venda_add"),
-            self._payload_add(quantidade=5),
-        )
-        venda = Venda.objects.get()
-        self.assertEqual(
-            MovimentacaoProduto.objects.filter(
-                tipo="SAIDA",
-                produto=self.produto,
-            ).count(),
-            1,
-        )
-        item = ItemVenda.objects.get(venda=venda)
-        response = self.http.post(
-            reverse("admin:vendas_venda_change", args=[venda.pk]),
-            {
-                "cliente": self.cliente.pk,
-                "observacoes": "edicao",
-                "itens-TOTAL_FORMS": "1",
-                "itens-INITIAL_FORMS": "1",
-                "itens-MIN_NUM_FORMS": "0",
-                "itens-MAX_NUM_FORMS": "1000",
-                "itens-0-id": str(item.pk),
-                "itens-0-produto": str(self.produto.pk),
-                "itens-0-quantidade": "5",
-                "_save": "Salvar",
-            },
-        )
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(
-            MovimentacaoProduto.objects.filter(tipo="SAIDA").count(),
-            1,
-        )
+        self.assertEqual(resposta.status_code, 403)
+        self.assertEqual(Venda.objects.count(), 0)
+        self.assertEqual(ItemVenda.objects.count(), 0)
+        self.assertEqual(MovimentacaoProduto.objects.filter(tipo="SAIDA").count(), 0)
 
 
 class PoliticaDataCorteSemBackfillTests(TestCase):
@@ -797,15 +744,18 @@ class PoliticaDataCorteSemBackfillTests(TestCase):
             self.assertEqual(ItemVenda.objects.filter(venda=venda).count(), 1)
 
     def test_admin_e_tela_normal_usam_o_mesmo_servico(self):
-        from vendas.admin import VendaAdmin
+        from django.contrib import admin as django_admin
+        from vendas.models import Venda
+        from vendas.services import entregar_pedido
         from vendas.views import nova_venda
         import inspect
 
+        self.assertFalse(django_admin.site._registry[Venda].has_add_permission(None))
         self.assertIn(
             "registrar_saidas_venda",
-            inspect.getsource(VendaAdmin.save_related),
+            inspect.getsource(entregar_pedido),
         )
-        self.assertIn(
+        self.assertNotIn(
             "registrar_saidas_venda",
             inspect.getsource(nova_venda),
         )
@@ -827,6 +777,108 @@ class VendaClienteProtectTests(TestCase):
         with self.assertRaises(ProtectedError):
             cliente.delete()
         self.assertTrue(Venda.objects.filter(pk=venda.pk).exists())
+
+
+class IdempotenciaSaidaVendaTests(TestCase):
+
+    def setUp(self):
+        self.cliente = Cliente.objects.create(nome="Cliente idempotencia")
+        self.produto_a = Produto.objects.create(
+            nome="Produto idempotencia A",
+            peso_kg=11,
+            preco_venda="10.00",
+        )
+        self.produto_b = Produto.objects.create(
+            nome="Produto idempotencia B",
+            peso_kg=12,
+            preco_venda="7.00",
+        )
+
+    def _criar_venda(self, data_venda, itens):
+        venda = Venda.objects.create(cliente=self.cliente)
+        Venda.objects.filter(pk=venda.pk).update(data=data_venda)
+        venda.refresh_from_db()
+        for produto, quantidade in itens:
+            ItemVenda.objects.create(
+                venda=venda,
+                produto=produto,
+                quantidade=quantidade,
+            )
+        return venda
+
+    @override_settings(ESTOQUE_DATA_CORTE=date(2026, 9, 1))
+    def test_segunda_chamada_sequencial_nao_cria_outra_saida(self):
+        venda = self._criar_venda(date(2026, 9, 5), [(self.produto_a, 4)])
+        primeira = registrar_saidas_venda(venda)
+        self.assertEqual(len(primeira), 1)
+        self.assertEqual(primeira[0].quantidade, 4)
+        saldo = calcular_estoque_produto(produto=self.produto_a)
+        self.assertEqual(saldo, -4)
+
+        segunda = registrar_saidas_venda(venda)
+        self.assertEqual(segunda, [])
+        self.assertEqual(
+            MovimentacaoProduto.objects.filter(tipo="SAIDA").count(),
+            1,
+        )
+        self.assertEqual(
+            calcular_estoque_produto(produto=self.produto_a),
+            saldo,
+        )
+
+    @override_settings(ESTOQUE_DATA_CORTE=date(2026, 9, 1))
+    def test_segunda_chamada_com_dois_itens_nao_duplica(self):
+        venda = self._criar_venda(
+            date(2026, 9, 5),
+            [(self.produto_a, 10), (self.produto_b, 5)],
+        )
+        primeira = registrar_saidas_venda(venda)
+        self.assertEqual(len(primeira), 2)
+        segunda = registrar_saidas_venda(venda)
+        self.assertEqual(segunda, [])
+        self.assertEqual(
+            MovimentacaoProduto.objects.filter(tipo="SAIDA").count(),
+            2,
+        )
+        quantidades = {
+            movimento.produto_id: movimento.quantidade
+            for movimento in MovimentacaoProduto.objects.filter(tipo="SAIDA")
+        }
+        self.assertEqual(quantidades[self.produto_a.id], 10)
+        self.assertEqual(quantidades[self.produto_b.id], 5)
+
+    @override_settings(ESTOQUE_DATA_CORTE=date(2026, 9, 1))
+    def test_estoque_insuficiente_continua_negativo_sem_segunda_saida(self):
+        venda = self._criar_venda(date(2026, 9, 5), [(self.produto_a, 10)])
+        primeira = registrar_saidas_venda(venda)
+        self.assertEqual(len(primeira), 1)
+        self.assertEqual(calcular_estoque_produto(produto=self.produto_a), -10)
+        self.assertEqual(registrar_saidas_venda(venda), [])
+        self.assertEqual(
+            MovimentacaoProduto.objects.filter(tipo="SAIDA").count(),
+            1,
+        )
+        self.assertEqual(calcular_estoque_produto(produto=self.produto_a), -10)
+
+    @override_settings(ESTOQUE_DATA_CORTE=None)
+    def test_corte_vazio_nao_cria_saida_em_chamadas_repetidas(self):
+        venda = self._criar_venda(date(2026, 9, 5), [(self.produto_a, 6)])
+        self.assertEqual(registrar_saidas_venda(venda), [])
+        self.assertEqual(registrar_saidas_venda(venda), [])
+        self.assertEqual(MovimentacaoProduto.objects.count(), 0)
+
+    @override_settings(ESTOQUE_DATA_CORTE=date(2026, 9, 1))
+    def test_quantidade_fracionada_continua_sendo_recusada(self):
+        venda = self._criar_venda(
+            date(2026, 9, 5),
+            [(self.produto_a, Decimal("10.50"))],
+        )
+        with self.assertRaises(QuantidadeNaoInteira):
+            registrar_saidas_venda(venda)
+        self.assertEqual(MovimentacaoProduto.objects.filter(tipo="SAIDA").count(), 0)
+        with self.assertRaises(QuantidadeNaoInteira):
+            registrar_saidas_venda(venda)
+        self.assertEqual(MovimentacaoProduto.objects.count(), 0)
 
 
 class VendaSaldoInsuficientePermiteSaidaTests(TestCase):
@@ -920,6 +972,8 @@ class VendaCriadoPorTests(TestCase):
     def _payload(self):
         return {
             "cliente": self.cliente.pk,
+            "endereco": "Rua dos Testes, 10",
+            "cidade": "Marília",
             "observacoes": "",
             "criado_por": str(self.outro.pk),
             "itens-TOTAL_FORMS": "1",
@@ -937,16 +991,16 @@ class VendaCriadoPorTests(TestCase):
             self._payload(),
         )
         self.assertEqual(response.status_code, 302)
-        venda = Venda.objects.get()
-        self.assertEqual(venda.criado_por_id, self.user.pk)
-        self.assertNotEqual(venda.criado_por_id, self.outro.pk)
+        pedido = Pedido.objects.get()
+        self.assertEqual(pedido.criado_por_id, self.user.pk)
+        self.assertNotEqual(pedido.criado_por_id, self.outro.pk)
+        self.assertEqual(Venda.objects.count(), 0)
         self.assertEqual(
             MovimentacaoProduto.objects.filter(tipo="SAIDA").count(),
-            1,
+            0,
         )
 
-    @override_settings(ESTOQUE_DATA_CORTE=date(2000, 1, 1))
-    def test_admin_cria_com_usuario_e_edicao_nao_troca(self):
+    def test_admin_nao_cria_venda_fora_do_pedido(self):
         User = get_user_model()
         admin_user = User.objects.create_superuser(
             username="admin-audit-venda",
@@ -967,28 +1021,6 @@ class VendaCriadoPorTests(TestCase):
                 "_save": "Salvar",
             },
         )
-        self.assertEqual(response.status_code, 302)
-        venda = Venda.objects.get()
-        self.assertEqual(venda.criado_por_id, admin_user.pk)
-        self.assertEqual(
-            MovimentacaoProduto.objects.filter(tipo="SAIDA").count(),
-            1,
-        )
-        response = self.http.post(
-            reverse("admin:vendas_venda_change", args=[venda.pk]),
-            {
-                "cliente": self.cliente.pk,
-                "observacoes": "editado",
-                "itens-TOTAL_FORMS": "1",
-                "itens-INITIAL_FORMS": "1",
-                "itens-MIN_NUM_FORMS": "0",
-                "itens-MAX_NUM_FORMS": "1000",
-                "itens-0-id": str(venda.itens.get().pk),
-                "itens-0-produto": str(self.produto.pk),
-                "itens-0-quantidade": "2",
-                "_save": "Salvar",
-            },
-        )
-        self.assertEqual(response.status_code, 302)
-        venda.refresh_from_db()
-        self.assertEqual(venda.criado_por_id, admin_user.pk)
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(Venda.objects.count(), 0)
+        self.assertEqual(MovimentacaoProduto.objects.filter(tipo="SAIDA").count(), 0)

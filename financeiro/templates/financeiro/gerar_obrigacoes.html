@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Gerar obrigações | GELOSAR{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'financeiro/css/financeiro_form.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="gs-page financeiro-form-page">
+    <header class="gs-page-header">
+        <div>
+            <ol class="gs-breadcrumb">
+                <li><a href="{% url 'financeiro:lista_obrigacoes' %}">Obrigações</a></li>
+                <li aria-hidden="true">/</li>
+                <li>Gerar exercício</li>
+            </ol>
+            <h1 class="gs-page-header__title">Gerar obrigações do exercício</h1>
+            <p class="gs-page-header__desc">A ação é idempotente e não cria contas a pagar automaticamente.</p>
+        </div>
+    </header>
+    <div class="row justify-content-center">
+        <div class="col-12 col-xl-8">
+            <div class="gs-card">
+                <form method="post" novalidate class="gs-form">
+                    {% csrf_token %}
+                    <div class="row g-2">
+                        <div class="col-12 col-md-6">
+                            <label class="gs-label" for="{{ form.exercicio.id_for_label }}">Exercício *</label>
+                            {{ form.exercicio }}
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label class="gs-label" for="{{ form.veiculo.id_for_label }}">Veículo</label>
+                            {{ form.veiculo }}
+                        </div>
+                    </div>
+                    <div class="gs-form-actions">
+                        <a href="{% url 'financeiro:lista_obrigacoes' %}" class="gs-btn gs-btn-outline">Voltar</a>
+                        <button type="submit" class="gs-btn gs-btn-primary">Gerar obrigações</button>
+                    </div>
+                </form>
+                {% if resumo %}
+                <p class="gs-field-hint">Criadas: {{ resumo.criadas }} · Atualizadas: {{ resumo.atualizadas }} · Preservadas: {{ resumo.preservadas }}</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

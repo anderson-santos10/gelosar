@@ -64,8 +64,8 @@
                         <li class="gs-nav__item">
                             <a
                                 href="{% url 'dashboard' %}"
-                                class="gs-nav__link{% if rn == 'dashboard' %} is-active{% endif %}"
-                                {% if rn == 'dashboard' %}aria-current="page"{% endif %}
+                                class="gs-nav__link{% if rn == 'dashboard' and ns != 'financeiro' %} is-active{% endif %}"
+                                {% if rn == 'dashboard' and ns != 'financeiro' %}aria-current="page"{% endif %}
                             >
                                 <i class="bi bi-grid-1x2" aria-hidden="true"></i>
                                 <span>Dashboard</span>
@@ -183,14 +183,110 @@
                                 <li role="none" class="gs-dropdown__sep" aria-hidden="true"></li>
                                 {% if perms.vendas.add_venda %}
                                 <li role="none">
-                                    <a role="menuitem" href="{% url 'vendas:novo_pedido' %}" class="gs-dropdown__link{% if ns == 'vendas' %} is-active{% endif %}">
+                                    <a role="menuitem" href="{% url 'vendas:novo_pedido' %}" class="gs-dropdown__link{% if ns == 'vendas' and rn == 'novo_pedido' or ns == 'vendas' and rn == 'detalhe_venda' %} is-active{% endif %}">
                                         <i class="bi bi-cart3" aria-hidden="true"></i>
                                         <span>Vendas</span>
                                     </a>
                                 </li>
                                 {% endif %}
+                                {% if perms.vendas.view_pedido or perms.vendas.add_pedido or perms.vendas.entregar_pedido %}
+                                <li role="none" class="gs-dropdown__sep" aria-hidden="true"></li>
+                                <li role="none">
+                                    <span class="gs-dropdown__label">Pedidos</span>
+                                </li>
+                                {% if perms.vendas.view_pedido %}
+                                <li role="none">
+                                    <a role="menuitem" href="{% url 'vendas:pedidos_abertos' %}" class="gs-dropdown__link{% if rn == 'pedidos_abertos' %} is-active{% endif %}">
+                                        <i class="bi bi-clipboard" aria-hidden="true"></i>
+                                        <span>Pedidos em aberto</span>
+                                    </a>
+                                </li>
+                                <li role="none">
+                                    <a role="menuitem" href="{% url 'vendas:historico_pedidos' %}" class="gs-dropdown__link{% if rn == 'historico_pedidos' %} is-active{% endif %}">
+                                        <i class="bi bi-clock-history" aria-hidden="true"></i>
+                                        <span>Histórico de pedidos</span>
+                                    </a>
+                                </li>
+                                {% endif %}
+                                {% endif %}
                             </ul>
                         </li>
+
+                        {% if perms.financeiro.view_fornecedor or perms.financeiro.view_categoriafinanceira or perms.financeiro.view_contapagar or perms.financeiro.view_contareceber or perms.financeiro.view_contarecorrente or perms.financeiro.view_veiculo %}
+                        <li class="gs-nav__item has-dropdown{% if ns == 'financeiro' %} is-current{% endif %}">
+                            <button type="button" class="gs-nav__link gs-nav__trigger" aria-expanded="false" aria-haspopup="true" aria-controls="gsDropdownFinanceiro" id="gsTriggerFinanceiro">
+                                <i class="bi bi-cash-stack" aria-hidden="true"></i>
+                                <span>Financeiro</span>
+                                <i class="bi bi-chevron-down gs-nav__caret" aria-hidden="true"></i>
+                            </button>
+                            <ul class="gs-dropdown" id="gsDropdownFinanceiro" role="menu" aria-labelledby="gsTriggerFinanceiro">
+                                {% if perms.financeiro.view_contapagar %}
+                                <li role="none">
+                                    <a role="menuitem" href="{% url 'financeiro:dashboard' %}" class="gs-dropdown__link{% if ns == 'financeiro' and rn == 'dashboard' %} is-active{% endif %}">
+                                        <i class="bi bi-graph-up" aria-hidden="true"></i>
+                                        <span>Visão geral</span>
+                                    </a>
+                                </li>
+                                {% endif %}
+                                {% if perms.financeiro.view_contapagar %}
+                                <li role="none">
+                                    <a role="menuitem" href="{% url 'financeiro:relatorios' %}" class="gs-dropdown__link{% if rn == 'relatorios' %} is-active{% endif %}">
+                                        <i class="bi bi-bar-chart-line" aria-hidden="true"></i>
+                                        <span>Relatórios</span>
+                                    </a>
+                                </li>
+                                {% endif %}
+                                {% if perms.financeiro.view_contapagar %}
+                                <li role="none">
+                                    <a role="menuitem" href="{% url 'financeiro:lista_contas_pagar' %}" class="gs-dropdown__link{% if rn == 'lista_contas_pagar' or rn == 'cadastrar_conta_pagar' or rn == 'editar_conta_pagar' %} is-active{% endif %}">
+                                        <i class="bi bi-wallet2" aria-hidden="true"></i>
+                                        <span>Contas a pagar</span>
+                                    </a>
+                                </li>
+                                {% endif %}
+                                {% if perms.financeiro.view_contareceber %}
+                                <li role="none">
+                                    <a role="menuitem" href="{% url 'financeiro:lista_contas_receber' %}" class="gs-dropdown__link{% if rn == 'lista_contas_receber' or rn == 'cadastrar_conta_receber' or rn == 'editar_conta_receber' %} is-active{% endif %}">
+                                        <i class="bi bi-cash-coin" aria-hidden="true"></i>
+                                        <span>Contas a receber</span>
+                                    </a>
+                                </li>
+                                {% endif %}
+                                {% if perms.financeiro.view_contarecorrente %}
+                                <li role="none">
+                                    <a role="menuitem" href="{% url 'financeiro:lista_contas_recorrentes' %}" class="gs-dropdown__link{% if rn == 'lista_contas_recorrentes' or rn == 'cadastrar_conta_recorrente' or rn == 'editar_conta_recorrente' or rn == 'gerar_contas_recorrentes' %} is-active{% endif %}">
+                                        <i class="bi bi-arrow-repeat" aria-hidden="true"></i>
+                                        <span>Contas recorrentes</span>
+                                    </a>
+                                </li>
+                                {% endif %}
+                                {% if perms.financeiro.view_veiculo %}
+                                <li role="none">
+                                    <a role="menuitem" href="{% url 'financeiro:lista_veiculos' %}" class="gs-dropdown__link{% if 'veiculo' in rn or 'plano' in rn or 'manutencao' in rn or 'obrigacao' in rn %} is-active{% endif %}">
+                                        <i class="bi bi-speedometer2" aria-hidden="true"></i>
+                                        <span>Veículos</span>
+                                    </a>
+                                </li>
+                                {% endif %}
+                                {% if perms.financeiro.view_categoriafinanceira %}
+                                <li role="none">
+                                    <a role="menuitem" href="{% url 'financeiro:lista_categorias' %}" class="gs-dropdown__link{% if rn == 'lista_categorias' or rn == 'cadastrar_categoria' or rn == 'editar_categoria' %} is-active{% endif %}">
+                                        <i class="bi bi-tags" aria-hidden="true"></i>
+                                        <span>Categorias</span>
+                                    </a>
+                                </li>
+                                {% endif %}
+                                {% if perms.financeiro.view_fornecedor %}
+                                <li role="none">
+                                    <a role="menuitem" href="{% url 'financeiro:lista_fornecedores' %}" class="gs-dropdown__link{% if rn == 'lista_fornecedores' or rn == 'cadastrar_fornecedor' or rn == 'editar_fornecedor' %} is-active{% endif %}">
+                                        <i class="bi bi-truck" aria-hidden="true"></i>
+                                        <span>Fornecedores</span>
+                                    </a>
+                                </li>
+                                {% endif %}
+                            </ul>
+                        </li>
+                        {% endif %}
 
                         <li class="gs-nav__item has-dropdown{% if rn == 'contrato_comodato' or rn == 'contrato_comodato_novo' or rn == 'contrato_comodato_detalhe' or rn == 'contrato_comodato_editar' or rn == 'indice_documentos' %} is-current{% endif %}">
                             <button type="button" class="gs-nav__link gs-nav__trigger" aria-expanded="false" aria-haspopup="true" aria-controls="gsDropdownDocumentos" id="gsTriggerDocumentos">

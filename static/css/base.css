@@ -52,6 +52,17 @@
     --gs-shadow-lg: 0 14px 32px rgba(11, 44, 92, 0.12);
     --gs-shadow-nav: 0 1px 0 rgba(255, 255, 255, 0.06), 0 4px 16px rgba(7, 30, 64, 0.22);
 
+    --gs-hud-bg: #071E40;
+    --gs-hud-border: rgba(126, 200, 255, 0.22);
+    --gs-hud-blue: #3D9BFF;
+    --gs-hud-blue-2: #7EC8FF;
+    --gs-hud-text: #F7FBFF;
+    --gs-hud-muted: #A9BED4;
+    --gs-hud-track: #163456;
+    --gs-hud-grid: rgba(169, 190, 212, 0.16);
+    --gs-hud-glow: 0 0 28px rgba(61, 155, 255, 0.16);
+    --gs-hud-radius: 16px;
+
     /* Spacing */
     --gs-space-1: 0.25rem;
     --gs-space-2: 0.5rem;
@@ -540,6 +551,16 @@ body.gs-app .page-content:focus {
     background: var(--gs-border);
 }
 
+.gs-dropdown__label {
+    display: block;
+    padding: 0.35rem 0.75rem 0.15rem;
+    color: var(--gs-text-muted);
+    font-size: 0.75rem;
+    font-weight: var(--gs-font-weight-bold);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
 .has-dropdown.is-open > .gs-nav__trigger .gs-nav__caret,
 .gs-user.is-open .gs-nav__caret {
     transform: rotate(180deg);
@@ -786,6 +807,22 @@ body.gs-app .card-gs,
     border-radius: var(--gs-radius-lg);
     box-shadow: var(--gs-shadow-sm);
     padding: var(--gs-space-5);
+}
+
+.gs-card.gs-hud,
+body.gs-app .card-gs.gs-hud {
+    background: var(--gs-hud-bg);
+    color: var(--gs-hud-text);
+    border: 1px solid var(--gs-hud-border);
+    border-radius: var(--gs-hud-radius);
+    box-shadow: var(--gs-hud-glow);
+}
+
+.gs-card.gs-hud .gs-card__title,
+.gs-card.gs-hud .gs-section-title,
+body.gs-app .card-gs.gs-hud .gs-section-label {
+    color: var(--gs-hud-muted);
+    letter-spacing: 0.08em;
 }
 
 .gs-card__title {
@@ -1306,6 +1343,15 @@ body.gs-app .table tbody tr:hover,
 @media (max-width: 1199.98px) {
     .gs-brand__text {
         display: none;
+    }
+}
+
+/* Safari amplia a página ao focar campo com fonte abaixo de 16px. */
+@media (max-width: 430px) {
+    body.gs-app input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="file"]):not([type="button"]):not([type="submit"]):not([type="reset"]):not([type="image"]):not([type="range"]),
+    body.gs-app select,
+    body.gs-app textarea {
+        font-size: 16px;
     }
 }
 

@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ manutencao.descricao }} | GELOSAR{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'financeiro/css/financeiro_list.css' %}">
+<link rel="stylesheet" href="{% static 'financeiro/css/veiculos.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="gs-page">
+    <header class="gs-page-header">
+        <div>
+            <ol class="gs-breadcrumb">
+                <li><a href="{% url 'financeiro:detalhe_veiculo' veiculo.pk %}">{{ veiculo.placa_formatada }}</a></li>
+                <li aria-hidden="true">/</li>
+                <li><a href="{% url 'financeiro:lista_manutencoes' veiculo.pk %}">Manutenções</a></li>
+                <li aria-hidden="true">/</li>
+                <li>{{ manutencao.descricao }}</li>
+            </ol>
+            <h1 class="gs-page-header__title">{{ manutencao.descricao }}</h1>
+            <p class="gs-page-header__desc">
+                {{ manutencao.data_realizacao|date:"d/m/Y" }} · {{ manutencao.km_realizacao }} km
+                {% if manutencao.plano %} · Plano: {{ manutencao.plano.nome }}{% endif %}
+            </p>
+        </div>
+        <div class="gs-page-header__actions">
+            {% if perms.financeiro.change_manutencaoveiculo %}
+            <a href="{% url 'financeiro:editar_manutencao' veiculo.pk manutencao.pk %}" class="gs-btn gs-btn-outline">Editar</a>
+            {% endif %}
+            {% if perms.financeiro.add_contapagar %}
+            <a href="{% url 'financeiro:cadastrar_conta_pagar' %}" class="gs-btn gs-btn-primary">Lançar despesa</a>
+            {% endif %}
+        </div>
+    </header>
+
+    <div class="gs-card mb-3">
+        <p><strong>Fornecedor:</strong> {{ manutencao.fornecedor.nome|default:"—" }}</p>
+        {% if manutencao.observacoes %}<p>{{ manutencao.observacoes }}</p>{% endif %}
+        {% if manutencao.anexo %}
+        <p><a href="{% url 'financeiro:download_anexo_manutencao' veiculo.pk manutencao.pk %}">Baixar anexo</a></p>
+        {% endif %}
+        <p><strong>Custo financeiro associado:</strong> R$ {{ custo_financeiro|floatformat:2 }}</p>
+        <p class="gs-muted">O valor oficial é a soma das contas a pagar vinculadas. Não há valor duplicado nesta manutenção.</p>
+    </div>
+
+    <section class="gs-card">
+        <h2 class="gs-section-title">Contas a pagar relacionadas</h2>
+        {% if contas %}
+        <div class="gs-table-wrap">
+            <table class="gs-table">
+                <thead>
+                    <tr>
+                        <th>Descrição</th>
+                        <th>Categoria</th>
+                        <th>Valor</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for conta in contas %}
+                    <tr>
+                        <td>{{ conta.descricao }}</td>
+                        <td>{{ conta.categoria.nome }}</td>
+                        <td>R$ {{ conta.valor|floatformat:2 }}</td>
+                        <td>{{ conta.status_display_financeiro }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p class="gs-muted">Nenhuma conta a pagar vinculada.</p>
+        {% endif %}
+    </section>
+</div>
+{% endblock %}

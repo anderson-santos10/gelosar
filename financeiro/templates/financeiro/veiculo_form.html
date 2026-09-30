@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{% if form.instance.pk %}Editar veículo | GELOSAR{% else %}Novo veículo | GELOSAR{% endif %}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'financeiro/css/financeiro_form.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="gs-page financeiro-form-page">
+    <header class="gs-page-header">
+        <div>
+            <ol class="gs-breadcrumb">
+                <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                <li aria-hidden="true">/</li>
+                <li><a href="{% url 'financeiro:lista_veiculos' %}">Veículos</a></li>
+                <li aria-hidden="true">/</li>
+                <li>{% if form.instance.pk %}Editar veículo{% else %}Novo veículo{% endif %}</li>
+            </ol>
+            <h1 class="gs-page-header__title">{% if form.instance.pk %}Editar veículo{% else %}Cadastrar veículo{% endif %}</h1>
+        </div>
+    </header>
+    <div class="row justify-content-center">
+        <div class="col-12 col-xl-10">
+            <div class="gs-card">
+                <form method="post" novalidate class="gs-form">
+                    {% csrf_token %}
+                    {% if form.non_field_errors %}
+                    <div class="gs-alert gs-alert--error" role="alert">
+                        <div class="gs-alert__body">
+                            <i class="bi bi-exclamation-octagon-fill" aria-hidden="true"></i>
+                            <span>{{ form.non_field_errors|striptags }}</span>
+                        </div>
+                    </div>
+                    {% endif %}
+                    <div class="row g-2">
+                        <div class="col-12 col-md-4">
+                            <label class="gs-label" for="{{ form.marca.id_for_label }}">Marca *</label>
+                            {{ form.marca }}
+                            {% if form.marca.errors %}<p class="gs-field-error">{{ form.marca.errors|striptags }}</p>{% endif %}
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <label class="gs-label" for="{{ form.modelo.id_for_label }}">Modelo *</label>
+                            {{ form.modelo }}
+                            {% if form.modelo.errors %}<p class="gs-field-error">{{ form.modelo.errors|striptags }}</p>{% endif %}
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <label class="gs-label" for="{{ form.versao.id_for_label }}">Versão</label>
+                            {{ form.versao }}
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <label class="gs-label" for="{{ form.placa.id_for_label }}">Placa *</label>
+                            {{ form.placa }}
+                            {% if form.placa.errors %}<p class="gs-field-error">{{ form.placa.errors|striptags }}</p>{% endif %}
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <label class="gs-label" for="{{ form.renavam.id_for_label }}">RENAVAM</label>
+                            {{ form.renavam }}
+                            {% if form.renavam.errors %}<p class="gs-field-error">{{ form.renavam.errors|striptags }}</p>{% endif %}
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <label class="gs-label" for="{{ form.uf.id_for_label }}">UF</label>
+                            {{ form.uf }}
+                        </div>
+                        <div class="col-12 col-md-3">
+                            <label class="gs-label" for="{{ form.ano_fabricacao.id_for_label }}">Ano fabricação *</label>
+                            {{ form.ano_fabricacao }}
+                            {% if form.ano_fabricacao.errors %}<p class="gs-field-error">{{ form.ano_fabricacao.errors|striptags }}</p>{% endif %}
+                        </div>
+                        <div class="col-12 col-md-3">
+                            <label class="gs-label" for="{{ form.ano_modelo.id_for_label }}">Ano modelo *</label>
+                            {{ form.ano_modelo }}
+                            {% if form.ano_modelo.errors %}<p class="gs-field-error">{{ form.ano_modelo.errors|striptags }}</p>{% endif %}
+                        </div>
+                        <div class="col-12 col-md-3">
+                            <label class="gs-label" for="{{ form.km_atual.id_for_label }}">Km atual</label>
+                            {{ form.km_atual }}
+                            {% if form.km_atual.errors %}<p class="gs-field-error">{{ form.km_atual.errors|striptags }}</p>{% endif %}
+                        </div>
+                        <div class="col-12 col-md-3">
+                            <label class="gs-label" for="{{ form.data_aquisicao.id_for_label }}">Aquisição</label>
+                            {{ form.data_aquisicao }}
+                        </div>
+                        <div class="col-12">
+                            <div class="gs-check-wrapper">
+                                <label class="gs-check" for="{{ form.ativo.id_for_label }}">
+                                    {{ form.ativo }}
+                                    <span>Veículo ativo</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <label class="gs-label" for="{{ form.observacoes.id_for_label }}">Observações</label>
+                            {{ form.observacoes }}
+                        </div>
+                    </div>
+                    <div class="gs-form-actions">
+                        <a href="{% url 'financeiro:lista_veiculos' %}" class="gs-btn gs-btn-outline">Cancelar</a>
+                        <button type="submit" class="gs-btn gs-btn-primary">Salvar veículo</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

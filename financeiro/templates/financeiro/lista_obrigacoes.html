@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Obrigações de veículos | GELOSAR{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'financeiro/css/financeiro_list.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="gs-page">
+    <header class="gs-page-header">
+        <div>
+            <ol class="gs-breadcrumb">
+                <li><a href="{% url 'financeiro:lista_veiculos' %}">Veículos</a></li>
+                <li aria-hidden="true">/</li>
+                <li>Obrigações</li>
+            </ol>
+            <h1 class="gs-page-header__title">Obrigações de veículos</h1>
+            <p class="gs-page-header__desc">IPVA, licenciamento, seguro e demais obrigações por exercício.</p>
+        </div>
+        <div class="gs-page-header__actions">
+            {% if perms.financeiro.add_obrigacaoveiculo and perms.financeiro.change_obrigacaoveiculo %}
+            <a href="{% url 'financeiro:gerar_obrigacoes' %}" class="gs-btn gs-btn-primary">Gerar obrigações</a>
+            {% endif %}
+        </div>
+    </header>
+
+    <div class="gs-card gs-filter-card mb-3">
+        <form method="get" class="gs-form gs-filter-form">
+            <div class="row g-2 align-items-end">
+                <div class="col-12 col-md-3">
+                    <label class="gs-label" for="filtro-veiculo">Veículo</label>
+                    <select class="form-select gs-input" id="filtro-veiculo" name="veiculo">
+                        <option value="">Todos</option>
+                        {% for item in veiculos_filtro %}
+                        <option value="{{ item.pk }}"{% if filtros.veiculo == item.pk|stringformat:"s" %} selected{% endif %}>{{ item }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-12 col-md-2">
+                    <label class="gs-label" for="filtro-tipo">Tipo</label>
+                    <select class="form-select gs-input" id="filtro-tipo" name="tipo">
+                        <option value="">Todos</option>
+                        {% for value, label in tipos %}
+                        <option value="{{ value }}"{% if filtros.tipo == value %} selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-12 col-md-2">
+                    <label class="gs-label" for="filtro-exercicio">Exercício</label>
+                    <input class="form-control gs-input" type="number" id="filtro-exercicio" name="exercicio" value="{{ filtros.exercicio }}">
+                </div>
+                <div class="col-12 col-md-2">
+                    <label class="gs-label" for="filtro-status">Status</label>
+                    <select class="form-select gs-input" id="filtro-status" name="status">
+                        <option value="">Todos</option>
+                        {% for value, label in status_choices %}
+                        <option value="{{ value }}"{% if filtros.status == value %} selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-12 col-md-2">
+                    <button type="submit" class="gs-btn gs-btn-outline">Filtrar</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    {% if linhas %}
+    <div class="gs-table-wrap">
+        <table class="gs-table">
+            <thead>
+                <tr>
+                    <th>Veículo</th>
+                    <th>Tipo</th>
+                    <th>Exercício</th>
+                    <th>Vencimento</th>
+                    <th>Valor</th>
+                    <th>Status</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for linha in linhas %}
+                <tr>
+                    <td>{{ linha.obrigacao.veiculo }}</td>
+                    <td>{{ linha.obrigacao.get_tipo_display }}</td>
+                    <td>{{ linha.obrigacao.exercicio }}</td>
+                    <td>{% if linha.obrigacao.data_vencimento %}{{ linha.obrigacao.data_vencimento|date:"d/m/Y" }}{% else %}—{% endif %}</td>
+                    <td>{% if linha.obrigacao.valor_previsto %}R$ {{ linha.obrigacao.valor_previsto|floatformat:2 }}{% else %}—{% endif %}</td>
+                    <td><span class="gs-badge {{ linha.badge }}">{{ linha.rotulo }}</span></td>
+                    <td>
+                        <a href="{% url 'financeiro:detalhe_obrigacao' linha.obrigacao.pk %}" class="gs-btn gs-btn-outline">Abrir</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% if page_obj.has_other_pages %}
+    <nav class="gs-pagination" aria-label="Paginação de obrigações">
+        {% if page_obj.has_previous %}
+        <a class="gs-btn gs-btn-outline" href="?page={{ page_obj.previous_page_number }}{% if filtro_querystring %}&amp;{{ filtro_querystring }}{% endif %}">Anterior</a>
+        {% endif %}
+        <span class="gs-pagination__info">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+        {% if page_obj.has_next %}
+        <a class="gs-btn gs-btn-outline" href="?page={{ page_obj.next_page_number }}{% if filtro_querystring %}&amp;{{ filtro_querystring }}{% endif %}">Próxima</a>
+        {% endif %}
+    </nav>
+    {% endif %}
+    {% else %}
+    <div class="gs-empty">
+        <h2 class="gs-empty__title">Nenhuma obrigação encontrada</h2>
+        <p class="gs-empty__text">Gere as obrigações do exercício para a frota ativa.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

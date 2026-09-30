@@ -19,6 +19,15 @@ class ModulePermissionRequiredMixin(PermissionRequiredMixin):
         return super().handle_no_permission()
 
 
+def usuario_pode_ver_pedido(user, pedido):
+    """Quem acompanha ou entrega vê qualquer pedido. Quem só cria vê o próprio."""
+    if user.has_perm("vendas.view_pedido") or user.has_perm("vendas.entregar_pedido"):
+        return True
+    return bool(
+        user.has_perm("vendas.add_venda") and pedido.criado_por_id == user.pk
+    )
+
+
 def module_permission_required(perm):
     """Equivalente FBV: login se anônimo; 403 se autenticado sem permissão."""
 

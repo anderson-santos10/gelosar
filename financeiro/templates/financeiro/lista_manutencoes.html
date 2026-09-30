@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Manutenções | GELOSAR{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'financeiro/css/financeiro_list.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="gs-page">
+    <header class="gs-page-header">
+        <div>
+            <ol class="gs-breadcrumb">
+                <li><a href="{% url 'financeiro:detalhe_veiculo' veiculo.pk %}">{{ veiculo.placa_formatada }}</a></li>
+                <li aria-hidden="true">/</li>
+                <li>Manutenções</li>
+            </ol>
+            <h1 class="gs-page-header__title">Manutenções de {{ veiculo.marca }} {{ veiculo.modelo }}</h1>
+        </div>
+        <div class="gs-page-header__actions">
+            {% if perms.financeiro.add_manutencaoveiculo %}
+            <a href="{% url 'financeiro:cadastrar_manutencao' veiculo.pk %}" class="gs-btn gs-btn-primary">Registrar manutenção</a>
+            {% endif %}
+        </div>
+    </header>
+    {% if manutencoes %}
+    <div class="gs-table-wrap">
+        <table class="gs-table">
+            <thead>
+                <tr>
+                    <th>Data</th>
+                    <th>Km</th>
+                    <th>Descrição</th>
+                    <th>Plano</th>
+                    <th>Fornecedor</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in manutencoes %}
+                <tr>
+                    <td>{{ item.data_realizacao|date:"d/m/Y" }}</td>
+                    <td>{{ item.km_realizacao }}</td>
+                    <td>{{ item.descricao }}</td>
+                    <td>{{ item.plano.nome|default:"—" }}</td>
+                    <td>{{ item.fornecedor.nome|default:"—" }}</td>
+                    <td>
+                        <a href="{% url 'financeiro:detalhe_manutencao' veiculo.pk item.pk %}" class="gs-btn gs-btn-outline">Abrir</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% if page_obj.has_other_pages %}
+    <nav class="gs-pagination" aria-label="Paginação de manutenções">
+        {% if page_obj.has_previous %}
+        <a class="gs-btn gs-btn-outline" href="?page={{ page_obj.previous_page_number }}">Anterior</a>
+        {% endif %}
+        <span class="gs-pagination__info">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+        {% if page_obj.has_next %}
+        <a class="gs-btn gs-btn-outline" href="?page={{ page_obj.next_page_number }}">Próxima</a>
+        {% endif %}
+    </nav>
+    {% endif %}
+    {% else %}
+    <div class="gs-empty">
+        <h2 class="gs-empty__title">Nenhuma manutenção registrada</h2>
+        {% if perms.financeiro.add_manutencaoveiculo %}
+        <a href="{% url 'financeiro:cadastrar_manutencao' veiculo.pk %}" class="gs-btn gs-btn-primary">Registrar manutenção</a>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

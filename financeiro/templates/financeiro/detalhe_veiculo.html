@@ -1,0 +1,200 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ veiculo.marca }} {{ veiculo.modelo }} | GELOSAR{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'financeiro/css/financeiro_list.css' %}">
+<link rel="stylesheet" href="{% static 'financeiro/css/veiculos.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="gs-page">
+    <header class="gs-page-header">
+        <div>
+            <ol class="gs-breadcrumb">
+                <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                <li aria-hidden="true">/</li>
+                <li><a href="{% url 'financeiro:lista_veiculos' %}">Veículos</a></li>
+                <li aria-hidden="true">/</li>
+                <li>{{ veiculo.placa_formatada }}</li>
+            </ol>
+            <h1 class="gs-page-header__title">{{ veiculo.marca }} {{ veiculo.modelo }}{% if veiculo.versao %} {{ veiculo.versao }}{% endif %}</h1>
+            <p class="gs-page-header__desc">
+                Placa {{ veiculo.placa_formatada }} · {{ veiculo.ano_fabricacao }}/{{ veiculo.ano_modelo }} · {{ veiculo.km_atual }} km
+                {% if veiculo.ativo %}
+                <span class="gs-badge gs-badge--ok">Ativo</span>
+                {% else %}
+                <span class="gs-badge gs-badge--neutral">Inativo</span>
+                {% endif %}
+            </p>
+        </div>
+        <div class="gs-page-header__actions">
+            {% if perms.financeiro.change_veiculo %}
+            <a href="{% url 'financeiro:editar_veiculo' veiculo.pk %}" class="gs-btn gs-btn-outline">Editar</a>
+            {% endif %}
+            {% if perms.financeiro.add_manutencaoveiculo %}
+            <a href="{% url 'financeiro:cadastrar_manutencao' veiculo.pk %}" class="gs-btn gs-btn-primary">Registrar manutenção</a>
+            {% endif %}
+        </div>
+    </header>
+
+    <div class="row g-3 mb-3">
+        <div class="col-12 col-md-6 col-xl">
+            <div class="gs-card">
+                <p class="gs-card__title">Manutenção atrasada</p>
+                <p class="gs-card__value">{{ atrasadas_count }}</p>
+            </div>
+        </div>
+        <div class="col-12 col-md-6 col-xl">
+            <div class="gs-card">
+                <p class="gs-card__title">Manutenção próxima</p>
+                <p class="gs-card__value">{{ proximas_count }}</p>
+            </div>
+        </div>
+        <div class="col-12 col-md-6 col-xl">
+            <div class="gs-card">
+                <p class="gs-card__title">IPVA {{ exercicio }}</p>
+                <p class="gs-card__value">{{ situacao_ipva.rotulo }}</p>
+                <p class="gs-muted">{{ situacao_ipva.motivo }}</p>
+            </div>
+        </div>
+        <div class="col-12 col-md-6 col-xl">
+            <div class="gs-card">
+                <p class="gs-card__title">Licenciamento {{ exercicio }}</p>
+                <p class="gs-card__value"><span class="gs-badge {{ licenciamento_badge }}">{{ licenciamento_rotulo }}</span></p>
+            </div>
+        </div>
+        <div class="col-12 col-md-6 col-xl">
+            <div class="gs-card">
+                <p class="gs-card__title">Custo no exercício</p>
+                <p class="gs-card__value">R$ {{ custo_ano|floatformat:2 }}</p>
+            </div>
+        </div>
+    </div>
+
+    <section class="gs-card mb-3">
+        <div class="gs-section-head">
+            <h2 class="gs-section-title">Manutenção preventiva</h2>
+            <div>
+                {% if perms.financeiro.view_planomanutencao %}
+                <a href="{% url 'financeiro:lista_planos_veiculo' veiculo.pk %}" class="gs-btn gs-btn-outline">Planos</a>
+                {% endif %}
+                {% if perms.financeiro.view_manutencaoveiculo %}
+                <a href="{% url 'financeiro:lista_manutencoes' veiculo.pk %}" class="gs-btn gs-btn-outline">Histórico</a>
+                {% endif %}
+            </div>
+        </div>
+        {% if situacoes %}
+        <div class="gs-table-wrap">
+            <table class="gs-table">
+                <thead>
+                    <tr>
+                        <th>Plano</th>
+                        <th>Última execução</th>
+                        <th>Próxima data</th>
+                        <th>Próxima km</th>
+                        <th>Situação</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in situacoes %}
+                    {% if item.plano.ativo %}
+                    <tr>
+                        <td>{{ item.plano.nome }}</td>
+                        <td>
+                            {% if item.ultima %}
+                            {{ item.ultima.data_realizacao|date:"d/m/Y" }} · {{ item.ultima.km_realizacao }} km
+                            {% else %}
+                            —
+                            {% endif %}
+                        </td>
+                        <td>{% if item.proxima_data %}{{ item.proxima_data|date:"d/m/Y" }}{% else %}—{% endif %}</td>
+                        <td>{% if item.proxima_km %}{{ item.proxima_km }} km{% else %}—{% endif %}</td>
+                        <td><span class="gs-badge {% if item.situacao == 'atrasada' %}gs-badge--danger{% elif item.situacao == 'proxima' %}gs-badge--warning{% elif item.situacao == 'em_dia' %}gs-badge--ok{% else %}gs-badge--neutral{% endif %}">{{ item.rotulo }}</span></td>
+                    </tr>
+                    {% endif %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p class="gs-muted">Nenhum plano cadastrado.</p>
+        {% endif %}
+    </section>
+
+    <section class="gs-card mb-3">
+        <div class="gs-section-head">
+            <h2 class="gs-section-title">Obrigações</h2>
+            {% if perms.financeiro.view_obrigacaoveiculo %}
+            <a href="{% url 'financeiro:lista_obrigacoes' %}?veiculo={{ veiculo.pk }}" class="gs-btn gs-btn-outline">Ver todas</a>
+            {% endif %}
+        </div>
+        {% if obrigacoes %}
+        <div class="gs-table-wrap">
+            <table class="gs-table">
+                <thead>
+                    <tr>
+                        <th>Tipo</th>
+                        <th>Exercício</th>
+                        <th>Vencimento</th>
+                        <th>Valor previsto</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for obrigacao in obrigacoes %}
+                    <tr>
+                        <td>{{ obrigacao.get_tipo_display }}</td>
+                        <td>{{ obrigacao.exercicio }}</td>
+                        <td>{% if obrigacao.data_vencimento %}{{ obrigacao.data_vencimento|date:"d/m/Y" }}{% else %}—{% endif %}</td>
+                        <td>{% if obrigacao.valor_previsto %}R$ {{ obrigacao.valor_previsto|floatformat:2 }}{% else %}—{% endif %}</td>
+                        <td>{{ obrigacao.get_status_display }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p class="gs-muted">Nenhuma obrigação gerada para este veículo.</p>
+        {% endif %}
+    </section>
+
+    <section class="gs-card">
+        <div class="gs-section-head">
+            <h2 class="gs-section-title">Financeiro</h2>
+            {% if perms.financeiro.add_contapagar %}
+            <a href="{% url 'financeiro:cadastrar_conta_pagar' %}" class="gs-btn gs-btn-outline">Nova conta</a>
+            {% endif %}
+        </div>
+        {% if contas %}
+        <div class="gs-table-wrap">
+            <table class="gs-table">
+                <thead>
+                    <tr>
+                        <th>Descrição</th>
+                        <th>Categoria</th>
+                        <th>Vencimento</th>
+                        <th>Valor</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for conta in contas %}
+                    <tr>
+                        <td>{{ conta.descricao }}</td>
+                        <td>{{ conta.categoria.nome }}</td>
+                        <td>{{ conta.data_vencimento|date:"d/m/Y" }}</td>
+                        <td>R$ {{ conta.valor|floatformat:2 }}</td>
+                        <td>{{ conta.status_display_financeiro }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p class="gs-muted">Nenhuma conta a pagar vinculada a este veículo.</p>
+        {% endif %}
+    </section>
+</div>
+{% endblock %}

@@ -1,0 +1,120 @@
+<div
+    class="contas-fragmento"
+    data-filtros-ativos="{{ filtros_ativos }}"
+>
+    <div class="row g-3 mb-3">
+        <div class="col-12 col-md-6 col-xl-3">
+            <div class="gs-card">
+                <p class="gs-card__title">Pendente</p>
+                <p class="gs-card__value">R$ {{ totais.total_pendente|floatformat:2 }}</p>
+            </div>
+        </div>
+        <div class="col-12 col-md-6 col-xl-3">
+            <div class="gs-card">
+                <p class="gs-card__title">Vencido</p>
+                <p class="gs-card__value">R$ {{ totais.total_vencido|floatformat:2 }}</p>
+            </div>
+        </div>
+        <div class="col-12 col-md-6 col-xl-3">
+            <div class="gs-card">
+                <p class="gs-card__title">Pago</p>
+                <p class="gs-card__value">R$ {{ totais.total_pago|floatformat:2 }}</p>
+            </div>
+        </div>
+        <div class="col-12 col-md-6 col-xl-3">
+            <div class="gs-card">
+                <p class="gs-card__title">Total filtrado</p>
+                <p class="gs-card__value">R$ {{ totais.total_geral|floatformat:2 }}</p>
+            </div>
+        </div>
+    </div>
+
+    {% if contas %}
+    <div class="gs-table-wrap">
+        <table class="gs-table">
+            <thead>
+                <tr>
+                    <th>Descrição</th>
+                    <th>Fornecedor</th>
+                    <th>Categoria</th>
+                    <th>Competência</th>
+                    <th>Vencimento</th>
+                    <th>Valor</th>
+                    <th>Status</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for conta in contas %}
+                <tr>
+                    <td>{{ conta.descricao }}</td>
+                    <td>{{ conta.fornecedor.nome|default:"-" }}</td>
+                    <td>{{ conta.categoria.nome }}</td>
+                    <td>{{ conta.competencia|date:"m/Y" }}</td>
+                    <td>{{ conta.data_vencimento|date:"d/m/Y" }}</td>
+                    <td>R$ {{ conta.valor|floatformat:2 }}</td>
+                    <td>
+                        {% if conta.vencida %}
+                        <span class="gs-badge gs-badge--danger">Vencida</span>
+                        {% elif conta.status == 'pendente' %}
+                        <span class="gs-badge gs-badge--warning">Pendente</span>
+                        {% elif conta.status == 'pago' %}
+                        <span class="gs-badge gs-badge--ok">Paga</span>
+                        {% else %}
+                        <span class="gs-badge gs-badge--neutral">Cancelada</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if perms.financeiro.change_contapagar and conta.status == 'pendente' %}
+                        <a href="{% url 'financeiro:editar_conta_pagar' conta.pk %}" class="gs-btn gs-btn-outline">Editar</a>
+                        <form method="post" action="{% url 'financeiro:marcar_conta_paga' conta.pk %}" class="gs-inline-form">
+                            {% csrf_token %}
+                            <button type="submit" class="gs-btn gs-btn-outline">Marcar paga</button>
+                        </form>
+                        <form method="post" action="{% url 'financeiro:cancelar_conta_pagar' conta.pk %}" class="gs-inline-form">
+                            {% csrf_token %}
+                            <button type="submit" class="gs-btn gs-btn-outline">Cancelar</button>
+                        </form>
+                        {% elif conta.status == 'pago' %}
+                        <span class="gs-muted">Conta paga — edição bloqueada</span>
+                        {% elif conta.status == 'cancelado' %}
+                        <span class="gs-muted">Conta cancelada — edição bloqueada</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% if page_obj.has_other_pages %}
+    <nav class="gs-pagination" aria-label="Paginação de contas a pagar">
+        {% if page_obj.has_previous %}
+        <a class="gs-btn gs-btn-outline" href="?page={{ page_obj.previous_page_number }}{% if filtro_querystring %}&amp;{{ filtro_querystring }}{% endif %}">Anterior</a>
+        {% endif %}
+        <span class="gs-pagination__info">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+        {% if page_obj.has_next %}
+        <a class="gs-btn gs-btn-outline" href="?page={{ page_obj.next_page_number }}{% if filtro_querystring %}&amp;{{ filtro_querystring }}{% endif %}">Próxima</a>
+        {% endif %}
+    </nav>
+    {% endif %}
+
+    {% else %}
+    <div class="gs-empty">
+        {% if existem_contas and filtros_ativos %}
+        <h2 class="gs-empty__title">Nenhuma conta encontrada</h2>
+        <p class="gs-empty__text">Não encontramos contas que correspondam aos filtros selecionados.</p>
+        <a href="{% url 'financeiro:lista_contas_pagar' %}" class="gs-btn gs-btn-outline" data-lista-limpar>Limpar filtros</a>
+        {% elif existem_contas %}
+        <h2 class="gs-empty__title">Nenhuma conta encontrada</h2>
+        <p class="gs-empty__text">Não encontramos contas que correspondam aos filtros atuais.</p>
+        {% else %}
+        <h2 class="gs-empty__title">Nenhuma conta cadastrada.</h2>
+        <p class="gs-empty__text">Cadastre a primeira conta a pagar para começar o controle financeiro.</p>
+        {% if perms.financeiro.add_contapagar %}
+        <a href="{% url 'financeiro:cadastrar_conta_pagar' %}" class="gs-btn gs-btn-primary">Nova conta</a>
+        {% endif %}
+        {% endif %}
+    </div>
+    {% endif %}
+</div>

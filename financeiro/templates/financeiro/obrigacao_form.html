@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Editar obrigação | GELOSAR{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'financeiro/css/financeiro_form.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="gs-page financeiro-form-page">
+    <header class="gs-page-header">
+        <div>
+            <ol class="gs-breadcrumb">
+                <li><a href="{% url 'financeiro:lista_obrigacoes' %}">Obrigações</a></li>
+                <li aria-hidden="true">/</li>
+                <li>Editar</li>
+            </ol>
+            <h1 class="gs-page-header__title">Editar obrigação</h1>
+        </div>
+    </header>
+    <div class="row justify-content-center">
+        <div class="col-12 col-xl-8">
+            <div class="gs-card">
+                <form method="post" novalidate class="gs-form">
+                    {% csrf_token %}
+                    <div class="row g-2">
+                        <div class="col-12 col-md-6">
+                            <label class="gs-label" for="{{ form.tipo.id_for_label }}">Tipo</label>
+                            {{ form.tipo }}
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label class="gs-label" for="{{ form.exercicio.id_for_label }}">Exercício</label>
+                            {{ form.exercicio }}
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label class="gs-label" for="{{ form.data_vencimento.id_for_label }}">Vencimento</label>
+                            {{ form.data_vencimento }}
+                            <p class="gs-field-hint">Informe a data. O sistema não inventa calendário pela placa.</p>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label class="gs-label" for="{{ form.status.id_for_label }}">Status</label>
+                            {{ form.status }}
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label class="gs-label" for="{{ form.valor_previsto.id_for_label }}">Valor previsto</label>
+                            {{ form.valor_previsto }}
+                            {% if form.valor_previsto.errors %}<p class="gs-field-error">{{ form.valor_previsto.errors|striptags }}</p>{% endif %}
+                        </div>
+                        <div class="col-12">
+                            <label class="gs-label" for="{{ form.observacoes.id_for_label }}">Observações</label>
+                            {{ form.observacoes }}
+                        </div>
+                    </div>
+                    <div class="gs-form-actions">
+                        <a href="{% url 'financeiro:detalhe_obrigacao' form.instance.pk %}" class="gs-btn gs-btn-outline">Cancelar</a>
+                        <button type="submit" class="gs-btn gs-btn-primary">Salvar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

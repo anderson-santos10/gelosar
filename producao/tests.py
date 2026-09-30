@@ -331,11 +331,135 @@ class ProducaoCriadoPorTests(TestCase):
             {
                 "equipamento": self.equipamento.pk,
                 "produto": self.produto.pk,
-                "quantidade": "1",
+                "quantidade": "9",
                 "observacao": "editado",
                 "_save": "Salvar",
             },
         )
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, 403)
         producao.refresh_from_db()
         self.assertEqual(producao.criado_por_id, self.user.pk)
+        self.assertEqual(producao.quantidade, 1)
+        self.assertEqual(producao.observacao, "")
+
+
+class ProducaoAdminConsultaTests(TestCase):
+
+    def setUp(self):
+        User = get_user_model()
+        self.staff = User.objects.create_user(
+            username="consulta-prod",
+            password="teste-123",
+            is_staff=True,
+        )
+        conceder_permissoes(
+            self.staff,
+            "producao.view_producao",
+            "producao.add_producao",
+            "producao.change_producao",
+            "producao.delete_producao",
+        )
+        self.operador = User.objects.create_user(
+            username="operador-prod",
+            password="teste-123",
+        )
+        conceder_permissoes(self.operador, "producao.add_producao")
+        self.http = Client()
+        self.equipamento = Equipamento.objects.create(
+            nome="Máquina consulta",
+            tipo="maquina_gelo",
+        )
+        self.insumo = Insumo.objects.create(nome="Emb consulta")
+        self.produto = Produto.objects.create(
+            nome="Produto consulta",
+            peso_kg=Decimal("8.00"),
+            preco_venda="1.00",
+        )
+        ComposicaoProduto.objects.create(
+            produto=self.produto,
+            insumo=self.insumo,
+            quantidade=Decimal("2"),
+        )
+        self.producao = Producao.objects.create(
+            equipamento=self.equipamento,
+            produto=self.produto,
+            quantidade=3,
+            criado_por=self.operador,
+        )
+
+    def test_admin_nao_permite_adicionar(self):
+        self.http.force_login(self.staff)
+        self.assertEqual(
+            self.http.get(reverse("admin:producao_producao_add")).status_code,
+            403,
+        )
+        resposta = self.http.post(
+            reverse("admin:producao_producao_add"),
+            {
+                "equipamento": self.equipamento.pk,
+                "produto": self.produto.pk,
+                "quantidade": "2",
+                "observacao": "",
+                "_save": "Salvar",
+            },
+        )
+        self.assertEqual(resposta.status_code, 403)
+        self.assertEqual(Producao.objects.count(), 1)
+        self.assertEqual(MovimentacaoProduto.objects.count(), 0)
+        self.assertEqual(MovimentacaoInsumo.objects.count(), 0)
+
+    def test_admin_nao_permite_alterar(self):
+        self.http.force_login(self.staff)
+        resposta = self.http.post(
+            reverse("admin:producao_producao_change", args=[self.producao.pk]),
+            {
+                "equipamento": self.equipamento.pk,
+                "produto": self.produto.pk,
+                "quantidade": "9",
+                "observacao": "alterado pelo admin",
+                "_save": "Salvar",
+            },
+        )
+        self.assertEqual(resposta.status_code, 403)
+        self.producao.refresh_from_db()
+        self.assertEqual(self.producao.quantidade, 3)
+        self.assertEqual(self.producao.observacao, "")
+
+    def test_admin_nao_permite_excluir(self):
+        self.http.force_login(self.staff)
+        url = reverse("admin:producao_producao_delete", args=[self.producao.pk])
+        self.assertEqual(self.http.get(url).status_code, 403)
+        resposta = self.http.post(url, {"post": "yes"})
+        self.assertEqual(resposta.status_code, 403)
+        self.assertTrue(Producao.objects.filter(pk=self.producao.pk).exists())
+
+    def test_usuario_com_view_consulta_lista_e_registro(self):
+        self.http.force_login(self.staff)
+        lista = self.http.get(reverse("admin:producao_producao_changelist"))
+        self.assertEqual(lista.status_code, 200)
+        self.assertContains(lista, self.produto.nome)
+        detalhe = self.http.get(
+            reverse("admin:producao_producao_change", args=[self.producao.pk])
+        )
+        self.assertEqual(detalhe.status_code, 200)
+        self.assertContains(detalhe, self.produto.nome)
+
+    def test_tela_operacional_continua_criando_producao_e_estoque(self):
+        self.http.force_login(self.operador)
+        resposta = self.http.post(
+            reverse("producao:new_producao"),
+            {
+                "equipamento": self.equipamento.pk,
+                "produto": self.produto.pk,
+                "quantidade": "4",
+                "observacao": "",
+            },
+        )
+        self.assertEqual(resposta.status_code, 302)
+        self.assertEqual(Producao.objects.count(), 2)
+        entrada = MovimentacaoProduto.objects.get(tipo="ENTRADA")
+        self.assertEqual(entrada.produto_id, self.produto.pk)
+        self.assertEqual(entrada.quantidade, 4)
+        saida = MovimentacaoInsumo.objects.get(tipo="SAIDA")
+        self.assertEqual(saida.insumo_id, self.insumo.pk)
+        self.assertEqual(saida.quantidade, 8)

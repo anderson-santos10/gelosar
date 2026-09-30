@@ -1,0 +1,16 @@
+.gs-fin-relatorios .gs-subtitle {
+    margin: 1rem 0 0.5rem;
+    font-size: 0.95rem;
+}
+
+.gs-fin-relatorios .gs-ranking a {
+    color: inherit;
+}
+
+.gs-fin-relatorios .gs-filter-form .gs-btn-outline {
+    width: 100%;
+}
+
+.gs-fin-relatorios .gs-chart-wrap {
+    height: 280px;
+}

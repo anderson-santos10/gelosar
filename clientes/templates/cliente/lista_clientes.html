@@ -33,6 +33,7 @@
                     <th>CNPJ / CPF</th>
                     <th>Telefone</th>
                     <th>Cidade</th>
+                    <th>Comodato</th>
                     <th>Status</th>
                     <th>Cadastro</th>
                     <th>Ações</th>
@@ -46,9 +47,16 @@
                             {{ cliente.nome }}
                         </a>
                     </td>
-                    <td>{{ cliente.cnpj|default:"-" }}</td>
+                    <td>{{ cliente.cnpj_formatado|default:"-" }}</td>
                     <td>{{ cliente.telefone|default:"-" }}</td>
                     <td>{{ cliente.cidade|default:"-" }}</td>
+                    <td>
+                        {% if cliente.possui_comodato_efetivo %}
+                            <span class="gs-badge gs-badge--ok">Sim</span>
+                        {% else %}
+                            <span class="gs-badge gs-badge--neutral">Não</span>
+                        {% endif %}
+                    </td>
                     <td>
                         {% if cliente.ativo %}
                             <span class="gs-badge gs-badge--ok">Ativo</span>

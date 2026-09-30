@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{% if form.instance.pk %}Editar conta a receber | GELOSAR{% else %}Nova conta a receber | GELOSAR{% endif %}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'financeiro/css/financeiro_form.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="gs-page financeiro-form-page">
+    <header class="gs-page-header">
+        <div>
+            <ol class="gs-breadcrumb">
+                <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                <li aria-hidden="true">/</li>
+                <li><a href="{% url 'financeiro:lista_contas_receber' %}">Contas a receber</a></li>
+                <li aria-hidden="true">/</li>
+                <li>{% if form.instance.pk %}Editar conta{% else %}Nova conta{% endif %}</li>
+            </ol>
+            <h1 class="gs-page-header__title">{% if form.instance.pk %}Editar conta a receber{% else %}Nova conta a receber{% endif %}</h1>
+            <p class="gs-page-header__desc">{% if form.instance.pk %}Atualize os dados da receita{% else %}Registre uma receita a receber{% endif %}</p>
+        </div>
+    </header>
+
+    <div class="row justify-content-center">
+        <div class="col-12 col-xl-10">
+            <div class="gs-card">
+                <form method="post" novalidate class="gs-form">
+                    {% csrf_token %}
+                    {% if form.non_field_errors %}
+                    <div class="gs-alert gs-alert--error" role="alert">
+                        <div class="gs-alert__body">
+                            <i class="bi bi-exclamation-octagon-fill" aria-hidden="true"></i>
+                            <span>{{ form.non_field_errors|striptags }}</span>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <div class="row g-2">
+                        <div class="col-12">
+                            <label class="gs-label" for="{{ form.descricao.id_for_label }}">Descrição *</label>
+                            {{ form.descricao }}
+                            {% if form.descricao.errors %}<p class="gs-field-error">{{ form.descricao.errors|striptags }}</p>{% endif %}
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label class="gs-label" for="{{ form.cliente.id_for_label }}">Cliente *</label>
+                            {{ form.cliente }}
+                            {% if form.cliente.errors %}<p class="gs-field-error">{{ form.cliente.errors|striptags }}</p>{% endif %}
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label class="gs-label" for="{{ form.venda.id_for_label }}">Venda</label>
+                            {{ form.venda }}
+                            {% if form.venda.help_text %}<p class="gs-field-hint">{{ form.venda.help_text }}</p>{% endif %}
+                            {% if form.venda.errors %}<p class="gs-field-error">{{ form.venda.errors|striptags }}</p>{% endif %}
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label class="gs-label" for="{{ form.categoria.id_for_label }}">Categoria *</label>
+                            {{ form.categoria }}
+                            {% if form.categoria.errors %}<p class="gs-field-error">{{ form.categoria.errors|striptags }}</p>{% endif %}
+                        </div>
+                        <div class="col-12 col-md-3">
+                            <label class="gs-label" for="{{ form.competencia.id_for_label }}">Competência *</label>
+                            {{ form.competencia }}
+                            {% if form.competencia.help_text %}<p class="gs-field-hint">{{ form.competencia.help_text }}</p>{% endif %}
+                            {% if form.competencia.errors %}<p class="gs-field-error">{{ form.competencia.errors|striptags }}</p>{% endif %}
+                        </div>
+                        <div class="col-12 col-md-3">
+                            <label class="gs-label" for="{{ form.valor.id_for_label }}">Valor *</label>
+                            {{ form.valor }}
+                            {% if form.valor.errors %}<p class="gs-field-error">{{ form.valor.errors|striptags }}</p>{% endif %}
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <label class="gs-label" for="{{ form.data_emissao.id_for_label }}">Emissão</label>
+                            {{ form.data_emissao }}
+                            {% if form.data_emissao.errors %}<p class="gs-field-error">{{ form.data_emissao.errors|striptags }}</p>{% endif %}
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <label class="gs-label" for="{{ form.data_vencimento.id_for_label }}">Vencimento *</label>
+                            {{ form.data_vencimento }}
+                            {% if form.data_vencimento.errors %}<p class="gs-field-error">{{ form.data_vencimento.errors|striptags }}</p>{% endif %}
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <label class="gs-label" for="{{ form.status.id_for_label }}">Status</label>
+                            {{ form.status }}
+                            {% if form.status.errors %}<p class="gs-field-error">{{ form.status.errors|striptags }}</p>{% endif %}
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label class="gs-label" for="{{ form.data_recebimento.id_for_label }}">Data de recebimento</label>
+                            {{ form.data_recebimento }}
+                            {% if form.data_recebimento.help_text %}<p class="gs-field-hint">{{ form.data_recebimento.help_text }}</p>{% endif %}
+                            {% if form.data_recebimento.errors %}<p class="gs-field-error">{{ form.data_recebimento.errors|striptags }}</p>{% endif %}
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label class="gs-label" for="{{ form.forma_recebimento.id_for_label }}">Forma de recebimento</label>
+                            {{ form.forma_recebimento }}
+                            {% if form.forma_recebimento.errors %}<p class="gs-field-error">{{ form.forma_recebimento.errors|striptags }}</p>{% endif %}
+                        </div>
+                        <div class="col-12">
+                            <label class="gs-label" for="{{ form.observacoes.id_for_label }}">Observações</label>
+                            {{ form.observacoes }}
+                            {% if form.observacoes.errors %}<p class="gs-field-error">{{ form.observacoes.errors|striptags }}</p>{% endif %}
+                        </div>
+                    </div>
+
+                    <div class="gs-form-actions">
+                        <a href="{% url 'financeiro:lista_contas_receber' %}" class="gs-btn gs-btn-outline">Cancelar</a>
+                        <button type="submit" class="gs-btn gs-btn-primary">
+                            <i class="bi bi-check-lg" aria-hidden="true"></i>
+                            Salvar conta
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

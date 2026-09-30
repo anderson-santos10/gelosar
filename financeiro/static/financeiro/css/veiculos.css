@@ -1,0 +1,29 @@
+.gs-section-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-bottom: 0.85rem;
+}
+
+.gs-section-title {
+    margin: 0;
+    font-size: 1.05rem;
+}
+
+.gs-muted {
+    color: var(--gs-text-muted);
+    font-size: var(--gs-font-size-sm);
+    margin: 0.35rem 0 0;
+}
+
+.gs-card .gs-card__value .gs-badge {
+    font-size: 0.85rem;
+}
+
+@media (max-width: 768px) {
+    .gs-section-head {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}

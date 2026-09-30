@@ -1,0 +1,134 @@
+<div
+    class="contas-fragmento"
+    data-filtros-ativos="{{ filtros_ativos }}"
+>
+    <div class="row g-3 mb-3 gs-indicadores">
+        <div class="col-6 col-md-4 col-xl">
+            <div class="gs-card">
+                <p class="gs-card__title">A receber</p>
+                <p class="gs-card__value">R$ {{ totais.total_a_receber|floatformat:2 }}</p>
+            </div>
+        </div>
+        <div class="col-6 col-md-4 col-xl">
+            <div class="gs-card">
+                <p class="gs-card__title">Em atraso</p>
+                <p class="gs-card__value">R$ {{ totais.total_vencido|floatformat:2 }}</p>
+            </div>
+        </div>
+        <div class="col-6 col-md-4 col-xl">
+            <div class="gs-card">
+                <p class="gs-card__title">Recebido</p>
+                <p class="gs-card__value">R$ {{ totais.total_recebido|floatformat:2 }}</p>
+            </div>
+        </div>
+        <div class="col-6 col-md-4 col-xl">
+            <div class="gs-card">
+                <p class="gs-card__title">Cancelado</p>
+                <p class="gs-card__value">R$ {{ totais.total_cancelado|floatformat:2 }}</p>
+            </div>
+        </div>
+        <div class="col-6 col-md-4 col-xl">
+            <div class="gs-card">
+                <p class="gs-card__title">Total</p>
+                <p class="gs-card__value">R$ {{ totais.total_geral|floatformat:2 }}</p>
+            </div>
+        </div>
+    </div>
+
+    {% if contas %}
+    <div class="gs-table-wrap">
+        <table class="gs-table">
+            <thead>
+                <tr>
+                    <th>Descrição</th>
+                    <th>Cliente</th>
+                    <th>Venda</th>
+                    <th>Categoria</th>
+                    <th>Vencimento</th>
+                    <th>Valor</th>
+                    <th>Status</th>
+                    <th>Forma</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for conta in contas %}
+                <tr>
+                    <td>{{ conta.descricao }}</td>
+                    <td>{{ conta.cliente.nome }}</td>
+                    <td>
+                        {% if conta.venda_id %}
+                        #{{ conta.venda_id }}
+                        {% else %}
+                        -
+                        {% endif %}
+                    </td>
+                    <td>{{ conta.categoria.nome }}</td>
+                    <td>{{ conta.data_vencimento|date:"d/m/Y" }}</td>
+                    <td>R$ {{ conta.valor|floatformat:2 }}</td>
+                    <td>
+                        {% if conta.vencida %}
+                        <span class="gs-badge gs-badge--danger">Vencida</span>
+                        {% elif conta.status == 'pendente' %}
+                        <span class="gs-badge gs-badge--warning">Pendente</span>
+                        {% elif conta.status == 'recebida' %}
+                        <span class="gs-badge gs-badge--ok">Recebida</span>
+                        {% else %}
+                        <span class="gs-badge gs-badge--neutral">Cancelada</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ conta.get_forma_recebimento_display|default:"-" }}</td>
+                    <td>
+                        {% if perms.financeiro.change_contareceber and conta.status == 'pendente' %}
+                        <a href="{% url 'financeiro:editar_conta_receber' conta.pk %}" class="gs-btn gs-btn-outline">Editar</a>
+                        <form method="post" action="{% url 'financeiro:marcar_conta_recebida' conta.pk %}" class="gs-inline-form">
+                            {% csrf_token %}
+                            <button type="submit" class="gs-btn gs-btn-outline">Marcar recebida</button>
+                        </form>
+                        <form method="post" action="{% url 'financeiro:cancelar_conta_receber' conta.pk %}" class="gs-inline-form">
+                            {% csrf_token %}
+                            <button type="submit" class="gs-btn gs-btn-outline">Cancelar</button>
+                        </form>
+                        {% elif conta.status == 'recebida' %}
+                        <span class="gs-muted">Conta recebida — edição bloqueada</span>
+                        {% elif conta.status == 'cancelada' %}
+                        <span class="gs-muted">Conta cancelada — edição bloqueada</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% if page_obj.has_other_pages %}
+    <nav class="gs-pagination" aria-label="Paginação de contas a receber">
+        {% if page_obj.has_previous %}
+        <a class="gs-btn gs-btn-outline" href="?page={{ page_obj.previous_page_number }}{% if filtro_querystring %}&amp;{{ filtro_querystring }}{% endif %}">Anterior</a>
+        {% endif %}
+        <span class="gs-pagination__info">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+        {% if page_obj.has_next %}
+        <a class="gs-btn gs-btn-outline" href="?page={{ page_obj.next_page_number }}{% if filtro_querystring %}&amp;{{ filtro_querystring }}{% endif %}">Próxima</a>
+        {% endif %}
+    </nav>
+    {% endif %}
+
+    {% else %}
+    <div class="gs-empty">
+        {% if existem_contas and filtros_ativos %}
+        <h2 class="gs-empty__title">Nenhuma conta a receber encontrada.</h2>
+        <p class="gs-empty__text">Não encontramos contas a receber com os filtros selecionados.</p>
+        <a href="{% url 'financeiro:lista_contas_receber' %}" class="gs-btn gs-btn-outline" data-lista-limpar>Limpar filtros</a>
+        {% elif existem_contas %}
+        <h2 class="gs-empty__title">Nenhuma conta a receber encontrada.</h2>
+        <p class="gs-empty__text">Não encontramos contas a receber com os filtros atuais.</p>
+        {% else %}
+        <h2 class="gs-empty__title">Nenhuma conta a receber cadastrada</h2>
+        <p class="gs-empty__text">Registre vendas e outras receitas para acompanhar o recebimento.</p>
+        {% if perms.financeiro.add_contareceber %}
+        <a href="{% url 'financeiro:cadastrar_conta_receber' %}" class="gs-btn gs-btn-primary">Nova conta</a>
+        {% endif %}
+        {% endif %}
+    </div>
+    {% endif %}
+</div>

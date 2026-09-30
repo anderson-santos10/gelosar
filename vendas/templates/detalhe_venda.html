@@ -60,6 +60,18 @@
                 <p class="gs-card__hint mb-1">Total do pedido</p>
                 <p class="mb-0 fw-semibold">R$ {{ venda.total|floatformat:2 }}</p>
             </div>
+            {% if venda.pedido %}
+            <div class="col-12 col-md-4">
+                <p class="gs-card__hint mb-1">Pedido de origem</p>
+                <p class="mb-0 fw-semibold">
+                    {% if perms.vendas.view_pedido %}
+                    <a href="{% url 'vendas:detalhe_pedido' venda.pedido.pk %}">Pedido #{{ venda.pedido.pk }}</a>
+                    {% else %}
+                    Pedido #{{ venda.pedido.pk }}
+                    {% endif %}
+                </p>
+            </div>
+            {% endif %}
         </div>
     </div>
 

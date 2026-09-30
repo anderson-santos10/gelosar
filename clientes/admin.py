@@ -10,9 +10,10 @@ class ClienteAdmin(admin.ModelAdmin):
 
     list_display = (
         'nome',
-        'cnpj',
+        'cnpj_formatado',
         'telefone',
         'cidade',
+        'possui_equipamento_comodato',
         'ativo',
         'dashboard_link',
     )
@@ -27,8 +28,13 @@ class ClienteAdmin(admin.ModelAdmin):
 
     list_filter = (
         'ativo',
+        'possui_equipamento_comodato',
         'cidade',
     )
+
+    @admin.display(description="CNPJ / CPF", ordering="cnpj")
+    def cnpj_formatado(self, obj):
+        return obj.cnpj_formatado or "-"
 
 
     def dashboard_link(self, obj):

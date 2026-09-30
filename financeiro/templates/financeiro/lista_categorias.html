@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Categorias financeiras | GELOSAR{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'financeiro/css/financeiro_list.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="gs-page">
+    <header class="gs-page-header">
+        <div>
+            <ol class="gs-breadcrumb">
+                <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                <li aria-hidden="true">/</li>
+                <li>Categorias financeiras</li>
+            </ol>
+            <h1 class="gs-page-header__title">Categorias financeiras</h1>
+            <p class="gs-page-header__desc">Classificação de despesas, investimentos e futuras receitas.</p>
+        </div>
+        <div class="gs-page-header__actions">
+            {% if perms.financeiro.add_categoriafinanceira %}
+            <a href="{% url 'financeiro:cadastrar_categoria' %}" class="gs-btn gs-btn-primary">
+                <i class="bi bi-plus-lg" aria-hidden="true"></i>
+                Cadastrar categoria
+            </a>
+            {% endif %}
+        </div>
+    </header>
+
+    {% if categorias %}
+    <div class="gs-table-wrap">
+        <table class="gs-table">
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Tipo</th>
+                    <th>Status</th>
+                    <th>Exige veículo</th>
+                    <th>Ordem</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for categoria in categorias %}
+                <tr>
+                    <td>{{ categoria.nome }}</td>
+                    <td>
+                        {% if categoria.tipo == 'despesa' %}
+                        <span class="gs-badge gs-badge--neutral">{{ categoria.get_tipo_display }}</span>
+                        {% elif categoria.tipo == 'investimento' %}
+                        <span class="gs-badge gs-badge--warning">{{ categoria.get_tipo_display }}</span>
+                        {% else %}
+                        <span class="gs-badge gs-badge--ok">{{ categoria.get_tipo_display }}</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if categoria.ativo %}
+                        <span class="gs-badge gs-badge--ok">Ativo</span>
+                        {% else %}
+                        <span class="gs-badge gs-badge--neutral">Inativo</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if categoria.exige_veiculo %}
+                        <span class="gs-badge gs-badge--warning">Sim</span>
+                        {% else %}
+                        <span class="gs-badge gs-badge--neutral">Não</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ categoria.ordem }}</td>
+                    <td>
+                        {% if perms.financeiro.change_categoriafinanceira %}
+                        <a href="{% url 'financeiro:editar_categoria' categoria.pk %}" class="gs-btn gs-btn-outline">Editar</a>
+                        <form method="post" action="{% url 'financeiro:alternar_ativo_categoria' categoria.pk %}" class="gs-inline-form">
+                            {% csrf_token %}
+                            <button type="submit" class="gs-btn gs-btn-outline">
+                                {% if categoria.ativo %}Desativar{% else %}Ativar{% endif %}
+                            </button>
+                        </form>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="gs-empty">
+        <h2 class="gs-empty__title">Nenhuma categoria cadastrada</h2>
+        {% if perms.financeiro.add_categoriafinanceira %}
+        <a href="{% url 'financeiro:cadastrar_categoria' %}" class="gs-btn gs-btn-primary">Cadastrar categoria</a>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

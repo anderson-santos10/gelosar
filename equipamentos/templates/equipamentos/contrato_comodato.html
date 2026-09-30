@@ -105,7 +105,7 @@
                         <strong>{{ contrato.cliente.nome }}</strong>
                         {% if contrato.cliente.cnpj %}
                         , inscrito(a) no CNPJ/CPF sob nº
-                        <strong>{{ contrato.cliente.cnpj }}</strong>
+                        <strong>{{ contrato.cliente.cnpj_formatado }}</strong>
                         {% endif %}.
                     </p>
                     <p>
@@ -306,7 +306,7 @@
                 <strong>{{ contrato.cliente.nome }}</strong>
                 <span>COMODATÁRIO</span>
                 {% if contrato.cliente.cnpj %}
-                <p>CNPJ/CPF: {{ contrato.cliente.cnpj }}</p>
+                <p>CNPJ/CPF: {{ contrato.cliente.cnpj_formatado }}</p>
                 {% endif %}
             </div>
         </section>

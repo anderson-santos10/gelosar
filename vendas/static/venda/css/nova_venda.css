@@ -11,7 +11,7 @@
 }
 
 .venda-formset .produtos-table .remover {
-    width: 4rem;
+    width: 3rem;
     text-align: center;
 }
 
@@ -27,19 +27,26 @@
 }
 
 .btn-remover {
-    width: 34px;
-    height: 34px;
+    width: 2rem;
+    height: 2rem;
+    min-width: 2rem;
+    min-height: 2rem;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     padding: 0;
     border: none;
     border-radius: var(--gs-radius-sm);
-    background: var(--gs-danger-bg);
-    color: var(--gs-danger);
+    background: transparent;
+    color: var(--gs-text-muted);
     font-size: 1.25rem;
+    font-weight: 600;
     line-height: 1;
     cursor: pointer;
+}
+
+.btn-remover[hidden] {
+    display: none;
 }
 
 .btn-remover:hover {
@@ -102,5 +109,75 @@
     .total-box {
         width: 100%;
         min-width: 0;
+    }
+
+    .venda-formset .gs-table-wrap {
+        overflow: visible;
+    }
+
+    .venda-formset .produtos-table {
+        min-width: 0;
+    }
+
+    .venda-formset .produtos-table thead {
+        display: none;
+    }
+
+    .venda-formset .produtos-table,
+    .venda-formset .produtos-table tbody,
+    .venda-formset .produtos-table tr,
+    .venda-formset .produtos-table td {
+        display: block;
+        width: 100%;
+    }
+
+    .venda-formset .produtos-table tr.item-row {
+        margin-bottom: 1rem;
+        padding: 1rem;
+        border: 1px solid var(--gs-border);
+        border-radius: var(--gs-radius-md);
+        background: var(--gs-surface);
+    }
+
+    .venda-formset .produtos-table td {
+        padding: 0.5rem 0;
+    }
+
+    .venda-formset .produtos-table td[data-label]::before {
+        content: attr(data-label);
+        display: block;
+        margin-bottom: 0.35rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: var(--gs-text-secondary);
+    }
+
+    .venda-formset .produtos-table .quantidade,
+    .venda-formset .produtos-table .preco,
+    .venda-formset .produtos-table .subtotal,
+    .venda-formset .produtos-table .remover {
+        width: auto;
+        text-align: left;
+    }
+
+    .venda-formset select,
+    .venda-formset input,
+    .venda-formset textarea,
+    .btn-adicionar,
+    .venda-formset .gs-form-actions .gs-btn {
+        width: 100%;
+        min-height: 44px;
+        font-size: 16px;
+    }
+
+    .venda-formset .btn-remover {
+        width: 2.75rem;
+        min-width: 2.75rem;
+        min-height: 44px;
+        font-size: 1.35rem;
+    }
+
+    .venda-formset .gs-form-actions {
+        flex-direction: column;
     }
 }

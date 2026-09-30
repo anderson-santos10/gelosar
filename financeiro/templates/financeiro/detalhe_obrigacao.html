@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ obrigacao }} | GELOSAR{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'financeiro/css/financeiro_list.css' %}">
+<link rel="stylesheet" href="{% static 'financeiro/css/veiculos.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="gs-page">
+    <header class="gs-page-header">
+        <div>
+            <ol class="gs-breadcrumb">
+                <li><a href="{% url 'financeiro:lista_obrigacoes' %}">Obrigações</a></li>
+                <li aria-hidden="true">/</li>
+                <li>{{ obrigacao.get_tipo_display }} {{ obrigacao.exercicio }}</li>
+            </ol>
+            <h1 class="gs-page-header__title">{{ obrigacao.get_tipo_display }} {{ obrigacao.exercicio }}</h1>
+            <p class="gs-page-header__desc">{{ obrigacao.veiculo }} · <span class="gs-badge {{ badge }}">{{ rotulo }}</span></p>
+        </div>
+        <div class="gs-page-header__actions">
+            {% if perms.financeiro.change_obrigacaoveiculo %}
+            <a href="{% url 'financeiro:editar_obrigacao' obrigacao.pk %}" class="gs-btn gs-btn-outline">Editar</a>
+            {% endif %}
+            {% if perms.financeiro.add_contapagar %}
+            <a href="{% url 'financeiro:cadastrar_conta_pagar' %}" class="gs-btn gs-btn-primary">Lançar pagamento</a>
+            {% endif %}
+        </div>
+    </header>
+
+    <div class="gs-card mb-3">
+        <p><strong>Vencimento:</strong> {% if obrigacao.data_vencimento %}{{ obrigacao.data_vencimento|date:"d/m/Y" }}{% else %}não informado{% endif %}</p>
+        <p><strong>Valor previsto:</strong> {% if obrigacao.valor_previsto %}R$ {{ obrigacao.valor_previsto|floatformat:2 }}{% else %}—{% endif %}</p>
+        {% if situacao_ipva %}
+        <p><strong>Cálculo de IPVA:</strong> {{ situacao_ipva.rotulo }} — {{ situacao_ipva.motivo }}</p>
+        {% endif %}
+        {% if obrigacao.observacoes %}<p>{{ obrigacao.observacoes }}</p>{% endif %}
+    </div>
+
+    <section class="gs-card">
+        <h2 class="gs-section-title">Contas a pagar</h2>
+        {% if contas %}
+        <div class="gs-table-wrap">
+            <table class="gs-table">
+                <thead>
+                    <tr>
+                        <th>Descrição</th>
+                        <th>Valor</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for conta in contas %}
+                    <tr>
+                        <td>{{ conta.descricao }}</td>
+                        <td>R$ {{ conta.valor|floatformat:2 }}</td>
+                        <td>{{ conta.status_display_financeiro }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p class="gs-muted">Nenhuma conta financeira gerada automaticamente. Lance o pagamento quando houver confirmação.</p>
+        {% endif %}
+    </section>
+</div>
+{% endblock %}

@@ -153,6 +153,8 @@ class EditarClienteUITests(TestCase):
         self.assertContains(response, 'id="id_endereco"')
         self.assertContains(response, 'id="id_observacoes"')
         self.assertContains(response, "cliente/css/cliente_form.css")
+        self.assertContains(response, "cliente/js/cliente_form.js")
+        self.assertContains(response, "Possui equipamento em comodato?")
         response = self.client.post(
             self.url,
             {
@@ -163,6 +165,7 @@ class EditarClienteUITests(TestCase):
                 "endereco": "",
                 "cidade": "São Paulo",
                 "ativo": "on",
+                "possui_equipamento_comodato": "False",
                 "observacoes": "",
             },
         )
@@ -170,6 +173,7 @@ class EditarClienteUITests(TestCase):
         self.cliente.refresh_from_db()
         self.assertEqual(self.cliente.nome, "Cliente alterado")
         self.assertEqual(self.cliente.cidade, "São Paulo")
+        self.assertFalse(self.cliente.possui_equipamento_comodato)
 
 
 class CriarClienteUITests(TestCase):
@@ -201,21 +205,26 @@ class CriarClienteUITests(TestCase):
         response = self.client.get(reverse("clientes:cadastrar_cliente"))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "cliente-form-page")
+        self.assertContains(response, "Possui equipamento em comodato?")
         response = self.client.post(
             reverse("clientes:cadastrar_cliente"),
             {
                 "nome": "Cliente novo",
-                "cnpj": "",
+                "cnpj": "12.345.678/0001-99",
                 "telefone": "",
                 "email": "",
                 "endereco": "",
                 "cidade": "Campinas",
                 "ativo": "on",
+                "possui_equipamento_comodato": "True",
                 "observacoes": "",
             },
         )
         self.assertEqual(response.status_code, 302)
-        self.assertTrue(Cliente.objects.filter(nome="Cliente novo").exists())
+        cliente = Cliente.objects.get(nome="Cliente novo")
+        self.assertEqual(cliente.cnpj, "12345678000199")
+        self.assertEqual(cliente.cnpj_formatado, "12.345.678/0001-99")
+        self.assertTrue(cliente.possui_equipamento_comodato)
 
 
 class ClientesUrlNamespaceTests(TestCase):
@@ -252,3 +261,91 @@ class ClienteDashboardCollapseJsTests(TestCase):
         self.assertIn("shown.bs.collapse", js)
         self.assertIn("hidden.bs.collapse", js)
         self.assertIn("aria-expanded", js)
+
+
+class ClienteCnpjComodatoListaTests(TestCase):
+
+    def setUp(self):
+        User = get_user_model()
+        self.user = User.objects.create_user(
+            username="lista-cli",
+            password="teste-123",
+        )
+        conceder_permissoes(
+            self.user,
+            "clientes.view_cliente",
+            "clientes.change_cliente",
+        )
+        self.client.force_login(self.user)
+
+    def test_cnpj_armazenado_em_digitos_e_exibido_formatado(self):
+        cliente = Cliente.objects.create(
+            nome="Mercado Alfa",
+            cnpj="11.222.333/0001-81",
+        )
+        self.assertEqual(cliente.cnpj, "11222333000181")
+        self.assertEqual(cliente.cnpj_formatado, "11.222.333/0001-81")
+
+        response = self.client.get(reverse("clientes:lista_clientes"))
+        self.assertContains(response, "11.222.333/0001-81")
+        self.assertNotContains(response, "11222333000181")
+
+        dash = self.client.get(
+            reverse("clientes:dashboard_cliente", args=[cliente.pk])
+        )
+        self.assertContains(dash, "11.222.333/0001-81")
+
+    def test_listagem_ordem_alfabetica_e_indicador_comodato(self):
+        sem_comodato = Cliente.objects.create(nome="Zeta Gelo")
+        declarado = Cliente.objects.create(
+            nome="Beta Gelo",
+            possui_equipamento_comodato=True,
+        )
+        com_equipamento = Cliente.objects.create(
+            nome="Alfa Gelo",
+            possui_equipamento_comodato=False,
+        )
+        Equipamento.objects.create(
+            nome="Freezer Alfa",
+            tipo="freezer",
+            cliente=com_equipamento,
+        )
+
+        response = self.client.get(reverse("clientes:lista_clientes"))
+        self.assertEqual(response.status_code, 200)
+        nomes = [cliente.nome for cliente in response.context["clientes"]]
+        self.assertEqual(nomes, ["Alfa Gelo", "Beta Gelo", "Zeta Gelo"])
+        self.assertContains(response, "Comodato")
+        self.assertTrue(response.context["clientes"][0].possui_comodato_efetivo)
+        self.assertTrue(declarado.possui_comodato_efetivo)
+        self.assertFalse(sem_comodato.possui_comodato_efetivo)
+
+    def test_edicao_nao_permite_marcar_nao_com_equipamento_vinculado(self):
+        cliente = Cliente.objects.create(
+            nome="Cliente com freezer",
+            possui_equipamento_comodato=True,
+        )
+        Equipamento.objects.create(
+            nome="Freezer vinculado",
+            tipo="freezer",
+            cliente=cliente,
+        )
+        url = reverse("clientes:editar_cliente", args=[cliente.pk])
+        response = self.client.post(
+            url,
+            {
+                "nome": "Cliente com freezer",
+                "cnpj": "",
+                "telefone": "",
+                "email": "",
+                "endereco": "",
+                "cidade": "",
+                "ativo": "on",
+                "possui_equipamento_comodato": "False",
+                "observacoes": "",
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Não é possível marcar Não")
+        cliente.refresh_from_db()
+        self.assertTrue(cliente.possui_equipamento_comodato)

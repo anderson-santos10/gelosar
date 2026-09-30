@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Histórico de pedidos | GELOSAR{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'venda/css/pedido.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="gs-page pedido-flow">
+    <header class="gs-page-header">
+        <div>
+            <ol class="gs-breadcrumb">
+                <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                <li aria-hidden="true">/</li>
+                <li>Histórico de pedidos</li>
+            </ol>
+            <h1 class="gs-page-header__title">Histórico de pedidos</h1>
+            <p class="gs-page-header__desc">Pedidos que já foram entregues e viraram venda</p>
+        </div>
+    </header>
+
+    {% if pedidos %}
+        {% for pedido in pedidos %}
+        <article class="gs-card pedido-card">
+            <p class="gs-card__hint">Pedido #{{ pedido.pk }}</p>
+            <h2 class="pedido-card__cliente">
+                <a href="{% url 'vendas:detalhe_pedido' pedido.pk %}">{{ pedido.cliente.nome }}</a>
+            </h2>
+            <ul class="pedido-itens">
+                {% for item in pedido.itens.all %}
+                <li>{{ item.quantidade }} × {{ item.produto.nome }}</li>
+                {% endfor %}
+            </ul>
+            <p class="pedido-valor">Valor: R$ {{ pedido.total|floatformat:2 }}</p>
+            <p class="gs-card__hint">Criado em {{ pedido.criado_em|date:"d/m/Y H:i" }}{% if pedido.criado_por %} por {{ pedido.criado_por.get_full_name|default:pedido.criado_por.username }}{% endif %}</p>
+            <p class="gs-card__hint">Entregue em {{ pedido.entregue_em|date:"d/m/Y H:i" }}{% if pedido.entregue_por %} por {{ pedido.entregue_por.get_full_name|default:pedido.entregue_por.username }}{% endif %}</p>
+            {% if pedido.venda_id %}
+            <p class="mb-0">
+                Venda:
+                {% if perms.vendas.view_venda %}
+                <a href="{% url 'vendas:detalhe_venda' pedido.venda_id %}">#{{ pedido.venda_id }}</a>
+                {% else %}
+                #{{ pedido.venda_id }}
+                {% endif %}
+            </p>
+            {% endif %}
+        </article>
+        {% endfor %}
+
+        {% if page_obj.has_other_pages %}
+        <nav class="pedido-paginacao" aria-label="Paginação do histórico de pedidos">
+            {% if page_obj.has_previous %}
+            <a class="gs-btn gs-btn-outline" href="?page={{ page_obj.previous_page_number }}">Anterior</a>
+            {% endif %}
+            <p class="pedido-paginacao__info">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</p>
+            {% if page_obj.has_next %}
+            <a class="gs-btn gs-btn-outline" href="?page={{ page_obj.next_page_number }}">Próxima</a>
+            {% endif %}
+        </nav>
+        {% endif %}
+    {% else %}
+    <div class="gs-empty">
+        <h2 class="gs-empty__title">Nenhum pedido entregue</h2>
+        <p class="gs-empty__text">Os pedidos aparecem aqui depois de serem marcados como entregues.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

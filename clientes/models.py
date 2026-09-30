@@ -1,5 +1,7 @@
 from django.db import models
 
+from .utils import formatar_cnpj_cpf, normalizar_cnpj
+
 
 class Cliente(models.Model):
 
@@ -23,7 +25,7 @@ class Cliente(models.Model):
         blank=True
     )
 
-    endereco = models.TextField( 
+    endereco = models.TextField(
         max_length=255,
         blank=True
     )
@@ -35,6 +37,15 @@ class Cliente(models.Model):
 
     ativo = models.BooleanField(
         default=True
+    )
+
+    possui_equipamento_comodato = models.BooleanField(
+        default=False,
+        verbose_name="Possui equipamento em comodato",
+        help_text=(
+            "Declaração operacional: o cliente opera com equipamento em comodato, "
+            "mesmo antes de um equipamento ou contrato específico estar vinculado."
+        ),
     )
 
     observacoes = models.TextField(
@@ -49,6 +60,35 @@ class Cliente(models.Model):
         auto_now=True
     )
 
+    class Meta:
+        verbose_name = "Cliente"
+        verbose_name_plural = "Clientes"
+        ordering = ["nome"]
 
     def __str__(self):
         return self.nome
+
+    def save(self, *args, **kwargs):
+        self.cnpj = normalizar_cnpj(self.cnpj)
+        super().save(*args, **kwargs)
+
+    @property
+    def cnpj_formatado(self):
+        return formatar_cnpj_cpf(self.cnpj)
+
+    @property
+    def possui_comodato_efetivo(self):
+        """
+        Indicador de listagem/detalhe.
+
+        Sim se a declaração estiver marcada ou se já existir equipamento
+        ou contrato de comodato vinculado ao cliente.
+        """
+        anotado = getattr(self, "possui_comodato_lista", None)
+        if anotado is not None:
+            return bool(anotado)
+        return (
+            self.possui_equipamento_comodato
+            or self.equipamentos.exists()
+            or self.contratos_comodato.exists()
+        )

@@ -65,6 +65,8 @@ MENSAGEM_TIPO_NAO_PERMITIDO = (
 MENSAGEM_CONTEUDO_INVALIDO = (
     "O conteúdo do arquivo não corresponde ao tipo informado."
 )
+TAMANHO_MAXIMO_BYTES = 10 * 1024 * 1024
+MENSAGEM_TAMANHO_EXCEDIDO = "O arquivo excede o limite de 10 MB."
 
 
 def extensao_arquivo(nome):
@@ -101,12 +103,31 @@ def _assinatura_valida(extensao, inicio):
     return any(inicio.startswith(sig) for sig in esperadas)
 
 
+def _tamanho_arquivo(arquivo):
+    tamanho = getattr(arquivo, "size", None)
+    if tamanho is not None:
+        try:
+            return int(tamanho)
+        except (TypeError, ValueError):
+            return 0
+    if hasattr(arquivo, "seek") and hasattr(arquivo, "tell"):
+        posicao = arquivo.tell()
+        arquivo.seek(0, 2)
+        tamanho = arquivo.tell()
+        arquivo.seek(posicao)
+        return tamanho
+    return 0
+
+
 def validar_arquivo_documento(arquivo):
     nome = getattr(arquivo, "name", "") or ""
     extensao = extensao_arquivo(nome)
 
     if extensao in EXTENSOES_BLOQUEADAS or extensao not in EXTENSOES_PERMITIDAS:
         raise ValidationError(MENSAGEM_TIPO_NAO_PERMITIDO)
+
+    if _tamanho_arquivo(arquivo) > TAMANHO_MAXIMO_BYTES:
+        raise ValidationError(MENSAGEM_TAMANHO_EXCEDIDO)
 
     inicio = _ler_inicio(arquivo)
     if not _assinatura_valida(extensao, inicio):

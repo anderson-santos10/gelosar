@@ -1,23 +1,14 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models import BooleanField, Case, Exists, OuterRef, Q, Value, When
 from django.views.generic import DetailView, ListView, CreateView, UpdateView
 from django.urls import reverse, reverse_lazy
 
 from accounts.authz import ModulePermissionRequiredMixin
 from core.charts import compras_cliente_por_mes, mix_produtos_cliente
+from equipamentos.models import ContratoComodato, Equipamento
 
+from .forms import ClienteForm
 from .models import Cliente
-
-
-CAMPOS_CLIENTE = [
-    'nome',
-    'cnpj',
-    'telefone',
-    'email',
-    'endereco',
-    'cidade',
-    'ativo',
-    'observacoes',
-]
 
 
 class CriarClienteView(LoginRequiredMixin, ModulePermissionRequiredMixin, CreateView):
@@ -25,8 +16,8 @@ class CriarClienteView(LoginRequiredMixin, ModulePermissionRequiredMixin, Create
     permission_required = "clientes.add_cliente"
 
     model = Cliente
+    form_class = ClienteForm
     template_name = 'cliente/cliente_form.html'
-    fields = CAMPOS_CLIENTE
     success_url = reverse_lazy('clientes:lista_clientes')
 
 
@@ -40,14 +31,33 @@ class ListaClientesView(LoginRequiredMixin, ModulePermissionRequiredMixin, ListV
 
     context_object_name = 'clientes'
 
+    def get_queryset(self):
+        equipamentos = Equipamento.objects.filter(cliente_id=OuterRef("pk"))
+        contratos = ContratoComodato.objects.filter(cliente_id=OuterRef("pk"))
+        return (
+            Cliente.objects.annotate(
+                possui_comodato_lista=Case(
+                    When(
+                        Q(possui_equipamento_comodato=True)
+                        | Exists(equipamentos)
+                        | Exists(contratos),
+                        then=Value(True),
+                    ),
+                    default=Value(False),
+                    output_field=BooleanField(),
+                )
+            )
+            .order_by("nome")
+        )
+
 
 class EditarClienteView(LoginRequiredMixin, ModulePermissionRequiredMixin, UpdateView):
 
     permission_required = "clientes.change_cliente"
 
     model = Cliente
+    form_class = ClienteForm
     template_name = 'cliente/cliente_form.html'
-    fields = CAMPOS_CLIENTE
 
     def get_success_url(self):
         return reverse('clientes:dashboard_cliente', args=[self.object.pk])
@@ -208,4 +218,3 @@ class DashboardClienteView(LoginRequiredMixin, ModulePermissionRequiredMixin, De
         })
 
         return context
-

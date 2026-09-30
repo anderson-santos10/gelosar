@@ -1,14 +1,21 @@
 from django.contrib import admin
 
-from core.auditoria import atribuir_criado_por
-from estoque.services import registrar_saidas_venda
-
-from .models import Venda, ItemVenda
+from .models import ItemPedido, ItemVenda, Pedido, Venda
 
 
 class ItemVendaInline(admin.TabularInline):
     model = ItemVenda
-    extra = 1
+    extra = 0
+    can_delete = False
+
+    def has_add_permission(self, request, obj=None):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
 
 
 @admin.register(Venda)
@@ -38,16 +45,14 @@ class VendaAdmin(admin.ModelAdmin):
         'data',
     )
 
-    def save_model(self, request, obj, form, change):
-        if not change:
-            atribuir_criado_por(obj, request.user)
-        super().save_model(request, obj, form, change)
+    def has_add_permission(self, request):
+        return False
 
-    def save_related(self, request, form, formsets, change):
-        super().save_related(request, form, formsets, change)
-        if change:
-            return
-        registrar_saidas_venda(form.instance)
+    def has_change_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
 
     def get_queryset(self, request):
         return (
@@ -66,3 +71,60 @@ class VendaAdmin(admin.ModelAdmin):
         return f'R$ {obj.total:.2f}'
 
     mostrar_total.short_description = 'Total'
+
+
+class ItemPedidoInline(admin.TabularInline):
+    model = ItemPedido
+    extra = 0
+    fields = ("produto", "quantidade", "preco_unitario")
+    readonly_fields = ("produto", "quantidade", "preco_unitario")
+    can_delete = False
+
+    def has_add_permission(self, request, obj=None):
+        return False
+
+
+@admin.register(Pedido)
+class PedidoAdmin(admin.ModelAdmin):
+    inlines = [ItemPedidoInline]
+    list_display = (
+        "id",
+        "cliente",
+        "status",
+        "cidade",
+        "criado_em",
+        "criado_por",
+        "entregue_em",
+        "entregue_por",
+        "venda",
+    )
+    list_filter = ("status",)
+    search_fields = ("cliente__nome", "endereco", "cidade", "observacoes")
+    readonly_fields = (
+        "cliente",
+        "status",
+        "endereco",
+        "cidade",
+        "observacoes",
+        "criado_em",
+        "criado_por",
+        "entregue_em",
+        "entregue_por",
+        "venda",
+    )
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+    def get_queryset(self, request):
+        return (
+            super()
+            .get_queryset(request)
+            .select_related("cliente", "criado_por", "entregue_por", "venda")
+        )

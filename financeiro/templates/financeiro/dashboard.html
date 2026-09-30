@@ -1,0 +1,438 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Financeiro | GELOSAR{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'financeiro/css/financeiro_list.css' %}">
+<link rel="stylesheet" href="{% static 'financeiro/css/dashboard.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="gs-page gs-fin-dashboard">
+    <header class="gs-page-header">
+        <div>
+            <ol class="gs-breadcrumb">
+                <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                <li aria-hidden="true">/</li>
+                <li>Financeiro</li>
+            </ol>
+            <h1 class="gs-page-header__title">Financeiro</h1>
+            <p class="gs-page-header__desc">Visão geral das despesas e compromissos</p>
+        </div>
+        <div class="gs-page-header__actions">
+            {% if perms.financeiro.add_contapagar %}
+            <a href="{% url 'financeiro:cadastrar_conta_pagar' %}" class="gs-btn gs-btn-primary">Nova conta</a>
+            {% endif %}
+        </div>
+    </header>
+
+    <div class="gs-card gs-filter-card mb-3">
+        <form method="get" class="gs-form gs-filter-form" data-periodo-form>
+            <div class="row g-2 align-items-end">
+                <div class="col-12 col-md-4 col-lg-3">
+                    <label class="gs-label" for="filtro-periodo">Período</label>
+                    <select class="form-select gs-input" id="filtro-periodo" name="periodo" data-periodo-select>
+                        {% for valor, rotulo in periodo_opcoes %}
+                        <option value="{{ valor }}"{% if dashboard.periodo == valor %} selected{% endif %}>{{ rotulo }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-12 col-md-4 col-lg-3" data-periodo-custom>
+                    <label class="gs-label" for="filtro-inicio">Data inicial</label>
+                    <input class="form-control gs-input" type="date" id="filtro-inicio" name="inicio" value="{{ dashboard.inicio|date:'Y-m-d' }}">
+                </div>
+                <div class="col-12 col-md-4 col-lg-3" data-periodo-custom>
+                    <label class="gs-label" for="filtro-fim">Data final</label>
+                    <input class="form-control gs-input" type="date" id="filtro-fim" name="fim" value="{{ dashboard.fim|date:'Y-m-d' }}">
+                </div>
+                <div class="col-12 col-md-4 col-lg-2">
+                    <button type="submit" class="gs-btn gs-btn-primary">Aplicar</button>
+                </div>
+            </div>
+        </form>
+        <p class="gs-muted">{{ dashboard.inicio|date:"d/m/Y" }} a {{ dashboard.fim|date:"d/m/Y" }}</p>
+    </div>
+
+    <div class="row g-3 mb-3">
+        {% if dashboard.pendentes.visivel %}
+        <div class="col-12 col-md-6 col-xl">
+            <a class="gs-card gs-card-link" href="{{ dashboard.pendentes.url }}">
+                <p class="gs-card__title">Pendentes</p>
+                <p class="gs-card__value">R$ {{ dashboard.pendentes.total|floatformat:2 }}</p>
+                <p class="gs-muted">{{ dashboard.pendentes.quantidade }} conta{{ dashboard.pendentes.quantidade|pluralize }}</p>
+            </a>
+        </div>
+        {% endif %}
+        {% if dashboard.vencidas.visivel %}
+        <div class="col-12 col-md-6 col-xl">
+            <a class="gs-card gs-card-link gs-card-alert" href="{{ dashboard.vencidas.url }}">
+                <p class="gs-card__title">Vencidas</p>
+                <p class="gs-card__value">R$ {{ dashboard.vencidas.total|floatformat:2 }}</p>
+                <p class="gs-muted">{{ dashboard.vencidas.quantidade }} conta{{ dashboard.vencidas.quantidade|pluralize }}</p>
+            </a>
+        </div>
+        {% endif %}
+        {% if dashboard.vencendo.visivel %}
+        <div class="col-12 col-md-6 col-xl">
+            <a class="gs-card gs-card-link" href="{{ dashboard.vencendo.url }}">
+                <p class="gs-card__title">Vencendo em breve</p>
+                <p class="gs-card__value">R$ {{ dashboard.vencendo.total|floatformat:2 }}</p>
+                <p class="gs-muted">{{ dashboard.vencendo.quantidade }} nos próximos {{ dashboard.janela_dias }} dias</p>
+            </a>
+        </div>
+        {% endif %}
+        {% if dashboard.pagas.visivel %}
+        <div class="col-12 col-md-6 col-xl">
+            <a class="gs-card gs-card-link" href="{{ dashboard.pagas.url }}">
+                <p class="gs-card__title">Pago no período</p>
+                <p class="gs-card__value">R$ {{ dashboard.pagas.total|floatformat:2 }}</p>
+                <p class="gs-muted">{{ dashboard.pagas.quantidade }} pagamento{{ dashboard.pagas.quantidade|pluralize }}</p>
+            </a>
+        </div>
+        {% endif %}
+        {% if dashboard.comparacao_atual or dashboard.comparacao_anterior %}
+        <div class="col-12 col-md-6 col-xl">
+            <div class="gs-card">
+                <p class="gs-card__title">Comparação</p>
+                <p class="gs-card__value">R$ {{ dashboard.comparacao_atual|floatformat:2 }}</p>
+                <p class="gs-muted">Anterior: R$ {{ dashboard.comparacao_anterior|floatformat:2 }}</p>
+                {% if dashboard.comparacao_percentual != None %}
+                    {% if dashboard.comparacao_percentual > 0 %}
+                    <span class="gs-badge gs-badge--warning">+{{ dashboard.comparacao_percentual|floatformat:2 }}%</span>
+                    {% elif dashboard.comparacao_percentual < 0 %}
+                    <span class="gs-badge gs-badge--ok">{{ dashboard.comparacao_percentual|floatformat:2 }}%</span>
+                    {% else %}
+                    <span class="gs-badge gs-badge--neutral">0,00%</span>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+        {% if dashboard.sem_fornecedor %}
+        <div class="col-12 col-md-6 col-xl">
+            <a class="gs-card gs-card-link" href="{{ dashboard.sem_fornecedor.url }}">
+                <p class="gs-card__title">Contas sem fornecedor</p>
+                <p class="gs-card__value">{{ dashboard.sem_fornecedor.quantidade }}</p>
+                <p class="gs-muted">R$ {{ dashboard.sem_fornecedor.total|floatformat:2 }}</p>
+            </a>
+        </div>
+        {% endif %}
+    </div>
+
+    {% if not dashboard.pendentes.visivel and not dashboard.vencidas.visivel and not dashboard.vencendo.visivel and not dashboard.pagas.visivel %}
+    <div class="gs-empty mb-3">
+        <h2 class="gs-empty__title">Sem despesas no período</h2>
+        <p class="gs-empty__text">Não há pagamentos neste intervalo. Compromissos em aberto também não foram encontrados.</p>
+    </div>
+    {% endif %}
+
+    <div class="row g-3 mb-3">
+        <div class="col-12 col-xl-6">
+            <section class="gs-card gs-hud h-100">
+                <h2 class="gs-section-title">Despesas por categoria</h2>
+                {% if dashboard.categorias %}
+                <div class="gs-chart-wrap">
+                    <canvas id="chart-categorias" data-gs-chart="chart-categorias-data" aria-label="Despesas pagas por categoria"></canvas>
+                </div>
+                {% else %}
+                <p class="gs-muted">Sem dados no período</p>
+                {% endif %}
+            </section>
+        </div>
+        <div class="col-12 col-xl-6">
+            <section class="gs-card gs-hud h-100">
+                <h2 class="gs-section-title">Evolução das despesas</h2>
+                {% if dashboard.pagas.visivel %}
+                <div class="gs-chart-wrap">
+                    <canvas id="chart-evolucao" data-gs-chart="chart-evolucao-data" aria-label="Evolução das despesas pagas"></canvas>
+                </div>
+                {% else %}
+                <p class="gs-muted">Sem dados no período</p>
+                {% endif %}
+            </section>
+        </div>
+    </div>
+    {{ dashboard.chart_categorias|json_script:"chart-categorias-data" }}
+    {{ dashboard.chart_evolucao|json_script:"chart-evolucao-data" }}
+
+    <div class="row g-3 mb-3">
+        <div class="col-12 col-xl-7">
+            <section class="gs-card">
+                <div class="gs-section-head">
+                    <h2 class="gs-section-title">Próximos vencimentos</h2>
+                    <a href="{% url 'financeiro:lista_contas_pagar' %}?status=pendente" class="gs-btn gs-btn-outline">Ver todas</a>
+                </div>
+                {% if dashboard.proximos_vencimentos %}
+                <div class="gs-table-wrap">
+                    <table class="gs-table">
+                        <thead>
+                            <tr>
+                                <th>Descrição</th>
+                                <th>Categoria</th>
+                                <th>Fornecedor</th>
+                                <th>Vencimento</th>
+                                <th>Valor</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for conta in dashboard.proximos_vencimentos %}
+                            <tr>
+                                <td>{{ conta.descricao }}</td>
+                                <td>{{ conta.categoria.nome }}</td>
+                                <td>{{ conta.fornecedor.nome|default:"—" }}</td>
+                                <td>{{ conta.data_vencimento|date:"d/m/Y" }}</td>
+                                <td>R$ {{ conta.valor|floatformat:2 }}</td>
+                                <td><span class="gs-badge gs-badge--warning">Pendente</span></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p class="gs-muted">Não há próximos vencimentos.</p>
+                {% endif %}
+            </section>
+        </div>
+        <div class="col-12 col-xl-5">
+            {% if dashboard.contas_vencidas %}
+            <section class="gs-card gs-card-alert">
+                <div class="gs-section-head">
+                    <h2 class="gs-section-title">Contas vencidas</h2>
+                    <a href="{{ dashboard.vencidas.url }}" class="gs-btn gs-btn-outline">Ver contas vencidas</a>
+                </div>
+                <div class="gs-table-wrap">
+                    <table class="gs-table">
+                        <thead>
+                            <tr>
+                                <th>Descrição</th>
+                                <th>Fornecedor</th>
+                                <th>Vencimento</th>
+                                <th>Atraso</th>
+                                <th>Valor</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for conta in dashboard.contas_vencidas %}
+                            <tr>
+                                <td>{{ conta.descricao }}</td>
+                                <td>{{ conta.fornecedor.nome|default:"—" }}</td>
+                                <td>{{ conta.data_vencimento|date:"d/m/Y" }}</td>
+                                <td>{{ conta.dias_atraso }} d</td>
+                                <td>R$ {{ conta.valor|floatformat:2 }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if dashboard.recorrencias %}
+    <section class="gs-card mb-3">
+        <div class="gs-section-head">
+            <h2 class="gs-section-title">Próximas recorrências</h2>
+            <a href="{% url 'financeiro:lista_contas_recorrentes' %}" class="gs-btn gs-btn-outline">Ver recorrências</a>
+        </div>
+        <div class="gs-table-wrap">
+            <table class="gs-table">
+                <thead>
+                    <tr>
+                        <th>Descrição</th>
+                        <th>Categoria</th>
+                        <th>Valor</th>
+                        <th>Dia</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in dashboard.recorrencias %}
+                    <tr>
+                        <td>{{ item.descricao }}</td>
+                        <td>{{ item.categoria.nome }}</td>
+                        <td>R$ {{ item.valor|floatformat:2 }}</td>
+                        <td>Dia {{ item.dia_vencimento }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+    {% endif %}
+
+    {% if dashboard.gastos_veiculos or dashboard.manutencao %}
+    <div class="row g-3 mb-3">
+        {% if dashboard.gastos_veiculos %}
+        <div class="col-12 col-md-6">
+            <div class="gs-card">
+                <p class="gs-card__title">Gastos com veículos</p>
+                <p class="gs-card__value">R$ {{ dashboard.gastos_veiculos.total|floatformat:2 }}</p>
+                <p class="gs-muted">{{ dashboard.gastos_veiculos.quantidade }} lançamento{{ dashboard.gastos_veiculos.quantidade|pluralize }} pago{{ dashboard.gastos_veiculos.quantidade|pluralize }}</p>
+                {% if dashboard.ranking_veiculos %}
+                <ul class="gs-ranking">
+                    {% for item in dashboard.ranking_veiculos %}
+                    <li>{{ item.veiculo }} — R$ {{ item.total|floatformat:2 }}</li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+        {% if dashboard.manutencao %}
+        <div class="col-12 col-md-6">
+            <div class="gs-card">
+                <p class="gs-card__title">Manutenção</p>
+                <p class="gs-card__value">R$ {{ dashboard.manutencao.total|floatformat:2 }}</p>
+                <p class="gs-muted">{{ dashboard.manutencao.quantidade }} pagamento{{ dashboard.manutencao.quantidade|pluralize }}</p>
+                {% if dashboard.manutencao_maior_veiculo %}
+                <p class="gs-muted">Maior gasto: {{ dashboard.manutencao_maior_veiculo }}</p>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    {% if dashboard.veiculos %}
+    <section class="gs-card mb-3">
+        <div class="gs-section-head">
+            <h2 class="gs-section-title">Veículos</h2>
+            <a href="{% url 'financeiro:lista_veiculos' %}" class="gs-btn gs-btn-outline">Ver veículos</a>
+        </div>
+        <div class="gs-table-wrap">
+            <table class="gs-table">
+                <thead>
+                    <tr>
+                        <th>Veículo</th>
+                        <th>Placa</th>
+                        <th>Km</th>
+                        <th>Manutenção</th>
+                        <th>Próxima obrigação</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for linha in dashboard.veiculos %}
+                    <tr>
+                        <td>{{ linha.veiculo.marca }} {{ linha.veiculo.modelo }}</td>
+                        <td>{{ linha.veiculo.placa_formatada }}</td>
+                        <td>{{ linha.veiculo.km_atual }}</td>
+                        <td>
+                            <span class="gs-badge {% if linha.manutencao_codigo == 'atrasada' %}gs-badge--danger{% elif linha.manutencao_codigo == 'proxima' %}gs-badge--warning{% elif linha.manutencao_codigo == 'em_dia' %}gs-badge--ok{% else %}gs-badge--neutral{% endif %}">{{ linha.manutencao_rotulo }}</span>
+                        </td>
+                        <td>
+                            {% if linha.proxima_obrigacao %}
+                            {{ linha.proxima_obrigacao.get_tipo_display }} {{ linha.proxima_obrigacao.exercicio }}
+                            {% else %}
+                            —
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+    {% endif %}
+
+    {% if dashboard.obrigacoes %}
+    <section class="gs-card mb-3">
+        <div class="gs-section-head">
+            <h2 class="gs-section-title">Obrigações de veículos</h2>
+            <a href="{% url 'financeiro:lista_obrigacoes' %}?status=pendente" class="gs-btn gs-btn-outline">Ver obrigações</a>
+        </div>
+        <div class="gs-table-wrap">
+            <table class="gs-table">
+                <thead>
+                    <tr>
+                        <th>Veículo</th>
+                        <th>Tipo</th>
+                        <th>Exercício</th>
+                        <th>Vencimento</th>
+                        <th>Situação</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in dashboard.obrigacoes %}
+                    <tr>
+                        <td>{{ item.obrigacao.veiculo }}</td>
+                        <td>{{ item.obrigacao.get_tipo_display }}</td>
+                        <td>{{ item.obrigacao.exercicio }}</td>
+                        <td>{% if item.obrigacao.data_vencimento %}{{ item.obrigacao.data_vencimento|date:"d/m/Y" }}{% else %}—{% endif %}</td>
+                        <td>
+                            {% if item.vencida %}
+                            <span class="gs-badge gs-badge--danger">Atrasada</span>
+                            {% else %}
+                            <span class="gs-badge gs-badge--warning">Pendente</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+    {% endif %}
+
+    {% if dashboard.categorias %}
+    <section class="gs-card mb-3">
+        <h2 class="gs-section-title">Resumo por categoria</h2>
+        <div class="gs-table-wrap">
+            <table class="gs-table">
+                <thead>
+                    <tr>
+                        <th>Categoria</th>
+                        <th>Quantidade</th>
+                        <th>Total pago</th>
+                        <th>%</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for linha in dashboard.categorias %}
+                    <tr>
+                        <td>{{ linha.nome }}</td>
+                        <td>{{ linha.quantidade }}</td>
+                        <td>R$ {{ linha.total|floatformat:2 }}</td>
+                        <td>{{ linha.percentual|floatformat:2 }}%</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+    {% endif %}
+
+    {% if dashboard.formas_pagamento %}
+    <section class="gs-card">
+        <h2 class="gs-section-title">Formas de pagamento</h2>
+        <div class="gs-table-wrap">
+            <table class="gs-table">
+                <thead>
+                    <tr>
+                        <th>Forma</th>
+                        <th>Quantidade</th>
+                        <th>Total pago</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for linha in dashboard.formas_pagamento %}
+                    <tr>
+                        <td>{{ linha.nome }}</td>
+                        <td>{{ linha.quantidade }}</td>
+                        <td>R$ {{ linha.total|floatformat:2 }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/vendor/chart.umd.min.js' %}"></script>
+<script src="{% static 'js/gs_charts.js' %}"></script>
+<script src="{% static 'financeiro/js/dashboard.js' %}"></script>
+{% endblock %}

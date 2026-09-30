@@ -40,7 +40,12 @@
 }
 
 .equipment-progress {
-    padding: 0.25rem 0 0.75rem;
+    padding: 1rem;
+    border: 1px solid var(--gs-hud-border);
+    border-radius: var(--gs-hud-radius);
+    background: var(--gs-hud-bg);
+    color: var(--gs-hud-text);
+    box-shadow: var(--gs-hud-glow);
 }
 
 .equipment-progress-content {
@@ -51,27 +56,28 @@
 
 .progress-circle {
     --progress: 0;
-    width: 56px;
-    height: 56px;
+    width: 112px;
+    height: 112px;
     flex-shrink: 0;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: conic-gradient(var(--gs-primary) calc(var(--progress) * 1%), var(--gs-ice) 0);
+    background: conic-gradient(var(--gs-hud-blue) calc(var(--progress) * 1%), var(--gs-hud-track) 0);
 }
 
 .progress-circle-value {
-    width: 42px;
-    height: 42px;
+    width: 78px;
+    height: 78px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: var(--gs-surface);
-    color: var(--gs-navy);
-    font-size: 0.72rem;
-    font-weight: var(--gs-font-weight-bold);
+    background: var(--gs-hud-bg);
+    color: var(--gs-hud-text);
+    font-family: var(--gs-font-family);
+    font-size: 1.35rem;
+    font-weight: 700;
 }
 
 .equipment-progress-info {
@@ -80,9 +86,12 @@
 }
 
 .equipment-progress-title {
+    font-family: var(--gs-font-family);
     font-size: var(--gs-font-size-sm);
-    font-weight: var(--gs-font-weight-semibold);
-    color: var(--gs-navy);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--gs-hud-muted);
 }
 
 .equipment-progress-main,
@@ -91,14 +100,14 @@
     flex-wrap: wrap;
     gap: 0.35rem 0.75rem;
     margin-top: 0.2rem;
-    color: var(--gs-text-secondary);
+    color: var(--gs-hud-muted);
     font-size: var(--gs-font-size-sm);
 }
 
 .equipment-progress-bar {
     margin-top: 0.45rem;
     height: 6px;
-    background: var(--gs-ice);
+    background: var(--gs-hud-track);
     border-radius: 4px;
     overflow: hidden;
 }
@@ -106,11 +115,11 @@
 .equipment-progress-bar-fill {
     height: 100%;
     width: 0;
-    background: var(--gs-primary);
+    background: var(--gs-hud-blue);
 }
 
 .equipment-progress-complete .progress-circle {
-    background: conic-gradient(var(--gs-success) 100%, var(--gs-ice) 0);
+    background: conic-gradient(var(--gs-hud-blue) 100%, var(--gs-hud-track) 0);
 }
 
 .history-header-btn {
