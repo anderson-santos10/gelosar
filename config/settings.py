@@ -105,6 +105,7 @@ SECRET_KEY = resolve_secret_key(
 
 ALLOWED_HOSTS = _env_list(
     "DJANGO_ALLOWED_HOSTS",
+    "https://gelosar-production.up.railway.app/"
     ["localhost", "127.0.0.1"],
 )
 
