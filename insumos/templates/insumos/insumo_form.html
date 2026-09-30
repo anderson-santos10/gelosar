@@ -3,7 +3,7 @@
 {% block title %}{% if form.instance.pk %}Editar insumo | GELOSAR{% else %}Novo insumo | GELOSAR{% endif %}{% endblock %}
 
 {% block content %}
-<div class="gs-page">
+<div class="gs-page gs-form-page">
     <header class="gs-page-header">
         <div>
             <ol class="gs-breadcrumb">
@@ -29,13 +29,23 @@
                         </div>
                     </div>
                     {% endif %}
+                    <div class="gs-form-grid">
                     {% for field in form %}
-                    <div class="mb-3">
-                        <label class="gs-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    <div class="gs-field{% if field.name == 'nome' or field.field.widget.input_type == 'checkbox' %} gs-field--full{% endif %}">
+                        {% if field.field.widget.input_type == 'checkbox' %}
+                        <label class="gs-check" for="{{ field.id_for_label }}">
+                            {{ field }}
+                            <span>{{ field.label }}</span>
+                        </label>
+                        {% else %}
+                        <label class="gs-label" for="{{ field.id_for_label }}">{{ field.label }}{% if field.field.required %} <span class="gs-required">*</span>{% endif %}</label>
                         {{ field }}
+                        {% if field.help_text %}<p class="gs-field-hint">{{ field.help_text }}</p>{% endif %}
+                        {% endif %}
                         {% if field.errors %}<p class="gs-field-error">{{ field.errors|striptags }}</p>{% endif %}
                     </div>
                     {% endfor %}
+                    </div>
                     <div class="gs-form-actions">
                         <a href="{% url 'insumos:lista_insumos' %}" class="gs-btn gs-btn-outline">Cancelar</a>
                         <button type="submit" class="gs-btn gs-btn-primary">Salvar</button>

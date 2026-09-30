@@ -1,0 +1,1826 @@
+[
+  {
+    "model": "auth.user",
+    "fields": {
+      "password": "pbkdf2_sha256$1000000$yiDl1hwycU69ZIZ5y3uSvn$1ra3fXVeF6LZRaRuzdNG9j2PFdszIgn+LzxH/DKy2/E=",
+      "last_login": "2026-09-28T19:29:03.262Z",
+      "is_superuser": true,
+      "username": "gelosar",
+      "first_name": "",
+      "last_name": "",
+      "email": "",
+      "is_staff": true,
+      "is_active": true,
+      "date_joined": "2026-07-02T16:36:10.930Z",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "auth.user",
+    "fields": {
+      "password": "pbkdf2_sha256$1000000$ikGtLfW2JCWY2UPDXCj9PK$b9Tnya6uPaJxN3/1cYjs0ynI16OdQ9AwJ9x+vWscXRQ=",
+      "last_login": "2026-08-06T20:00:49.818Z",
+      "is_superuser": true,
+      "username": "anderson",
+      "first_name": "",
+      "last_name": "",
+      "email": "",
+      "is_staff": true,
+      "is_active": true,
+      "date_joined": "2026-08-03T23:23:38.399Z",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "equipamentos.equipamento",
+    "pk": 1,
+    "fields": {
+      "cliente": null,
+      "nome": "GL-200",
+      "tipo": "maquina_gelo",
+      "fabricante": "Gelin",
+      "numero_serie": null,
+      "valor_compra": "20000.00",
+      "data_compra": null,
+      "garantia_meses": 12,
+      "localizacao": "Rua Luiz Ciro Lovatto 70",
+      "status": "ativo",
+      "observacoes": "A GL-200 utiliza compressor de 1 CV em 220 V.\r\n\r\nCaso o local tenha apenas energia 127 V/110 V, será necessário utilizar um autotransformador de 127 V para 220 V.\r\n\r\nRecomendamos:\r\n\r\nAutotransformador 127 V → 220 V\r\nPotência mínima: 3.000 VA\r\nPotência ideal/recomendada: 5.000 VA\r\n\r\nComo o compressor tem pico de consumo na partida, o transformador não deve ser usado no limite. Por segurança, recomendamos o modelo de 5.000 VA, principalmente para uso contínuo/comercial.",
+      "criado_em": "2026-07-02T17:38:46.525Z",
+      "atualizado_em": "2026-07-02T17:38:46.525Z"
+    }
+  },
+  {
+    "model": "equipamentos.equipamento",
+    "pk": 2,
+    "fields": {
+      "cliente": null,
+      "nome": "Conservador de gelo 1840L",
+      "tipo": "freezer",
+      "fabricante": "Zero Grau",
+      "numero_serie": null,
+      "valor_compra": "9000.00",
+      "data_compra": "2026-05-22",
+      "garantia_meses": 12,
+      "localizacao": "Rua Luiz Ciro Lovatto 70",
+      "status": "ativo",
+      "observacoes": "",
+      "criado_em": "2026-07-02T19:50:12.825Z",
+      "atualizado_em": "2026-07-22T04:39:46.960Z"
+    }
+  },
+  {
+    "model": "equipamentos.equipamento",
+    "pk": 3,
+    "fields": {
+      "cliente": null,
+      "nome": "Conservador de gelo 1840L",
+      "tipo": "freezer",
+      "fabricante": "Zero Grau",
+      "numero_serie": null,
+      "valor_compra": null,
+      "data_compra": null,
+      "garantia_meses": null,
+      "localizacao": "Rua Luiz Ciro Lovatto 70",
+      "status": "ativo",
+      "observacoes": "",
+      "criado_em": "2026-07-23T17:43:13.427Z",
+      "atualizado_em": "2026-09-12T17:00:32.349Z"
+    }
+  },
+  {
+    "model": "equipamentos.equipamento",
+    "pk": 4,
+    "fields": {
+      "cliente": 1,
+      "nome": "Conservador de Gelo",
+      "tipo": "freezer",
+      "fabricante": "Zero Grau",
+      "numero_serie": null,
+      "valor_compra": "8700.00",
+      "data_compra": "2026-07-23",
+      "garantia_meses": 12,
+      "localizacao": "Rua lacri 95",
+      "status": "ativo",
+      "observacoes": "",
+      "criado_em": "2026-08-22T15:45:20.685Z",
+      "atualizado_em": "2026-09-07T18:11:45.155Z"
+    }
+  },
+  {
+    "model": "equipamentos.equipamento",
+    "pk": 5,
+    "fields": {
+      "cliente": 5,
+      "nome": "freezer 2t",
+      "tipo": "freezer",
+      "fabricante": "",
+      "numero_serie": null,
+      "valor_compra": "800.00",
+      "data_compra": "2026-08-25",
+      "garantia_meses": null,
+      "localizacao": "",
+      "status": "ativo",
+      "observacoes": "",
+      "criado_em": "2026-09-07T17:59:36.862Z",
+      "atualizado_em": "2026-09-07T18:00:09.245Z"
+    }
+  },
+  {
+    "model": "equipamentos.equipamento",
+    "pk": 6,
+    "fields": {
+      "cliente": 6,
+      "nome": "freezer horizoltal",
+      "tipo": "freezer",
+      "fabricante": "Gelopar",
+      "numero_serie": null,
+      "valor_compra": "2150.00",
+      "data_compra": "2026-05-10",
+      "garantia_meses": null,
+      "localizacao": "José Matheus Pinheiro 353",
+      "status": "ativo",
+      "observacoes": "",
+      "criado_em": "2026-09-08T03:07:56.188Z",
+      "atualizado_em": "2026-09-12T17:19:32.705Z"
+    }
+  },
+  {
+    "model": "equipamentos.documentoequipamento",
+    "pk": 1,
+    "fields": {
+      "equipamento": 2,
+      "nome": "Anderson",
+      "arquivo": "documentos_equipamentos/en.png",
+      "data_upload": "2026-07-02T20:41:54.088Z"
+    }
+  },
+  {
+    "model": "equipamentos.documentoequipamento",
+    "pk": 2,
+    "fields": {
+      "equipamento": 2,
+      "nome": "hnz",
+      "arquivo": "documentos_equipamentos/ChatGPT_Image_Jun_9_2026_06_51_05_PM.png",
+      "data_upload": "2026-07-02T21:42:50.436Z"
+    }
+  },
+  {
+    "model": "equipamentos.documentoequipamento",
+    "pk": 3,
+    "fields": {
+      "equipamento": 2,
+      "nome": "Dimenções",
+      "arquivo": "documentos_equipamentos/dimensoes.jpeg",
+      "data_upload": "2026-07-22T00:30:13.157Z"
+    }
+  },
+  {
+    "model": "equipamentos.documentoequipamento",
+    "pk": 4,
+    "fields": {
+      "equipamento": 2,
+      "nome": "Ficha Tecnica",
+      "arquivo": "documentos_equipamentos/Ficha_Tecnica_-_Conservador_de_gelo_1.840L_-_Zero_Grau.pdf",
+      "data_upload": "2026-07-22T00:35:43.509Z"
+    }
+  },
+  {
+    "model": "equipamentos.documentoequipamento",
+    "pk": 5,
+    "fields": {
+      "equipamento": 2,
+      "nome": "Pedido",
+      "arquivo": "documentos_equipamentos/125643.PDF",
+      "data_upload": "2026-07-22T00:37:32.536Z"
+    }
+  },
+  {
+    "model": "equipamentos.documentoequipamento",
+    "pk": 6,
+    "fields": {
+      "equipamento": 1,
+      "nome": "Informativo",
+      "arquivo": "documentos_equipamentos/GL-200_Informativo_.jpeg",
+      "data_upload": "2026-07-22T00:43:47.573Z"
+    }
+  },
+  {
+    "model": "equipamentos.documentoequipamento",
+    "pk": 7,
+    "fields": {
+      "equipamento": 3,
+      "nome": "Pedido",
+      "arquivo": "documentos_equipamentos/128082.pdf",
+      "data_upload": "2026-07-23T17:43:51.762Z"
+    }
+  },
+  {
+    "model": "equipamentos.documentoequipamento",
+    "pk": 8,
+    "fields": {
+      "equipamento": 3,
+      "nome": "Projeto-Conservador de gelo 1840L",
+      "arquivo": "documentos_equipamentos/Projeto-Conservador_de_gelo_1840L.jpeg",
+      "data_upload": "2026-07-23T17:52:00.559Z"
+    }
+  },
+  {
+    "model": "equipamentos.documentoequipamento",
+    "pk": 9,
+    "fields": {
+      "equipamento": 4,
+      "nome": "aaa",
+      "arquivo": "documentos_equipamentos/Captura_de_tela_2026-08-20_202453.png",
+      "data_upload": "2026-09-02T22:53:02.293Z"
+    }
+  },
+  {
+    "model": "equipamentos.contratocomodato",
+    "pk": 1,
+    "fields": {
+      "cliente": 1,
+      "equipamento": 2,
+      "numero_contrato": "01",
+      "data_inicio": "2026-08-08",
+      "data_fim": null,
+      "status": "ativo",
+      "observacoes": "",
+      "criado_em": "2026-09-07T22:53:09.143Z",
+      "atualizado_em": "2026-09-08T03:27:52.086Z"
+    }
+  },
+  {
+    "model": "produtos.produto",
+    "pk": 1,
+    "fields": {
+      "nome": "Saco Gelo 5k",
+      "peso_kg": "5.00",
+      "preco_venda": "7.00",
+      "estoque_minimo": 50,
+      "ativo": true,
+      "criado_em": "2026-07-08T00:36:23.538Z",
+      "atualizado_em": "2026-08-03T23:24:45.889Z"
+    }
+  },
+  {
+    "model": "produtos.produto",
+    "pk": 2,
+    "fields": {
+      "nome": "Saco Gelo 3k",
+      "peso_kg": "3.00",
+      "preco_venda": "4.50",
+      "estoque_minimo": 0,
+      "ativo": true,
+      "criado_em": "2026-07-08T01:18:48.199Z",
+      "atualizado_em": "2026-07-22T03:25:20.056Z"
+    }
+  },
+  {
+    "model": "produtos.composicaoproduto",
+    "pk": 1,
+    "fields": {
+      "produto": 1,
+      "insumo": 1,
+      "quantidade": "1.000"
+    }
+  },
+  {
+    "model": "produtos.composicaoproduto",
+    "pk": 2,
+    "fields": {
+      "produto": 2,
+      "insumo": 2,
+      "quantidade": "1.000"
+    }
+  },
+  {
+    "model": "insumos.insumo",
+    "pk": 1,
+    "fields": {
+      "nome": "Embalagem Gelo 5k",
+      "unidade": "un",
+      "estoque_minimo": 100,
+      "ativo": true,
+      "criado_em": "2026-08-26T21:57:05.408Z",
+      "atualizado_em": "2026-08-26T22:02:20.853Z"
+    }
+  },
+  {
+    "model": "insumos.insumo",
+    "pk": 2,
+    "fields": {
+      "nome": "Embalagem Gelo 3k",
+      "unidade": "un",
+      "estoque_minimo": 100,
+      "ativo": true,
+      "criado_em": "2026-08-26T21:57:32.837Z",
+      "atualizado_em": "2026-08-26T22:02:17.355Z"
+    }
+  },
+  {
+    "model": "estoque.movimentacaoinsumo",
+    "pk": 1,
+    "fields": {
+      "insumo": 1,
+      "tipo": "SAIDA",
+      "quantidade": 2,
+      "observacao": "Consumo automático referente à produção #16",
+      "criado_em": "2026-08-26T22:07:24.788Z"
+    }
+  },
+  {
+    "model": "estoque.movimentacaoinsumo",
+    "pk": 2,
+    "fields": {
+      "insumo": 1,
+      "tipo": "ENTRADA",
+      "quantidade": 100,
+      "observacao": "Compra inicial de embalagens",
+      "criado_em": "2026-08-26T22:16:49.906Z"
+    }
+  },
+  {
+    "model": "estoque.movimentacaoinsumo",
+    "pk": 3,
+    "fields": {
+      "insumo": 1,
+      "tipo": "ENTRADA",
+      "quantidade": 800,
+      "observacao": "",
+      "criado_em": "2026-08-26T22:47:57.652Z"
+    }
+  },
+  {
+    "model": "estoque.movimentacaoinsumo",
+    "pk": 4,
+    "fields": {
+      "insumo": 2,
+      "tipo": "ENTRADA",
+      "quantidade": 800,
+      "observacao": "",
+      "criado_em": "2026-08-26T22:48:59.110Z"
+    }
+  },
+  {
+    "model": "estoque.movimentacaoinsumo",
+    "pk": 5,
+    "fields": {
+      "insumo": 1,
+      "tipo": "ENTRADA",
+      "quantidade": 100,
+      "observacao": "",
+      "criado_em": "2026-09-03T03:51:45.608Z"
+    }
+  },
+  {
+    "model": "estoque.movimentacaoinsumo",
+    "pk": 6,
+    "fields": {
+      "insumo": 1,
+      "tipo": "ENTRADA",
+      "quantidade": 2,
+      "observacao": "",
+      "criado_em": "2026-09-03T03:53:09.612Z"
+    }
+  },
+  {
+    "model": "estoque.movimentacaoinsumo",
+    "pk": 7,
+    "fields": {
+      "insumo": 2,
+      "tipo": "SAIDA",
+      "quantidade": 150,
+      "observacao": "Consumo automático referente à produção #19",
+      "criado_em": "2026-09-03T03:53:50.789Z"
+    }
+  },
+  {
+    "model": "estoque.movimentacaoinsumo",
+    "pk": 8,
+    "fields": {
+      "insumo": 1,
+      "tipo": "SAIDA",
+      "quantidade": 61,
+      "observacao": "Consumo automático referente à produção #20",
+      "criado_em": "2026-09-03T03:54:47.974Z"
+    }
+  },
+  {
+    "model": "estoque.movimentacaoproduto",
+    "pk": 2,
+    "fields": {
+      "produto": 1,
+      "tipo": "ENTRADA",
+      "quantidade": 11,
+      "observacao": "Entrada referente à produção #13",
+      "criado_em": "2026-08-26T17:52:02.106Z"
+    }
+  },
+  {
+    "model": "estoque.movimentacaoproduto",
+    "pk": 3,
+    "fields": {
+      "produto": 1,
+      "tipo": "ENTRADA",
+      "quantidade": 17,
+      "observacao": "Entrada referente à produção #12",
+      "criado_em": "2026-08-26T17:52:02.113Z"
+    }
+  },
+  {
+    "model": "estoque.movimentacaoproduto",
+    "pk": 4,
+    "fields": {
+      "produto": 1,
+      "tipo": "ENTRADA",
+      "quantidade": 2,
+      "observacao": "Entrada automática referente à produção #16",
+      "criado_em": "2026-08-26T22:07:24.786Z"
+    }
+  },
+  {
+    "model": "estoque.movimentacaoproduto",
+    "pk": 5,
+    "fields": {
+      "produto": 2,
+      "tipo": "ENTRADA",
+      "quantidade": 150,
+      "observacao": "Entrada automática referente à produção #19",
+      "criado_em": "2026-09-03T03:53:50.788Z"
+    }
+  },
+  {
+    "model": "estoque.movimentacaoproduto",
+    "pk": 6,
+    "fields": {
+      "produto": 1,
+      "tipo": "ENTRADA",
+      "quantidade": 61,
+      "observacao": "Entrada automática referente à produção #20",
+      "criado_em": "2026-09-03T03:54:47.972Z"
+    }
+  },
+  {
+    "model": "estoque.movimentacaoproduto",
+    "pk": 7,
+    "fields": {
+      "produto": 1,
+      "tipo": "AJUSTE",
+      "quantidade": 10,
+      "observacao": "",
+      "criado_em": "2026-09-08T02:32:52.939Z"
+    }
+  },
+  {
+    "model": "producao.producao",
+    "pk": 12,
+    "fields": {
+      "equipamento": 1,
+      "produto": 1,
+      "quantidade": 17,
+      "data_hora": "2026-08-26T05:26:04.305Z",
+      "observacao": "",
+      "criado_por": null
+    }
+  },
+  {
+    "model": "producao.producao",
+    "pk": 13,
+    "fields": {
+      "equipamento": 1,
+      "produto": 1,
+      "quantidade": 11,
+      "data_hora": "2026-08-26T17:42:32.143Z",
+      "observacao": "",
+      "criado_por": null
+    }
+  },
+  {
+    "model": "producao.producao",
+    "pk": 14,
+    "fields": {
+      "equipamento": 1,
+      "produto": 2,
+      "quantidade": 5,
+      "data_hora": "2026-08-26T17:59:36.444Z",
+      "observacao": "",
+      "criado_por": null
+    }
+  },
+  {
+    "model": "producao.producao",
+    "pk": 17,
+    "fields": {
+      "equipamento": 1,
+      "produto": 1,
+      "quantidade": 5,
+      "data_hora": "2026-08-27T04:58:25.218Z",
+      "observacao": "",
+      "criado_por": null
+    }
+  },
+  {
+    "model": "producao.producao",
+    "pk": 18,
+    "fields": {
+      "equipamento": 1,
+      "produto": 2,
+      "quantidade": 23,
+      "data_hora": "2026-08-27T04:58:53.567Z",
+      "observacao": "",
+      "criado_por": null
+    }
+  },
+  {
+    "model": "producao.producao",
+    "pk": 19,
+    "fields": {
+      "equipamento": 1,
+      "produto": 2,
+      "quantidade": 150,
+      "data_hora": "2026-09-03T03:53:50.787Z",
+      "observacao": "",
+      "criado_por": null
+    }
+  },
+  {
+    "model": "producao.producao",
+    "pk": 20,
+    "fields": {
+      "equipamento": 1,
+      "produto": 1,
+      "quantidade": 61,
+      "data_hora": "2026-09-03T03:54:47.971Z",
+      "observacao": "",
+      "criado_por": null
+    }
+  },
+  {
+    "model": "clientes.cliente",
+    "pk": 1,
+    "fields": {
+      "nome": "Leve Facil Palmital",
+      "cnpj": "55144658000169",
+      "telefone": "(14) 99717-2929",
+      "email": "",
+      "endereco": "Rua Iacri 90",
+      "cidade": "Marília",
+      "ativo": true,
+      "possui_equipamento_comodato": true,
+      "observacoes": "",
+      "criado_em": "2026-07-29T17:37:45.756Z",
+      "atualizado_em": "2026-09-29T05:54:08.868Z"
+    }
+  },
+  {
+    "model": "clientes.cliente",
+    "pk": 2,
+    "fields": {
+      "nome": "Leve Facil Palmital 2",
+      "cnpj": "61952704000159",
+      "telefone": "",
+      "email": "",
+      "endereco": "Rua Antônio Piacenti 285",
+      "cidade": "Marília",
+      "ativo": true,
+      "possui_equipamento_comodato": false,
+      "observacoes": "",
+      "criado_em": "2026-07-29T18:00:24.281Z",
+      "atualizado_em": "2026-09-07T22:36:42.783Z"
+    }
+  },
+  {
+    "model": "clientes.cliente",
+    "pk": 3,
+    "fields": {
+      "nome": "Adega Da Boa",
+      "cnpj": null,
+      "telefone": "(14) 98804-5670",
+      "email": "ander_an10@hotmail.com",
+      "endereco": "",
+      "cidade": "Marília",
+      "ativo": true,
+      "possui_equipamento_comodato": false,
+      "observacoes": "",
+      "criado_em": "2026-08-06T19:48:14.957Z",
+      "atualizado_em": "2026-09-08T03:09:16.533Z"
+    }
+  },
+  {
+    "model": "clientes.cliente",
+    "pk": 4,
+    "fields": {
+      "nome": "Fedochenko Beer",
+      "cnpj": null,
+      "telefone": "(14) 99118-0254",
+      "email": "",
+      "endereco": "",
+      "cidade": "Marília",
+      "ativo": true,
+      "possui_equipamento_comodato": false,
+      "observacoes": "",
+      "criado_em": "2026-08-14T01:08:17.357Z",
+      "atualizado_em": "2026-09-08T03:08:32.264Z"
+    }
+  },
+  {
+    "model": "clientes.cliente",
+    "pk": 5,
+    "fields": {
+      "nome": "Adega 2T",
+      "cnpj": null,
+      "telefone": "",
+      "email": "",
+      "endereco": "",
+      "cidade": "Marília",
+      "ativo": true,
+      "possui_equipamento_comodato": true,
+      "observacoes": "",
+      "criado_em": "2026-09-02T16:34:48.705Z",
+      "atualizado_em": "2026-09-08T03:09:02.615Z"
+    }
+  },
+  {
+    "model": "clientes.cliente",
+    "pk": 6,
+    "fields": {
+      "nome": "Pólo Norte Adega",
+      "cnpj": "55062862000130",
+      "telefone": "(14) 997954821",
+      "email": "",
+      "endereco": "José Matheus Pinheiro 353",
+      "cidade": "Marília",
+      "ativo": true,
+      "possui_equipamento_comodato": true,
+      "observacoes": "",
+      "criado_em": "2026-09-12T16:57:58.765Z",
+      "atualizado_em": "2026-09-12T18:42:22.103Z"
+    }
+  },
+  {
+    "model": "clientes.cliente",
+    "pk": 8,
+    "fields": {
+      "nome": "GELOSAR",
+      "cnpj": "68165831000157",
+      "telefone": "1144420816",
+      "email": "ander_an10@hotmail.com",
+      "endereco": "",
+      "cidade": "Marília",
+      "ativo": true,
+      "possui_equipamento_comodato": false,
+      "observacoes": "",
+      "criado_em": "2026-09-28T21:41:51.596Z",
+      "atualizado_em": "2026-09-28T21:41:51.596Z"
+    }
+  },
+  {
+    "model": "vendas.venda",
+    "pk": 2,
+    "fields": {
+      "cliente": 2,
+      "data": "2026-07-29",
+      "observacoes": "",
+      "criado_em": "2026-07-29T18:22:39.696Z",
+      "criado_por": null
+    }
+  },
+  {
+    "model": "vendas.venda",
+    "pk": 3,
+    "fields": {
+      "cliente": 2,
+      "data": "2026-07-29",
+      "observacoes": "",
+      "criado_em": "2026-07-29T18:23:12.389Z",
+      "criado_por": null
+    }
+  },
+  {
+    "model": "vendas.venda",
+    "pk": 4,
+    "fields": {
+      "cliente": 1,
+      "data": "2026-07-29",
+      "observacoes": "",
+      "criado_em": "2026-07-29T18:24:04.924Z",
+      "criado_por": null
+    }
+  },
+  {
+    "model": "vendas.venda",
+    "pk": 5,
+    "fields": {
+      "cliente": 2,
+      "data": "2026-07-29",
+      "observacoes": "",
+      "criado_em": "2026-07-29T18:51:06.905Z",
+      "criado_por": null
+    }
+  },
+  {
+    "model": "vendas.venda",
+    "pk": 6,
+    "fields": {
+      "cliente": 1,
+      "data": "2026-07-29",
+      "observacoes": "",
+      "criado_em": "2026-07-29T18:51:54.310Z",
+      "criado_por": null
+    }
+  },
+  {
+    "model": "vendas.venda",
+    "pk": 7,
+    "fields": {
+      "cliente": 2,
+      "data": "2026-07-29",
+      "observacoes": "",
+      "criado_em": "2026-07-29T18:52:38.423Z",
+      "criado_por": null
+    }
+  },
+  {
+    "model": "vendas.venda",
+    "pk": 8,
+    "fields": {
+      "cliente": 1,
+      "data": "2026-08-03",
+      "observacoes": "",
+      "criado_em": "2026-08-03T23:25:20.405Z",
+      "criado_por": null
+    }
+  },
+  {
+    "model": "vendas.venda",
+    "pk": 9,
+    "fields": {
+      "cliente": 3,
+      "data": "2026-08-06",
+      "observacoes": "",
+      "criado_em": "2026-08-06T19:49:23.690Z",
+      "criado_por": null
+    }
+  },
+  {
+    "model": "vendas.venda",
+    "pk": 10,
+    "fields": {
+      "cliente": 1,
+      "data": "2026-08-06",
+      "observacoes": "",
+      "criado_em": "2026-08-06T20:01:28.643Z",
+      "criado_por": null
+    }
+  },
+  {
+    "model": "vendas.venda",
+    "pk": 11,
+    "fields": {
+      "cliente": 1,
+      "data": "2026-08-09",
+      "observacoes": "",
+      "criado_em": "2026-08-09T18:54:31.579Z",
+      "criado_por": null
+    }
+  },
+  {
+    "model": "vendas.venda",
+    "pk": 12,
+    "fields": {
+      "cliente": 1,
+      "data": "2026-08-13",
+      "observacoes": "",
+      "criado_em": "2026-08-14T00:58:45.222Z",
+      "criado_por": null
+    }
+  },
+  {
+    "model": "vendas.venda",
+    "pk": 13,
+    "fields": {
+      "cliente": 4,
+      "data": "2026-08-13",
+      "observacoes": "",
+      "criado_em": "2026-08-14T01:08:54.194Z",
+      "criado_por": null
+    }
+  },
+  {
+    "model": "vendas.venda",
+    "pk": 14,
+    "fields": {
+      "cliente": 1,
+      "data": "2026-08-22",
+      "observacoes": "",
+      "criado_em": "2026-08-22T15:40:06.075Z",
+      "criado_por": null
+    }
+  },
+  {
+    "model": "vendas.venda",
+    "pk": 15,
+    "fields": {
+      "cliente": 4,
+      "data": "2026-08-24",
+      "observacoes": "",
+      "criado_em": "2026-08-24T18:07:19.560Z",
+      "criado_por": null
+    }
+  },
+  {
+    "model": "vendas.venda",
+    "pk": 16,
+    "fields": {
+      "cliente": 4,
+      "data": "2026-08-24",
+      "observacoes": "",
+      "criado_em": "2026-08-24T18:07:19.625Z",
+      "criado_por": null
+    }
+  },
+  {
+    "model": "vendas.venda",
+    "pk": 17,
+    "fields": {
+      "cliente": 2,
+      "data": "2026-08-24",
+      "observacoes": "",
+      "criado_em": "2026-08-24T18:50:08.531Z",
+      "criado_por": null
+    }
+  },
+  {
+    "model": "vendas.venda",
+    "pk": 18,
+    "fields": {
+      "cliente": 2,
+      "data": "2026-08-24",
+      "observacoes": "",
+      "criado_em": "2026-08-24T18:53:21.246Z",
+      "criado_por": null
+    }
+  },
+  {
+    "model": "vendas.venda",
+    "pk": 19,
+    "fields": {
+      "cliente": 2,
+      "data": "2026-08-24",
+      "observacoes": "",
+      "criado_em": "2026-08-24T18:57:19.993Z",
+      "criado_por": null
+    }
+  },
+  {
+    "model": "vendas.venda",
+    "pk": 20,
+    "fields": {
+      "cliente": 1,
+      "data": "2026-08-25",
+      "observacoes": "",
+      "criado_em": "2026-08-25T21:50:01.618Z",
+      "criado_por": null
+    }
+  },
+  {
+    "model": "vendas.venda",
+    "pk": 22,
+    "fields": {
+      "cliente": 5,
+      "data": "2026-09-02",
+      "observacoes": "",
+      "criado_em": "2026-09-02T16:35:41.447Z",
+      "criado_por": null
+    }
+  },
+  {
+    "model": "vendas.venda",
+    "pk": 23,
+    "fields": {
+      "cliente": 5,
+      "data": "2026-09-02",
+      "observacoes": "",
+      "criado_em": "2026-09-02T16:36:18.563Z",
+      "criado_por": null
+    }
+  },
+  {
+    "model": "vendas.venda",
+    "pk": 24,
+    "fields": {
+      "cliente": 5,
+      "data": "2026-09-02",
+      "observacoes": "",
+      "criado_em": "2026-09-02T16:36:45.635Z",
+      "criado_por": null
+    }
+  },
+  {
+    "model": "vendas.venda",
+    "pk": 25,
+    "fields": {
+      "cliente": 6,
+      "data": "2026-09-12",
+      "observacoes": "",
+      "criado_em": "2026-09-12T17:20:40.133Z",
+      "criado_por": [
+        "gelosar"
+      ]
+    }
+  },
+  {
+    "model": "vendas.venda",
+    "pk": 26,
+    "fields": {
+      "cliente": 1,
+      "data": "2026-09-21",
+      "observacoes": "",
+      "criado_em": "2026-09-21T03:47:51.351Z",
+      "criado_por": [
+        "gelosar"
+      ]
+    }
+  },
+  {
+    "model": "vendas.venda",
+    "pk": 27,
+    "fields": {
+      "cliente": 4,
+      "data": "2026-09-28",
+      "observacoes": "",
+      "criado_em": "2026-09-28T21:02:51.385Z",
+      "criado_por": [
+        "gelosar"
+      ]
+    }
+  },
+  {
+    "model": "vendas.venda",
+    "pk": 28,
+    "fields": {
+      "cliente": 8,
+      "data": "2026-09-28",
+      "observacoes": "",
+      "criado_em": "2026-09-28T21:45:38.692Z",
+      "criado_por": [
+        "gelosar"
+      ]
+    }
+  },
+  {
+    "model": "vendas.venda",
+    "pk": 29,
+    "fields": {
+      "cliente": 8,
+      "data": "2026-09-29",
+      "observacoes": "",
+      "criado_em": "2026-09-29T06:45:54.563Z",
+      "criado_por": [
+        "gelosar"
+      ]
+    }
+  },
+  {
+    "model": "vendas.itemvenda",
+    "pk": 2,
+    "fields": {
+      "venda": 2,
+      "produto": 1,
+      "quantidade": "5.00",
+      "preco_unitario": "7.00"
+    }
+  },
+  {
+    "model": "vendas.itemvenda",
+    "pk": 3,
+    "fields": {
+      "venda": 3,
+      "produto": 2,
+      "quantidade": "15.00",
+      "preco_unitario": "4.50"
+    }
+  },
+  {
+    "model": "vendas.itemvenda",
+    "pk": 4,
+    "fields": {
+      "venda": 4,
+      "produto": 2,
+      "quantidade": "15.00",
+      "preco_unitario": "4.50"
+    }
+  },
+  {
+    "model": "vendas.itemvenda",
+    "pk": 5,
+    "fields": {
+      "venda": 5,
+      "produto": 1,
+      "quantidade": "10.00",
+      "preco_unitario": "6.00"
+    }
+  },
+  {
+    "model": "vendas.itemvenda",
+    "pk": 6,
+    "fields": {
+      "venda": 6,
+      "produto": 2,
+      "quantidade": "10.00",
+      "preco_unitario": "4.50"
+    }
+  },
+  {
+    "model": "vendas.itemvenda",
+    "pk": 7,
+    "fields": {
+      "venda": 7,
+      "produto": 2,
+      "quantidade": "10.00",
+      "preco_unitario": "4.50"
+    }
+  },
+  {
+    "model": "vendas.itemvenda",
+    "pk": 8,
+    "fields": {
+      "venda": 7,
+      "produto": 1,
+      "quantidade": "10.00",
+      "preco_unitario": "6.00"
+    }
+  },
+  {
+    "model": "vendas.itemvenda",
+    "pk": 9,
+    "fields": {
+      "venda": 8,
+      "produto": 1,
+      "quantidade": "7.00",
+      "preco_unitario": "7.00"
+    }
+  },
+  {
+    "model": "vendas.itemvenda",
+    "pk": 10,
+    "fields": {
+      "venda": 8,
+      "produto": 2,
+      "quantidade": "7.00",
+      "preco_unitario": "4.50"
+    }
+  },
+  {
+    "model": "vendas.itemvenda",
+    "pk": 11,
+    "fields": {
+      "venda": 9,
+      "produto": 1,
+      "quantidade": "5.00",
+      "preco_unitario": "7.00"
+    }
+  },
+  {
+    "model": "vendas.itemvenda",
+    "pk": 12,
+    "fields": {
+      "venda": 10,
+      "produto": 2,
+      "quantidade": "7.00",
+      "preco_unitario": "4.50"
+    }
+  },
+  {
+    "model": "vendas.itemvenda",
+    "pk": 13,
+    "fields": {
+      "venda": 10,
+      "produto": 1,
+      "quantidade": "7.00",
+      "preco_unitario": "7.00"
+    }
+  },
+  {
+    "model": "vendas.itemvenda",
+    "pk": 14,
+    "fields": {
+      "venda": 11,
+      "produto": 1,
+      "quantidade": "9.00",
+      "preco_unitario": "7.00"
+    }
+  },
+  {
+    "model": "vendas.itemvenda",
+    "pk": 15,
+    "fields": {
+      "venda": 11,
+      "produto": 2,
+      "quantidade": "10.00",
+      "preco_unitario": "4.50"
+    }
+  },
+  {
+    "model": "vendas.itemvenda",
+    "pk": 16,
+    "fields": {
+      "venda": 12,
+      "produto": 2,
+      "quantidade": "12.00",
+      "preco_unitario": "4.50"
+    }
+  },
+  {
+    "model": "vendas.itemvenda",
+    "pk": 17,
+    "fields": {
+      "venda": 12,
+      "produto": 1,
+      "quantidade": "10.00",
+      "preco_unitario": "7.00"
+    }
+  },
+  {
+    "model": "vendas.itemvenda",
+    "pk": 18,
+    "fields": {
+      "venda": 13,
+      "produto": 2,
+      "quantidade": "5.00",
+      "preco_unitario": "4.50"
+    }
+  },
+  {
+    "model": "vendas.itemvenda",
+    "pk": 19,
+    "fields": {
+      "venda": 14,
+      "produto": 2,
+      "quantidade": "15.00",
+      "preco_unitario": "4.50"
+    }
+  },
+  {
+    "model": "vendas.itemvenda",
+    "pk": 20,
+    "fields": {
+      "venda": 15,
+      "produto": 2,
+      "quantidade": "7.00",
+      "preco_unitario": "4.50"
+    }
+  },
+  {
+    "model": "vendas.itemvenda",
+    "pk": 21,
+    "fields": {
+      "venda": 16,
+      "produto": 2,
+      "quantidade": "7.00",
+      "preco_unitario": "4.50"
+    }
+  },
+  {
+    "model": "vendas.itemvenda",
+    "pk": 22,
+    "fields": {
+      "venda": 17,
+      "produto": 2,
+      "quantidade": "1.00",
+      "preco_unitario": "4.50"
+    }
+  },
+  {
+    "model": "vendas.itemvenda",
+    "pk": 23,
+    "fields": {
+      "venda": 18,
+      "produto": 2,
+      "quantidade": "1.00",
+      "preco_unitario": "4.50"
+    }
+  },
+  {
+    "model": "vendas.itemvenda",
+    "pk": 24,
+    "fields": {
+      "venda": 19,
+      "produto": 1,
+      "quantidade": "2.00",
+      "preco_unitario": "7.00"
+    }
+  },
+  {
+    "model": "vendas.itemvenda",
+    "pk": 25,
+    "fields": {
+      "venda": 20,
+      "produto": 1,
+      "quantidade": "75.00",
+      "preco_unitario": "7.00"
+    }
+  },
+  {
+    "model": "vendas.itemvenda",
+    "pk": 26,
+    "fields": {
+      "venda": 20,
+      "produto": 2,
+      "quantidade": "60.00",
+      "preco_unitario": "4.50"
+    }
+  },
+  {
+    "model": "vendas.itemvenda",
+    "pk": 29,
+    "fields": {
+      "venda": 22,
+      "produto": 2,
+      "quantidade": "10.00",
+      "preco_unitario": "4.50"
+    }
+  },
+  {
+    "model": "vendas.itemvenda",
+    "pk": 30,
+    "fields": {
+      "venda": 23,
+      "produto": 2,
+      "quantidade": "11.00",
+      "preco_unitario": "4.50"
+    }
+  },
+  {
+    "model": "vendas.itemvenda",
+    "pk": 31,
+    "fields": {
+      "venda": 24,
+      "produto": 1,
+      "quantidade": "12.00",
+      "preco_unitario": "7.00"
+    }
+  },
+  {
+    "model": "vendas.itemvenda",
+    "pk": 32,
+    "fields": {
+      "venda": 25,
+      "produto": 1,
+      "quantidade": "10.00",
+      "preco_unitario": "7.00"
+    }
+  },
+  {
+    "model": "vendas.itemvenda",
+    "pk": 33,
+    "fields": {
+      "venda": 25,
+      "produto": 2,
+      "quantidade": "10.00",
+      "preco_unitario": "4.50"
+    }
+  },
+  {
+    "model": "vendas.itemvenda",
+    "pk": 34,
+    "fields": {
+      "venda": 26,
+      "produto": 2,
+      "quantidade": "60.00",
+      "preco_unitario": "4.50"
+    }
+  },
+  {
+    "model": "vendas.itemvenda",
+    "pk": 35,
+    "fields": {
+      "venda": 27,
+      "produto": 2,
+      "quantidade": "5.00",
+      "preco_unitario": "4.50"
+    }
+  },
+  {
+    "model": "vendas.itemvenda",
+    "pk": 36,
+    "fields": {
+      "venda": 28,
+      "produto": 2,
+      "quantidade": "10.00",
+      "preco_unitario": "4.50"
+    }
+  },
+  {
+    "model": "vendas.itemvenda",
+    "pk": 37,
+    "fields": {
+      "venda": 28,
+      "produto": 1,
+      "quantidade": "10.00",
+      "preco_unitario": "7.00"
+    }
+  },
+  {
+    "model": "vendas.itemvenda",
+    "pk": 38,
+    "fields": {
+      "venda": 29,
+      "produto": 2,
+      "quantidade": "150.00",
+      "preco_unitario": "4.50"
+    }
+  },
+  {
+    "model": "vendas.pedido",
+    "pk": 1,
+    "fields": {
+      "cliente": 8,
+      "status": "entregue",
+      "endereco": "ds\\dgds\\g\\sgd\\s",
+      "cidade": "Marília",
+      "observacoes": "",
+      "criado_em": "2026-09-29T04:44:58.039Z",
+      "criado_por": [
+        "gelosar"
+      ],
+      "entregue_em": "2026-09-29T06:45:54.570Z",
+      "entregue_por": [
+        "gelosar"
+      ],
+      "venda": 29
+    }
+  },
+  {
+    "model": "vendas.pedido",
+    "pk": 2,
+    "fields": {
+      "cliente": 1,
+      "status": "aberto",
+      "endereco": "Rua Iacri 90",
+      "cidade": "Marília",
+      "observacoes": "",
+      "criado_em": "2026-09-29T06:47:41.306Z",
+      "criado_por": [
+        "gelosar"
+      ],
+      "entregue_em": null,
+      "entregue_por": null,
+      "venda": null
+    }
+  },
+  {
+    "model": "vendas.itempedido",
+    "pk": 1,
+    "fields": {
+      "pedido": 1,
+      "produto": 2,
+      "quantidade": 150,
+      "preco_unitario": "4.50"
+    }
+  },
+  {
+    "model": "vendas.itempedido",
+    "pk": 2,
+    "fields": {
+      "pedido": 2,
+      "produto": 2,
+      "quantidade": 1,
+      "preco_unitario": "4.50"
+    }
+  },
+  {
+    "model": "financeiro.categoriafinanceira",
+    "pk": 1,
+    "fields": {
+      "nome": "Impostos",
+      "slug": "impostos",
+      "tipo": "despesa",
+      "ativo": true,
+      "ordem": 10,
+      "exige_veiculo": false,
+      "criado_em": "2026-09-12T19:11:18.355Z",
+      "atualizado_em": "2026-09-12T19:11:18.355Z"
+    }
+  },
+  {
+    "model": "financeiro.categoriafinanceira",
+    "pk": 2,
+    "fields": {
+      "nome": "Aluguel",
+      "slug": "aluguel",
+      "tipo": "despesa",
+      "ativo": true,
+      "ordem": 20,
+      "exige_veiculo": false,
+      "criado_em": "2026-09-12T19:11:18.358Z",
+      "atualizado_em": "2026-09-12T19:11:18.358Z"
+    }
+  },
+  {
+    "model": "financeiro.categoriafinanceira",
+    "pk": 3,
+    "fields": {
+      "nome": "Água",
+      "slug": "agua",
+      "tipo": "despesa",
+      "ativo": true,
+      "ordem": 30,
+      "exige_veiculo": false,
+      "criado_em": "2026-09-12T19:11:18.358Z",
+      "atualizado_em": "2026-09-12T19:11:18.358Z"
+    }
+  },
+  {
+    "model": "financeiro.categoriafinanceira",
+    "pk": 4,
+    "fields": {
+      "nome": "Energia elétrica",
+      "slug": "energia-eletrica",
+      "tipo": "despesa",
+      "ativo": true,
+      "ordem": 40,
+      "exige_veiculo": false,
+      "criado_em": "2026-09-12T19:11:18.360Z",
+      "atualizado_em": "2026-09-12T19:11:18.360Z"
+    }
+  },
+  {
+    "model": "financeiro.categoriafinanceira",
+    "pk": 5,
+    "fields": {
+      "nome": "Internet/Telefonia",
+      "slug": "internet-telefonia",
+      "tipo": "despesa",
+      "ativo": true,
+      "ordem": 50,
+      "exige_veiculo": false,
+      "criado_em": "2026-09-12T19:11:18.360Z",
+      "atualizado_em": "2026-09-12T19:11:18.360Z"
+    }
+  },
+  {
+    "model": "financeiro.categoriafinanceira",
+    "pk": 6,
+    "fields": {
+      "nome": "Combustível",
+      "slug": "combustivel",
+      "tipo": "despesa",
+      "ativo": true,
+      "ordem": 60,
+      "exige_veiculo": true,
+      "criado_em": "2026-09-12T19:11:18.360Z",
+      "atualizado_em": "2026-09-12T19:11:18.360Z"
+    }
+  },
+  {
+    "model": "financeiro.categoriafinanceira",
+    "pk": 7,
+    "fields": {
+      "nome": "Manutenção",
+      "slug": "manutencao",
+      "tipo": "despesa",
+      "ativo": true,
+      "ordem": 70,
+      "exige_veiculo": false,
+      "criado_em": "2026-09-12T19:11:18.361Z",
+      "atualizado_em": "2026-09-12T19:11:18.361Z"
+    }
+  },
+  {
+    "model": "financeiro.categoriafinanceira",
+    "pk": 8,
+    "fields": {
+      "nome": "Veículos",
+      "slug": "veiculos",
+      "tipo": "despesa",
+      "ativo": true,
+      "ordem": 80,
+      "exige_veiculo": true,
+      "criado_em": "2026-09-12T19:11:18.361Z",
+      "atualizado_em": "2026-09-12T19:11:18.361Z"
+    }
+  },
+  {
+    "model": "financeiro.categoriafinanceira",
+    "pk": 9,
+    "fields": {
+      "nome": "Equipamentos",
+      "slug": "equipamentos",
+      "tipo": "despesa",
+      "ativo": true,
+      "ordem": 90,
+      "exige_veiculo": false,
+      "criado_em": "2026-09-12T19:11:18.362Z",
+      "atualizado_em": "2026-09-12T19:11:18.362Z"
+    }
+  },
+  {
+    "model": "financeiro.categoriafinanceira",
+    "pk": 10,
+    "fields": {
+      "nome": "Insumos",
+      "slug": "insumos",
+      "tipo": "despesa",
+      "ativo": true,
+      "ordem": 100,
+      "exige_veiculo": false,
+      "criado_em": "2026-09-12T19:11:18.362Z",
+      "atualizado_em": "2026-09-12T19:11:18.362Z"
+    }
+  },
+  {
+    "model": "financeiro.categoriafinanceira",
+    "pk": 11,
+    "fields": {
+      "nome": "Embalagens",
+      "slug": "embalagens",
+      "tipo": "despesa",
+      "ativo": true,
+      "ordem": 110,
+      "exige_veiculo": false,
+      "criado_em": "2026-09-12T19:11:18.362Z",
+      "atualizado_em": "2026-09-12T19:11:18.362Z"
+    }
+  },
+  {
+    "model": "financeiro.categoriafinanceira",
+    "pk": 12,
+    "fields": {
+      "nome": "Funcionários",
+      "slug": "funcionarios",
+      "tipo": "despesa",
+      "ativo": true,
+      "ordem": 120,
+      "exige_veiculo": false,
+      "criado_em": "2026-09-12T19:11:18.363Z",
+      "atualizado_em": "2026-09-12T19:11:18.363Z"
+    }
+  },
+  {
+    "model": "financeiro.categoriafinanceira",
+    "pk": 13,
+    "fields": {
+      "nome": "Contabilidade",
+      "slug": "contabilidade",
+      "tipo": "despesa",
+      "ativo": true,
+      "ordem": 130,
+      "exige_veiculo": false,
+      "criado_em": "2026-09-12T19:11:18.363Z",
+      "atualizado_em": "2026-09-12T19:11:18.363Z"
+    }
+  },
+  {
+    "model": "financeiro.categoriafinanceira",
+    "pk": 14,
+    "fields": {
+      "nome": "Seguros",
+      "slug": "seguros",
+      "tipo": "despesa",
+      "ativo": true,
+      "ordem": 140,
+      "exige_veiculo": true,
+      "criado_em": "2026-09-12T19:11:18.363Z",
+      "atualizado_em": "2026-09-12T19:11:18.363Z"
+    }
+  },
+  {
+    "model": "financeiro.categoriafinanceira",
+    "pk": 15,
+    "fields": {
+      "nome": "Taxas bancárias",
+      "slug": "taxas-bancarias",
+      "tipo": "despesa",
+      "ativo": true,
+      "ordem": 150,
+      "exige_veiculo": false,
+      "criado_em": "2026-09-12T19:11:18.364Z",
+      "atualizado_em": "2026-09-12T19:11:18.364Z"
+    }
+  },
+  {
+    "model": "financeiro.categoriafinanceira",
+    "pk": 16,
+    "fields": {
+      "nome": "Outros",
+      "slug": "outros",
+      "tipo": "despesa",
+      "ativo": true,
+      "ordem": 160,
+      "exige_veiculo": false,
+      "criado_em": "2026-09-12T19:11:18.364Z",
+      "atualizado_em": "2026-09-12T19:11:18.364Z"
+    }
+  },
+  {
+    "model": "financeiro.categoriafinanceira",
+    "pk": 17,
+    "fields": {
+      "nome": "IPVA",
+      "slug": "ipva",
+      "tipo": "despesa",
+      "ativo": true,
+      "ordem": 65,
+      "exige_veiculo": true,
+      "criado_em": "2026-09-12T20:12:11.275Z",
+      "atualizado_em": "2026-09-12T20:12:11.275Z"
+    }
+  },
+  {
+    "model": "financeiro.categoriafinanceira",
+    "pk": 18,
+    "fields": {
+      "nome": "Licenciamento",
+      "slug": "licenciamento",
+      "tipo": "despesa",
+      "ativo": true,
+      "ordem": 66,
+      "exige_veiculo": true,
+      "criado_em": "2026-09-12T20:12:11.277Z",
+      "atualizado_em": "2026-09-12T20:12:11.277Z"
+    }
+  },
+  {
+    "model": "financeiro.categoriafinanceira",
+    "pk": 19,
+    "fields": {
+      "nome": "Vendas",
+      "slug": "vendas-receita",
+      "tipo": "receita",
+      "ativo": true,
+      "ordem": 10,
+      "exige_veiculo": false,
+      "criado_em": "2026-09-13T02:07:16.033Z",
+      "atualizado_em": "2026-09-13T02:07:16.033Z"
+    }
+  },
+  {
+    "model": "financeiro.categoriafinanceira",
+    "pk": 20,
+    "fields": {
+      "nome": "Serviços",
+      "slug": "servicos",
+      "tipo": "receita",
+      "ativo": true,
+      "ordem": 20,
+      "exige_veiculo": false,
+      "criado_em": "2026-09-13T02:07:16.036Z",
+      "atualizado_em": "2026-09-13T02:07:16.036Z"
+    }
+  },
+  {
+    "model": "financeiro.categoriafinanceira",
+    "pk": 21,
+    "fields": {
+      "nome": "Ressarcimento",
+      "slug": "ressarcimento",
+      "tipo": "receita",
+      "ativo": true,
+      "ordem": 30,
+      "exige_veiculo": false,
+      "criado_em": "2026-09-13T02:07:16.037Z",
+      "atualizado_em": "2026-09-13T02:07:16.037Z"
+    }
+  },
+  {
+    "model": "financeiro.categoriafinanceira",
+    "pk": 22,
+    "fields": {
+      "nome": "Outras receitas",
+      "slug": "outras-receitas",
+      "tipo": "receita",
+      "ativo": true,
+      "ordem": 40,
+      "exige_veiculo": false,
+      "criado_em": "2026-09-13T02:07:16.038Z",
+      "atualizado_em": "2026-09-13T02:07:16.038Z"
+    }
+  },
+  {
+    "model": "financeiro.contarecorrente",
+    "pk": 1,
+    "fields": {
+      "descricao": "DAS MEI",
+      "categoria": 1,
+      "fornecedor": null,
+      "valor": "82.05",
+      "valor_estimado": false,
+      "periodicidade": "mensal",
+      "dia_vencimento": 20,
+      "data_inicio": "2026-09-01",
+      "data_fim": "2026-09-20",
+      "ativa": true,
+      "observacoes": "",
+      "criado_em": "2026-09-12T19:43:17.951Z",
+      "atualizado_em": "2026-09-12T19:43:17.951Z"
+    }
+  },
+  {
+    "model": "financeiro.contapagar",
+    "pk": 1,
+    "fields": {
+      "descricao": "DAS MEI",
+      "categoria": 1,
+      "fornecedor": null,
+      "recorrente": null,
+      "veiculo": null,
+      "manutencao": null,
+      "obrigacao": null,
+      "competencia": "2026-09-01",
+      "valor": "82.05",
+      "data_emissao": "2026-09-12",
+      "data_vencimento": "2026-09-20",
+      "data_pagamento": null,
+      "status": "cancelado",
+      "forma_pagamento": "boleto",
+      "observacoes": "",
+      "anexo": "",
+      "criado_por": [
+        "gelosar"
+      ],
+      "criado_em": "2026-09-12T19:30:44.435Z",
+      "atualizado_em": "2026-09-12T22:24:48.742Z"
+    }
+  },
+  {
+    "model": "financeiro.contapagar",
+    "pk": 2,
+    "fields": {
+      "descricao": "DAS MEI",
+      "categoria": 1,
+      "fornecedor": null,
+      "recorrente": 1,
+      "veiculo": null,
+      "manutencao": null,
+      "obrigacao": null,
+      "competencia": "2026-09-01",
+      "valor": "82.05",
+      "data_emissao": null,
+      "data_vencimento": "2026-09-20",
+      "data_pagamento": null,
+      "status": "pendente",
+      "forma_pagamento": "",
+      "observacoes": "",
+      "anexo": "",
+      "criado_por": [
+        "gelosar"
+      ],
+      "criado_em": "2026-09-12T19:43:58.412Z",
+      "atualizado_em": "2026-09-12T19:43:58.413Z"
+    }
+  },
+  {
+    "model": "financeiro.veiculo",
+    "pk": 1,
+    "fields": {
+      "marca": "Fiat",
+      "modelo": "Uno",
+      "versao": "",
+      "placa": "EOC4857",
+      "renavam": "",
+      "ano_fabricacao": 2013,
+      "ano_modelo": 2013,
+      "uf": "SP",
+      "km_atual": 0,
+      "data_aquisicao": "2026-06-12",
+      "ativo": true,
+      "observacoes": "",
+      "criado_em": "2026-09-13T01:33:24.018Z",
+      "atualizado_em": "2026-09-13T01:33:24.018Z"
+    }
+  },
+  {
+    "model": "financeiro.obrigacaoveiculo",
+    "pk": 1,
+    "fields": {
+      "veiculo": 1,
+      "tipo": "ipva",
+      "exercicio": 2026,
+      "data_vencimento": null,
+      "status": "pendente",
+      "valor_previsto": null,
+      "observacoes": "Em São Paulo, no exercício de 2026, o veículo não se enquadra na isenção por ano de fabricação.",
+      "criado_em": "2026-09-13T01:34:01.217Z",
+      "atualizado_em": "2026-09-13T01:34:01.217Z"
+    }
+  },
+  {
+    "model": "financeiro.obrigacaoveiculo",
+    "pk": 2,
+    "fields": {
+      "veiculo": 1,
+      "tipo": "licenciamento",
+      "exercicio": 2026,
+      "data_vencimento": null,
+      "status": "pendente",
+      "valor_previsto": null,
+      "observacoes": "",
+      "criado_em": "2026-09-13T01:34:01.222Z",
+      "atualizado_em": "2026-09-13T01:34:01.222Z"
+    }
+  }
+]

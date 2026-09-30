@@ -112,10 +112,19 @@ class ChartsTests(TestCase):
 class DashboardViewChartsTests(TestCase):
 
     def setUp(self):
+        from accounts.test_utils import conceder_permissoes
+
         User = get_user_model()
         self.user = User.objects.create_user(
             username="dash",
             password="teste-123",
+        )
+        conceder_permissoes(
+            self.user,
+            "equipamentos.view_equipamento",
+            "producao.view_producao",
+            "estoque.view_movimentacaoproduto",
+            "vendas.view_venda",
         )
         self.client.force_login(self.user)
 
@@ -124,20 +133,84 @@ class DashboardViewChartsTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIn("chart_vendas", response.context)
         self.assertEqual(len(response.context["chart_vendas"]["labels"]), 7)
-        self.assertContains(response, "chart-vendas-data")
+        self.assertNotContains(response, "Total Maquinário")
+        self.assertNotContains(response, "Produção acumulada")
+        self.assertNotContains(response, 'id="chart-vendas"')
+        self.assertNotContains(response, 'id="chart-producao"')
+        self.assertNotContains(response, 'id="chart-estoque"')
+        self.assertContains(response, "Produtos acabados (gelo)")
+        self.assertContains(response, "Gelo 5kg")
         self.assertContains(response, "dashboard_charts.js")
         self.assertContains(response, "js/vendor/chart.umd.min.js")
         self.assertContains(response, "img/logo-gelosar.jpg")
+
+    def test_dashboard_com_producao_sem_vendas_omite_grafico_de_vendas(self):
+        equipamento = Equipamento.objects.create(
+            nome="Máquina dashboard",
+            tipo="maquina_gelo",
+        )
+        produto = Produto.objects.create(
+            nome="Gelo dashboard produção",
+            peso_kg=Decimal("5.00"),
+            preco_venda="1.00",
+        )
+        Producao.objects.create(
+            equipamento=equipamento,
+            produto=produto,
+            quantidade=4,
+        )
+        response = self.client.get(reverse("dashboard"))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'id="chart-producao"')
+        self.assertNotContains(response, 'id="chart-vendas"')
+        self.assertContains(response, "Produção acumulada")
+
+    def test_dashboard_com_dados_mostra_graficos_e_kpis(self):
+        equipamento = Equipamento.objects.create(
+            nome="Máquina dashboard cheio",
+            tipo="maquina_gelo",
+            status="ativo",
+        )
+        produto = Produto.objects.create(
+            nome="Gelo dashboard cheio",
+            peso_kg=Decimal("5.00"),
+            preco_venda="2.00",
+        )
+        Producao.objects.create(
+            equipamento=equipamento,
+            produto=produto,
+            quantidade=3,
+        )
+        cliente = Cliente.objects.create(nome="Cliente dashboard cheio")
+        venda = Venda.objects.create(cliente=cliente)
+        ItemVenda.objects.create(venda=venda, produto=produto, quantidade=Decimal("2"))
+        MovimentacaoProduto.objects.create(
+            produto=produto,
+            tipo="ENTRADA",
+            quantidade=6,
+        )
+        response = self.client.get(reverse("dashboard"))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'id="chart-vendas"')
+        self.assertContains(response, 'id="chart-producao"')
+        self.assertContains(response, 'id="chart-estoque"')
+        self.assertEqual(response.context["total_equipamentos"], 1)
+        self.assertEqual(response.context["ativos"], 1)
+        self.assertGreater(response.context["producao_hoje"], 0)
+        self.assertContains(response, "Gelo 5kg")
 
 
 class DashboardEquipamentosKpiTests(TestCase):
 
     def setUp(self):
+        from accounts.test_utils import conceder_permissoes
+
         User = get_user_model()
         self.user = User.objects.create_user(
             username="dash-kpi",
             password="teste-123",
         )
+        conceder_permissoes(self.user, "equipamentos.view_equipamento")
         self.client.force_login(self.user)
         Equipamento.objects.create(nome="Ativo KPI", tipo="freezer", status="ativo")
         Equipamento.objects.create(
@@ -157,6 +230,196 @@ class DashboardEquipamentosKpiTests(TestCase):
         self.assertEqual(response.context["total_equipamentos"], 3)
         self.assertContains(response, "Parados")
         self.assertNotContains(response, 'status="inativo"')
+
+
+class DashboardPermissaoBlocosTests(TestCase):
+
+    def setUp(self):
+        User = get_user_model()
+        self.user = User.objects.create_user(
+            username="dash-perm",
+            password="teste-123",
+        )
+        self.client.force_login(self.user)
+        self.equipamento = Equipamento.objects.create(
+            nome="Máquina perm",
+            tipo="maquina_gelo",
+            status="ativo",
+        )
+        self.produto = Produto.objects.create(
+            nome="Gelo perm",
+            peso_kg=Decimal("5.00"),
+            preco_venda="2.00",
+        )
+        Producao.objects.create(
+            equipamento=self.equipamento,
+            produto=self.produto,
+            quantidade=3,
+        )
+        cliente = Cliente.objects.create(nome="Cliente perm")
+        venda = Venda.objects.create(cliente=cliente)
+        ItemVenda.objects.create(
+            venda=venda,
+            produto=self.produto,
+            quantidade=Decimal("2"),
+        )
+        MovimentacaoProduto.objects.create(
+            produto=self.produto,
+            tipo="ENTRADA",
+            quantidade=6,
+        )
+
+    def _conceder(self, *permissoes):
+        from accounts.test_utils import conceder_permissoes
+
+        conceder_permissoes(self.user, *permissoes)
+
+    def _get(self):
+        return self.client.get(reverse("dashboard"))
+
+    def test_sem_permissao_acessa_sem_blocos_operacionais(self):
+        response = self._get()
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Visão geral da operação da fábrica de gelo")
+        self.assertContains(response, "dashboard_charts.js")
+        for chave in (
+            "total_equipamentos",
+            "producao_hoje",
+            "chart_producao",
+            "estoque_5kg_sacos",
+            "chart_estoque",
+            "chart_vendas",
+        ):
+            self.assertNotIn(chave, response.context)
+        self.assertNotContains(response, "Total Maquinário")
+        self.assertNotContains(response, "Produção acumulada")
+        self.assertNotContains(response, "Produtos acabados (gelo)")
+        self.assertNotContains(response, "Insumos (embalagens)")
+        self.assertNotContains(response, 'id="chart-vendas"')
+        self.assertNotContains(response, 'id="chart-producao"')
+        self.assertNotContains(response, 'id="chart-estoque"')
+        self.assertNotContains(response, "chart-vendas-data")
+
+    def test_permissao_de_estoque_mostra_gelo_embalagens_e_grafico(self):
+        self._conceder("estoque.view_movimentacaoproduto")
+        response = self._get()
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Produtos acabados (gelo)")
+        self.assertContains(response, "Insumos (embalagens)")
+        self.assertContains(response, 'id="chart-estoque"')
+        self.assertEqual(response.context["estoque_5kg_sacos"], 6)
+        self.assertNotContains(response, "Total Maquinário")
+        self.assertNotContains(response, "Produção acumulada")
+        self.assertNotContains(response, 'id="chart-vendas"')
+        self.assertNotContains(response, 'id="chart-producao"')
+        self.assertNotIn("chart_vendas", response.context)
+        self.assertNotIn("total_equipamentos", response.context)
+
+    def test_permissao_de_producao_mostra_kpis_e_grafico(self):
+        self._conceder("producao.view_producao")
+        response = self._get()
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Produção acumulada")
+        self.assertContains(response, 'id="chart-producao"')
+        self.assertGreater(response.context["producao_hoje"], 0)
+        self.assertNotContains(response, "Produtos acabados (gelo)")
+        self.assertNotContains(response, "Total Maquinário")
+        self.assertNotContains(response, 'id="chart-vendas"')
+        self.assertNotContains(response, 'id="chart-estoque"')
+
+    def test_permissao_de_vendas_mostra_grafico(self):
+        self._conceder("vendas.view_venda")
+        response = self._get()
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'id="chart-vendas"')
+        self.assertContains(response, "Vendas (7 dias)")
+        self.assertIn("chart_vendas", response.context)
+        self.assertNotContains(response, "Produção acumulada")
+        self.assertNotContains(response, "Produtos acabados (gelo)")
+        self.assertNotContains(response, "Total Maquinário")
+        self.assertNotContains(response, 'id="chart-producao"')
+        self.assertNotContains(response, 'id="chart-estoque"')
+
+    def test_permissao_de_equipamentos_mostra_kpis(self):
+        self._conceder("equipamentos.view_equipamento")
+        response = self._get()
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Total Maquinário")
+        self.assertEqual(response.context["total_equipamentos"], 1)
+        self.assertEqual(response.context["ativos"], 1)
+        self.assertNotContains(response, "Produção acumulada")
+        self.assertNotContains(response, "Produtos acabados (gelo)")
+        self.assertNotContains(response, 'id="chart-vendas"')
+        self.assertNotContains(response, 'id="chart-producao"')
+        self.assertNotContains(response, 'id="chart-estoque"')
+
+    def test_varias_permissoes_mostram_os_blocos_correspondentes(self):
+        self._conceder(
+            "estoque.view_movimentacaoproduto",
+            "producao.view_producao",
+        )
+        response = self._get()
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Produtos acabados (gelo)")
+        self.assertContains(response, "Produção acumulada")
+        self.assertContains(response, 'id="chart-estoque"')
+        self.assertContains(response, 'id="chart-producao"')
+        self.assertNotContains(response, "Total Maquinário")
+        self.assertNotContains(response, 'id="chart-vendas"')
+        self.assertNotIn("chart_vendas", response.context)
+        self.assertNotIn("total_equipamentos", response.context)
+
+    def test_superusuario_ve_todos_os_blocos(self):
+        User = get_user_model()
+        superuser = User.objects.create_superuser(
+            username="dash-super",
+            password="teste-123",
+        )
+        self.client.force_login(superuser)
+        response = self._get()
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Total Maquinário")
+        self.assertContains(response, "Produção acumulada")
+        self.assertContains(response, "Produtos acabados (gelo)")
+        self.assertContains(response, "Insumos (embalagens)")
+        self.assertContains(response, 'id="chart-vendas"')
+        self.assertContains(response, 'id="chart-producao"')
+        self.assertContains(response, 'id="chart-estoque"')
+
+    def test_estoque_zerado_continua_visivel_para_quem_pode_ver(self):
+        from accounts.test_utils import conceder_permissoes
+
+        ItemVenda.objects.all().delete()
+        Venda.objects.all().delete()
+        Producao.objects.all().delete()
+        MovimentacaoProduto.objects.all().delete()
+        Equipamento.objects.all().delete()
+        User = get_user_model()
+        autorizado = User.objects.create_user(
+            username="dash-vazio",
+            password="teste-123",
+        )
+        conceder_permissoes(
+            autorizado,
+            "equipamentos.view_equipamento",
+            "producao.view_producao",
+            "estoque.view_movimentacaoproduto",
+            "vendas.view_venda",
+        )
+        self.client.force_login(autorizado)
+        response = self._get()
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Produtos acabados (gelo)")
+        self.assertContains(response, "Gelo 5kg")
+        self.assertContains(response, "Insumos (embalagens)")
+        self.assertEqual(response.context["estoque_5kg_sacos"], 0)
+        self.assertEqual(response.context["estoque_3kg_sacos"], 0)
+        self.assertNotContains(response, "Total Maquinário")
+        self.assertNotContains(response, "Produção acumulada")
+        self.assertNotContains(response, 'id="chart-vendas"')
+        self.assertNotContains(response, 'id="chart-producao"')
+        self.assertNotContains(response, 'id="chart-estoque"')
+        self.assertContains(response, "dashboard_charts.js")
 
 
 class LogoReferenciasTests(SimpleTestCase):

@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load static %}
+{% load static moeda %}
 
 {% block title %}{{ veiculo.marca }} {{ veiculo.modelo }} | GELOSAR{% endblock %}
 
@@ -68,7 +68,7 @@
         <div class="col-12 col-md-6 col-xl">
             <div class="gs-card">
                 <p class="gs-card__title">Custo no exercício</p>
-                <p class="gs-card__value">R$ {{ custo_ano|floatformat:2 }}</p>
+                <p class="gs-card__value">{{ custo_ano|moeda_br }}</p>
             </div>
         </div>
     </div>
@@ -119,7 +119,10 @@
             </table>
         </div>
         {% else %}
-        <p class="gs-muted">Nenhum plano cadastrado.</p>
+        <div class="gs-empty gs-empty--flush">
+            <p class="gs-empty__icon" aria-hidden="true"><i class="bi bi-inbox"></i></p>
+            <p class="gs-empty__title">Nenhum plano cadastrado.</p>
+        </div>
         {% endif %}
     </section>
 
@@ -148,7 +151,7 @@
                         <td>{{ obrigacao.get_tipo_display }}</td>
                         <td>{{ obrigacao.exercicio }}</td>
                         <td>{% if obrigacao.data_vencimento %}{{ obrigacao.data_vencimento|date:"d/m/Y" }}{% else %}—{% endif %}</td>
-                        <td>{% if obrigacao.valor_previsto %}R$ {{ obrigacao.valor_previsto|floatformat:2 }}{% else %}—{% endif %}</td>
+                        <td class="gs-table__number">{% if obrigacao.valor_previsto %}{{ obrigacao.valor_previsto|moeda_br }}{% else %}—{% endif %}</td>
                         <td>{{ obrigacao.get_status_display }}</td>
                     </tr>
                     {% endfor %}
@@ -156,7 +159,10 @@
             </table>
         </div>
         {% else %}
-        <p class="gs-muted">Nenhuma obrigação gerada para este veículo.</p>
+        <div class="gs-empty gs-empty--flush">
+            <p class="gs-empty__icon" aria-hidden="true"><i class="bi bi-inbox"></i></p>
+            <p class="gs-empty__title">Nenhuma obrigação gerada para este veículo.</p>
+        </div>
         {% endif %}
     </section>
 
@@ -185,7 +191,7 @@
                         <td>{{ conta.descricao }}</td>
                         <td>{{ conta.categoria.nome }}</td>
                         <td>{{ conta.data_vencimento|date:"d/m/Y" }}</td>
-                        <td>R$ {{ conta.valor|floatformat:2 }}</td>
+                        <td class="gs-table__number">{{ conta.valor|moeda_br }}</td>
                         <td>{{ conta.status_display_financeiro }}</td>
                     </tr>
                     {% endfor %}
@@ -193,7 +199,10 @@
             </table>
         </div>
         {% else %}
-        <p class="gs-muted">Nenhuma conta a pagar vinculada a este veículo.</p>
+        <div class="gs-empty gs-empty--flush">
+            <p class="gs-empty__icon" aria-hidden="true"><i class="bi bi-inbox"></i></p>
+            <p class="gs-empty__title">Nenhuma conta a pagar vinculada a este veículo.</p>
+        </div>
         {% endif %}
     </section>
 </div>

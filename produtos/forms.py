@@ -13,3 +13,9 @@ class ProdutoForm(forms.ModelForm):
             "estoque_minimo",
             "ativo",
         ]
+        widgets = {
+            "nome": forms.TextInput(attrs={"placeholder": "Ex.: Gelo 5 kg"}),
+            "peso_kg": forms.NumberInput(attrs={"placeholder": "Ex.: 5"}),
+            "preco_venda": forms.NumberInput(attrs={"placeholder": "Ex.: 7,00"}),
+            "estoque_minimo": forms.NumberInput(attrs={"placeholder": "Ex.: 20"}),
+        }

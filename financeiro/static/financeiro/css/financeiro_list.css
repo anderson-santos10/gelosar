@@ -28,20 +28,6 @@
     width: 100%;
 }
 
-.gs-pagination {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: flex-end;
-    gap: 0.65rem;
-    margin-top: 1rem;
-}
-
-.gs-pagination__info {
-    color: var(--gs-text-muted);
-    font-size: var(--gs-font-size-sm);
-}
-
 .gs-muted {
     color: var(--gs-text-muted);
     font-size: var(--gs-font-size-sm);
@@ -50,10 +36,6 @@
 .gs-table td .gs-muted {
     display: inline-block;
     margin: 0.15rem 0;
-}
-
-.gs-table-wrap {
-    overflow-x: auto;
 }
 
 .gs-filter-count {

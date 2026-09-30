@@ -1,3 +1,4 @@
+{% load moeda %}
 <div
     class="contas-fragmento"
     data-filtros-ativos="{{ filtros_ativos }}"
@@ -6,25 +7,25 @@
         <div class="col-12 col-md-6 col-xl-3">
             <div class="gs-card">
                 <p class="gs-card__title">Pendente</p>
-                <p class="gs-card__value">R$ {{ totais.total_pendente|floatformat:2 }}</p>
+                <p class="gs-card__value">{{ totais.total_pendente|moeda_br }}</p>
             </div>
         </div>
         <div class="col-12 col-md-6 col-xl-3">
             <div class="gs-card">
                 <p class="gs-card__title">Vencido</p>
-                <p class="gs-card__value">R$ {{ totais.total_vencido|floatformat:2 }}</p>
+                <p class="gs-card__value">{{ totais.total_vencido|moeda_br }}</p>
             </div>
         </div>
         <div class="col-12 col-md-6 col-xl-3">
             <div class="gs-card">
                 <p class="gs-card__title">Pago</p>
-                <p class="gs-card__value">R$ {{ totais.total_pago|floatformat:2 }}</p>
+                <p class="gs-card__value">{{ totais.total_pago|moeda_br }}</p>
             </div>
         </div>
         <div class="col-12 col-md-6 col-xl-3">
             <div class="gs-card">
                 <p class="gs-card__title">Total filtrado</p>
-                <p class="gs-card__value">R$ {{ totais.total_geral|floatformat:2 }}</p>
+                <p class="gs-card__value">{{ totais.total_geral|moeda_br }}</p>
             </div>
         </div>
     </div>
@@ -39,7 +40,7 @@
                     <th>Categoria</th>
                     <th>Competência</th>
                     <th>Vencimento</th>
-                    <th>Valor</th>
+                    <th scope="col" class="gs-table__number">Valor</th>
                     <th>Status</th>
                     <th>Ações</th>
                 </tr>
@@ -52,7 +53,7 @@
                     <td>{{ conta.categoria.nome }}</td>
                     <td>{{ conta.competencia|date:"m/Y" }}</td>
                     <td>{{ conta.data_vencimento|date:"d/m/Y" }}</td>
-                    <td>R$ {{ conta.valor|floatformat:2 }}</td>
+                    <td class="gs-table__number">{{ conta.valor|moeda_br }}</td>
                     <td>
                         {% if conta.vencida %}
                         <span class="gs-badge gs-badge--danger">Vencida</span>
@@ -61,10 +62,10 @@
                         {% elif conta.status == 'pago' %}
                         <span class="gs-badge gs-badge--ok">Paga</span>
                         {% else %}
-                        <span class="gs-badge gs-badge--neutral">Cancelada</span>
+                        <span class="gs-badge gs-badge--danger">Cancelada</span>
                         {% endif %}
                     </td>
-                    <td>
+                    <td class="gs-table__actions">
                         {% if perms.financeiro.change_contapagar and conta.status == 'pendente' %}
                         <a href="{% url 'financeiro:editar_conta_pagar' conta.pk %}" class="gs-btn gs-btn-outline">Editar</a>
                         <form method="post" action="{% url 'financeiro:marcar_conta_paga' conta.pk %}" class="gs-inline-form">
@@ -91,16 +92,21 @@
     <nav class="gs-pagination" aria-label="Paginação de contas a pagar">
         {% if page_obj.has_previous %}
         <a class="gs-btn gs-btn-outline" href="?page={{ page_obj.previous_page_number }}{% if filtro_querystring %}&amp;{{ filtro_querystring }}{% endif %}">Anterior</a>
+        {% else %}
+        <span class="gs-btn gs-btn-outline is-disabled" aria-disabled="true">Anterior</span>
         {% endif %}
         <span class="gs-pagination__info">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
         {% if page_obj.has_next %}
         <a class="gs-btn gs-btn-outline" href="?page={{ page_obj.next_page_number }}{% if filtro_querystring %}&amp;{{ filtro_querystring }}{% endif %}">Próxima</a>
+        {% else %}
+        <span class="gs-btn gs-btn-outline is-disabled" aria-disabled="true">Próxima</span>
         {% endif %}
     </nav>
     {% endif %}
 
     {% else %}
     <div class="gs-empty">
+        <p class="gs-empty__icon" aria-hidden="true"><i class="bi bi-inbox"></i></p>
         {% if existem_contas and filtros_ativos %}
         <h2 class="gs-empty__title">Nenhuma conta encontrada</h2>
         <p class="gs-empty__text">Não encontramos contas que correspondam aos filtros selecionados.</p>

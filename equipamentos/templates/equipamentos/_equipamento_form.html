@@ -9,12 +9,12 @@
 
 <div class="row g-3">
     <div class="col-12 col-md-6">
-        <label class="gs-label" for="{{ form.nome.id_for_label }}">Nome{% if form.nome.field.required %} *{% endif %}</label>
+        <label class="gs-label" for="{{ form.nome.id_for_label }}">Nome{% if form.nome.field.required %} <span class="gs-required">*</span>{% endif %}</label>
         {{ form.nome }}
         {% if form.nome.errors %}<p class="gs-field-error">{{ form.nome.errors|striptags }}</p>{% endif %}
     </div>
     <div class="col-12 col-md-6">
-        <label class="gs-label" for="{{ form.tipo.id_for_label }}">Tipo{% if form.tipo.field.required %} *{% endif %}</label>
+        <label class="gs-label" for="{{ form.tipo.id_for_label }}">Tipo{% if form.tipo.field.required %} <span class="gs-required">*</span>{% endif %}</label>
         {{ form.tipo }}
         {% if form.tipo.errors %}<p class="gs-field-error">{{ form.tipo.errors|striptags }}</p>{% endif %}
     </div>
@@ -24,7 +24,7 @@
         {% if form.cliente.errors %}<p class="gs-field-error">{{ form.cliente.errors|striptags }}</p>{% endif %}
     </div>
     <div class="col-12 col-md-6">
-        <label class="gs-label" for="{{ form.status.id_for_label }}">Status{% if form.status.field.required %} *{% endif %}</label>
+        <label class="gs-label" for="{{ form.status.id_for_label }}">Status{% if form.status.field.required %} <span class="gs-required">*</span>{% endif %}</label>
         {{ form.status }}
         {% if form.status.errors %}<p class="gs-field-error">{{ form.status.errors|striptags }}</p>{% endif %}
     </div>

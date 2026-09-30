@@ -269,6 +269,16 @@
     display: none !important;
 }
 
+html[data-theme="dark"] .parte,
+html[data-theme="dark"] .equipamento-box,
+html[data-theme="dark"] .endereco-box {
+    background: var(--gs-ice);
+}
+
+html[data-theme="dark"] .contrato-rodape {
+    color: var(--gs-text-muted);
+}
+
 /*
   Impressão do Comodato — causas reais de 3 páginas:
   1) Bootstrap 5.3 @media print: @page size A3 e body { min-width: 992px !important }

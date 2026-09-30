@@ -25,47 +25,47 @@
     </header>
 
     {% if clientes %}
-    <div class="gs-table-wrap">
+    <div class="gs-table-wrap gs-table-wrap--stack">
         <table class="gs-table">
             <thead>
                 <tr>
-                    <th>Cliente</th>
-                    <th>CNPJ / CPF</th>
-                    <th>Telefone</th>
-                    <th>Cidade</th>
-                    <th>Comodato</th>
-                    <th>Status</th>
-                    <th>Cadastro</th>
-                    <th>Ações</th>
+                    <th scope="col">Cliente</th>
+                    <th scope="col">CNPJ / CPF</th>
+                    <th scope="col">Telefone</th>
+                    <th scope="col">Cidade</th>
+                    <th scope="col">Comodato</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Cadastro</th>
+                    <th scope="col">Ações</th>
                 </tr>
             </thead>
             <tbody>
                 {% for cliente in clientes %}
                 <tr>
-                    <td>
+                    <td data-label="Cliente">
                         <a href="{% url 'clientes:dashboard_cliente' cliente.id %}" title="Abrir dashboard de {{ cliente.nome }}">
                             {{ cliente.nome }}
                         </a>
                     </td>
-                    <td>{{ cliente.cnpj_formatado|default:"-" }}</td>
-                    <td>{{ cliente.telefone|default:"-" }}</td>
-                    <td>{{ cliente.cidade|default:"-" }}</td>
-                    <td>
+                    <td data-label="CNPJ / CPF">{{ cliente.cnpj_formatado|default:"-" }}</td>
+                    <td data-label="Telefone">{{ cliente.telefone|default:"-" }}</td>
+                    <td data-label="Cidade">{{ cliente.cidade|default:"-" }}</td>
+                    <td data-label="Comodato">
                         {% if cliente.possui_comodato_efetivo %}
                             <span class="gs-badge gs-badge--ok">Sim</span>
                         {% else %}
                             <span class="gs-badge gs-badge--neutral">Não</span>
                         {% endif %}
                     </td>
-                    <td>
+                    <td data-label="Status">
                         {% if cliente.ativo %}
                             <span class="gs-badge gs-badge--ok">Ativo</span>
                         {% else %}
                             <span class="gs-badge gs-badge--neutral">Inativo</span>
                         {% endif %}
                     </td>
-                    <td>{{ cliente.criado_em|date:"d/m/Y" }}</td>
-                    <td>
+                    <td data-label="Cadastro">{{ cliente.criado_em|date:"d/m/Y" }}</td>
+                    <td data-label="Ações" class="gs-table__actions">
                         <a href="{% url 'clientes:dashboard_cliente' cliente.id %}" class="gs-btn gs-btn-outline">Dashboard</a>
                         {% if perms.clientes.change_cliente %}
                         <a href="{% url 'clientes:editar_cliente' cliente.id %}" class="gs-btn gs-btn-outline">Editar</a>
@@ -78,6 +78,7 @@
     </div>
     {% else %}
     <div class="gs-empty">
+        <p class="gs-empty__icon" aria-hidden="true"><i class="bi bi-inbox"></i></p>
         <h2 class="gs-empty__title">Nenhum cliente cadastrado</h2>
         <p class="gs-empty__text">Ainda não existem clientes cadastrados no sistema.</p>
         <a href="{% url 'clientes:cadastrar_cliente' %}" class="gs-btn gs-btn-primary">

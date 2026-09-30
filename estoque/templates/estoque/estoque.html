@@ -15,15 +15,21 @@
             <h1 class="gs-page-header__title">Estoque</h1>
             <p class="gs-page-header__desc">Acompanhe gelo, insumos e movimentações</p>
         </div>
+        {% if perms.estoque.add_movimentacaoproduto or perms.estoque.add_movimentacaoinsumo %}
         <div class="gs-page-header__actions">
+            {% if perms.estoque.add_movimentacaoproduto %}
             <a href="{% url 'estoque:ajuste_produto' %}" class="gs-btn gs-btn-outline">
                 Ajuste de produto
             </a>
+            {% endif %}
+            {% if perms.estoque.add_movimentacaoinsumo %}
             <a href="{% url 'estoque:entrada_insumo' %}" class="gs-btn gs-btn-primary">
                 <i class="bi bi-plus-lg" aria-hidden="true"></i>
                 Entrada de insumos
             </a>
+            {% endif %}
         </div>
+        {% endif %}
     </header>
 
     {% if estoque_5kg_sacos <= 0 or estoque_3kg_sacos <= 0 %}
@@ -31,8 +37,13 @@
         <div class="gs-alert__body">
             <i class="bi bi-exclamation-triangle-fill" aria-hidden="true"></i>
             <span>
-                <strong>Atenção ao estoque.</strong>
-                Um ou mais produtos estão sem estoque disponível.
+                <strong class="d-block">Atenção ao estoque.</strong>
+                {% if estoque_5kg_sacos <= 0 %}
+                <span class="d-block">Gelo 5 kg — estoque atual: {{ estoque_5kg_sacos }} sacos</span>
+                {% endif %}
+                {% if estoque_3kg_sacos <= 0 %}
+                <span class="d-block">Gelo 3 kg — estoque atual: {{ estoque_3kg_sacos }} sacos</span>
+                {% endif %}
             </span>
         </div>
     </div>
@@ -96,7 +107,7 @@
                     <tr>
                         <th>Insumo</th>
                         <th>Unidade</th>
-                        <th>Saldo</th>
+                        <th scope="col" class="gs-table__number">Saldo</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -104,14 +115,17 @@
                     <tr>
                         <td>{{ item.insumo.nome }}</td>
                         <td>{{ item.insumo.unidade }}</td>
-                        <td>{{ item.saldo }}</td>
+                        <td class="gs-table__number">{{ item.saldo }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
         </div>
         {% else %}
-        <p class="gs-card__hint mb-0">Nenhum insumo cadastrado.</p>
+        <div class="gs-empty gs-empty--flush">
+            <p class="gs-empty__icon" aria-hidden="true"><i class="bi bi-inbox"></i></p>
+            <p class="gs-empty__title">Nenhum insumo cadastrado.</p>
+        </div>
         {% endif %}
     </div>
 
@@ -123,7 +137,7 @@
                     <th>Data</th>
                     <th>Produto</th>
                     <th>Tipo</th>
-                    <th>Quantidade</th>
+                    <th scope="col" class="gs-table__number">Quantidade</th>
                     <th>Observação</th>
                 </tr>
             </thead>
@@ -146,7 +160,7 @@
                             <span class="gs-badge gs-badge--warning">{{ movimentacao.get_tipo_display }}</span>
                         {% endif %}
                     </td>
-                    <td>{{ movimentacao.quantidade }} sacos</td>
+                    <td class="gs-table__number">{{ movimentacao.quantidade }} sacos</td>
                     <td>{% if movimentacao.observacao %}{{ movimentacao.observacao }}{% else %}—{% endif %}</td>
                 </tr>
                 {% endfor %}
@@ -155,6 +169,7 @@
     </div>
     {% else %}
     <div class="gs-empty">
+        <p class="gs-empty__icon" aria-hidden="true"><i class="bi bi-inbox"></i></p>
         <h2 class="gs-empty__title">Nenhuma movimentação encontrada</h2>
         <p class="gs-empty__text">As entradas e saídas de produtos aparecerão aqui.</p>
     </div>

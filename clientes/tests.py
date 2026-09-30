@@ -206,6 +206,12 @@ class CriarClienteUITests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "cliente-form-page")
         self.assertContains(response, "Possui equipamento em comodato?")
+        self.assertContains(response, "Ex.: João da Silva")
+        self.assertContains(response, "Ex.: (14) 99999-9999")
+        self.assertContains(response, "Ex.: contato@empresa.com.br")
+        self.assertContains(response, "Ex.: Rua das Flores, 123")
+        self.assertContains(response, "Ex.: Bauru")
+        self.assertContains(response, "Ex.: 00.000.000/0000-00")
         response = self.client.post(
             reverse("clientes:cadastrar_cliente"),
             {

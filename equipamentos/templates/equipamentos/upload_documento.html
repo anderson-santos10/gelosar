@@ -3,7 +3,7 @@
 {% block title %}Adicionar documento | GELOSAR{% endblock %}
 
 {% block content %}
-<div class="gs-page">
+<div class="gs-page gs-form-page">
 
     <header class="gs-page-header">
         <div>
@@ -40,13 +40,14 @@
                     {% endif %}
 
                     <div class="mb-3">
-                        <label class="gs-label" for="{{ form.nome.id_for_label }}">Nome{% if form.nome.field.required %} *{% endif %}</label>
+                        <label class="gs-label" for="{{ form.nome.id_for_label }}">Nome{% if form.nome.field.required %} <span class="gs-required">*</span>{% endif %}</label>
                         {{ form.nome }}
                         {% if form.nome.errors %}<p class="gs-field-error">{{ form.nome.errors|striptags }}</p>{% endif %}
                     </div>
                     <div class="mb-3">
-                        <label class="gs-label" for="{{ form.arquivo.id_for_label }}">Arquivo{% if form.arquivo.field.required %} *{% endif %}</label>
+                        <label class="gs-label" for="{{ form.arquivo.id_for_label }}">Arquivo{% if form.arquivo.field.required %} <span class="gs-required">*</span>{% endif %}</label>
                         {{ form.arquivo }}
+                        {% if form.arquivo.help_text %}<p class="gs-field-hint">{{ form.arquivo.help_text }}</p>{% endif %}
                         {% if form.arquivo.errors %}<p class="gs-field-error">{{ form.arquivo.errors|striptags }}</p>{% endif %}
                     </div>
 

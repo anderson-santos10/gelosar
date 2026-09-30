@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load static %}
+{% load static moeda %}
 
 {% block title %}{{ manutencao.descricao }} | GELOSAR{% endblock %}
 
@@ -41,7 +41,7 @@
         {% if manutencao.anexo %}
         <p><a href="{% url 'financeiro:download_anexo_manutencao' veiculo.pk manutencao.pk %}">Baixar anexo</a></p>
         {% endif %}
-        <p><strong>Custo financeiro associado:</strong> R$ {{ custo_financeiro|floatformat:2 }}</p>
+        <p><strong>Custo financeiro associado:</strong> {{ custo_financeiro|moeda_br }}</p>
         <p class="gs-muted">O valor oficial é a soma das contas a pagar vinculadas. Não há valor duplicado nesta manutenção.</p>
     </div>
 
@@ -63,7 +63,7 @@
                     <tr>
                         <td>{{ conta.descricao }}</td>
                         <td>{{ conta.categoria.nome }}</td>
-                        <td>R$ {{ conta.valor|floatformat:2 }}</td>
+                        <td class="gs-table__number">{{ conta.valor|moeda_br }}</td>
                         <td>{{ conta.status_display_financeiro }}</td>
                     </tr>
                     {% endfor %}
@@ -71,7 +71,10 @@
             </table>
         </div>
         {% else %}
-        <p class="gs-muted">Nenhuma conta a pagar vinculada.</p>
+        <div class="gs-empty gs-empty--flush">
+            <p class="gs-empty__icon" aria-hidden="true"><i class="bi bi-inbox"></i></p>
+            <p class="gs-empty__title">Nenhuma conta a pagar vinculada.</p>
+        </div>
         {% endif %}
     </section>
 </div>

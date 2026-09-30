@@ -40,7 +40,7 @@
                     <div class="row g-2">
                         <div class="col-12 col-md-6">
                             <label class="gs-label" for="{{ form.nome.id_for_label }}">
-                                Nome{% if form.nome.field.required %} *{% endif %}
+                                Nome{% if form.nome.field.required %} <span class="gs-required">*</span>{% endif %}
                             </label>
                             {{ form.nome }}
                             {% if form.nome.errors %}<p class="gs-field-error">{{ form.nome.errors|striptags }}</p>{% endif %}

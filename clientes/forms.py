@@ -29,21 +29,45 @@ class ClienteForm(forms.ModelForm):
             "observacoes",
         ]
         widgets = {
-            "nome": forms.TextInput(attrs={"class": "form-control gs-input"}),
+            "nome": forms.TextInput(
+                attrs={
+                    "class": "form-control gs-input",
+                    "placeholder": "Ex.: João da Silva",
+                }
+            ),
             "cnpj": forms.TextInput(
                 attrs={
                     "class": "form-control gs-input",
                     "inputmode": "numeric",
                     "autocomplete": "off",
                     "maxlength": "18",
-                    "placeholder": "00.000.000/0000-00",
+                    "placeholder": "Ex.: 00.000.000/0000-00",
                 }
             ),
-            "telefone": forms.TextInput(attrs={"class": "form-control gs-input"}),
-            "email": forms.EmailInput(attrs={"class": "form-control gs-input"}),
-            "cidade": forms.TextInput(attrs={"class": "form-control gs-input"}),
+            "telefone": forms.TextInput(
+                attrs={
+                    "class": "form-control gs-input",
+                    "placeholder": "Ex.: (14) 99999-9999",
+                }
+            ),
+            "email": forms.EmailInput(
+                attrs={
+                    "class": "form-control gs-input",
+                    "placeholder": "Ex.: contato@empresa.com.br",
+                }
+            ),
+            "cidade": forms.TextInput(
+                attrs={
+                    "class": "form-control gs-input",
+                    "placeholder": "Ex.: Bauru",
+                }
+            ),
             "endereco": forms.Textarea(
-                attrs={"class": "form-control gs-textarea", "rows": 3}
+                attrs={
+                    "class": "form-control gs-textarea",
+                    "rows": 3,
+                    "placeholder": "Ex.: Rua das Flores, 123",
+                }
             ),
             "observacoes": forms.Textarea(
                 attrs={"class": "form-control gs-textarea", "rows": 4}

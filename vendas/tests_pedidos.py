@@ -5,7 +5,8 @@ from unittest.mock import patch
 
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Permission
-from django.test import Client, TestCase, override_settings
+from django.template import Context, Template
+from django.test import Client, SimpleTestCase, TestCase, override_settings
 from django.urls import reverse
 from django.utils import timezone
 
@@ -184,6 +185,12 @@ class PedidoFluxoTests(TestCase):
         self.assertIn('value="1"', html)
         self.assertIn("\u00d7", html)
         self.assertNotIn(">Remover<", html)
+        self.assertIn("Ex.: Rua das Flores, 123", html)
+        self.assertIn("Ponto de referência, horário ou quem recebe", html)
+        self.assertIn('id="itens-container"', html)
+        self.assertIn('id="total-venda"', html)
+        self.assertIn('class="form-control preco-input"', html)
+        self.assertIn('class="subtotal"', html)
 
     @override_settings(ESTOQUE_DATA_CORTE=None)
     def test_post_sem_endereco_copia_o_cadastro_do_cliente(self):
@@ -273,6 +280,10 @@ class PedidoFluxoTests(TestCase):
         historico = self.http.get(reverse("vendas:historico_pedidos"))
         self.assertContains(historico, "João da Silva")
         self.assertContains(historico, f"#{venda.pk}")
+        self.assertContains(historico, "Entregue")
+        self.assertContains(historico, "gs-badge--ok")
+        self.assertContains(historico, "Criado em")
+        self.assertContains(historico, "R$ 350,00")
 
     @override_settings(ESTOQUE_DATA_CORTE=None)
     def test_sem_data_corte_a_entrega_nao_baixa_estoque(self):
@@ -391,6 +402,19 @@ class PedidoFluxoTests(TestCase):
         negado = self.http.get(reverse("vendas:detalhe_pedido", args=[outro.pk]))
         self.assertEqual(negado.status_code, 403)
 
+    def test_lista_aberta_mostra_badge_e_valor_brasileiro(self):
+        self._criar()
+        resposta = self.http.get(reverse("vendas:pedidos_abertos"))
+        self.assertEqual(resposta.status_code, 200)
+        self.assertContains(resposta, "Aberto")
+        self.assertContains(resposta, "gs-badge--warning")
+        self.assertContains(resposta, "Criado em")
+        self.assertContains(resposta, "R$ 350,00")
+        self.assertContains(resposta, "Pedido entregue")
+        self.assertContains(resposta, "Pedidos em aberto")
+        vazio = self.http.get(reverse("vendas:historico_pedidos"))
+        self.assertContains(vazio, "Nenhum pedido entregue")
+
     def test_menu_separa_vendas_e_pedidos(self):
         resposta = self.http.get(reverse("vendas:pedidos_abertos"))
         self.assertEqual(resposta.status_code, 200)
@@ -405,4 +429,45 @@ class PedidoFluxoTests(TestCase):
         self.assertRedirects(
             self.http.get(reverse("vendas:cadastrar_pedido")),
             reverse("vendas:novo_pedido"),
+        )
+
+    def test_paginacao_de_pedidos_usa_gs_pagination(self):
+        for _ in range(26):
+            Pedido.objects.create(
+                cliente=self.cliente,
+                endereco=self.cliente.endereco,
+                cidade=self.cliente.cidade,
+                status=Pedido.STATUS_ABERTO,
+                criado_por=self.operador,
+            )
+        primeira = self.http.get(reverse("vendas:pedidos_abertos"))
+        self.assertContains(primeira, "gs-pagination")
+        self.assertContains(primeira, "Página 1 de 2")
+        self.assertContains(primeira, 'href="?page=2"')
+        self.assertContains(primeira, 'aria-disabled="true"')
+        self.assertNotContains(primeira, "pedido-paginacao")
+        segunda = self.http.get(reverse("vendas:pedidos_abertos") + "?page=2")
+        self.assertContains(segunda, "Página 2 de 2")
+        self.assertContains(segunda, 'href="?page=1"')
+        ultima = self.http.get(reverse("vendas:pedidos_abertos") + "?page=99")
+        self.assertContains(ultima, "Página 2 de 2")
+        sem_paginas = self.http.get(reverse("vendas:historico_pedidos"))
+        self.assertNotContains(sem_paginas, "gs-pagination")
+
+
+class MoedaBrFilterTests(SimpleTestCase):
+
+    def test_moeda_br_formata_reais(self):
+        template = Template("{% load moeda %}{{ valor|moeda_br }}")
+        self.assertEqual(
+            template.render(Context({"valor": 350})),
+            "R$ 350,00",
+        )
+        self.assertEqual(
+            template.render(Context({"valor": "1234.56"})),
+            "R$ 1.234,56",
+        )
+        self.assertEqual(
+            template.render(Context({"valor": Decimal("350.00")})),
+            "R$ 350,00",
         )

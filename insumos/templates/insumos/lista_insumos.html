@@ -22,31 +22,31 @@
     </header>
 
     {% if insumos %}
-    <div class="gs-table-wrap">
+    <div class="gs-table-wrap gs-table-wrap--stack">
         <table class="gs-table">
             <thead>
                 <tr>
-                    <th>Nome</th>
-                    <th>Unidade</th>
-                    <th>Estoque mín.</th>
-                    <th>Status</th>
-                    <th>Ações</th>
+                    <th scope="col">Nome</th>
+                    <th scope="col">Unidade</th>
+                    <th scope="col" class="gs-table__number">Estoque mín.</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Ações</th>
                 </tr>
             </thead>
             <tbody>
                 {% for insumo in insumos %}
                 <tr>
-                    <td>{{ insumo.nome }}</td>
-                    <td>{{ insumo.unidade }}</td>
-                    <td>{{ insumo.estoque_minimo }}</td>
-                    <td>
+                    <td data-label="Nome">{{ insumo.nome }}</td>
+                    <td data-label="Unidade">{{ insumo.unidade }}</td>
+                    <td data-label="Estoque mín." class="gs-table__number">{{ insumo.estoque_minimo }}</td>
+                    <td data-label="Status">
                         {% if insumo.ativo %}
                         <span class="gs-badge gs-badge--ok">Ativo</span>
                         {% else %}
                         <span class="gs-badge gs-badge--neutral">Inativo</span>
                         {% endif %}
                     </td>
-                    <td>
+                    <td data-label="Ações" class="gs-table__actions">
                         {% if perms.insumos.change_insumo %}
                         <a href="{% url 'insumos:editar_insumo' insumo.pk %}" class="gs-btn gs-btn-outline">Editar</a>
                         {% endif %}
@@ -58,6 +58,7 @@
     </div>
     {% else %}
     <div class="gs-empty">
+        <p class="gs-empty__icon" aria-hidden="true"><i class="bi bi-inbox"></i></p>
         <h2 class="gs-empty__title">Nenhum insumo cadastrado</h2>
         {% if perms.insumos.add_insumo %}
         <a href="{% url 'insumos:cadastrar_insumo' %}" class="gs-btn gs-btn-primary">Cadastrar insumo</a>

@@ -107,3 +107,27 @@ document.addEventListener('DOMContentLoaded', () => {
         window.print();
     });
 });
+
+document.addEventListener('DOMContentLoaded', () => {
+    const themeButton = document.getElementById('gsThemeToggle');
+    if (!themeButton) return;
+
+    const applyThemeLabel = (theme) => {
+        const dark = theme === 'dark';
+        themeButton.setAttribute('aria-pressed', dark ? 'true' : 'false');
+        themeButton.setAttribute('aria-label', dark ? 'Ativar tema claro' : 'Ativar tema escuro');
+        themeButton.setAttribute('title', dark ? 'Tema claro' : 'Tema escuro');
+    };
+
+    const saved = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+    applyThemeLabel(saved);
+
+    themeButton.addEventListener('click', () => {
+        const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+            localStorage.setItem('gs-theme', next);
+        } catch (e) {}
+        applyThemeLabel(next);
+    });
+});

@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load static %}
+{% load static moeda %}
 
 {% block title %}Obrigações de veículos | GELOSAR{% endblock %}
 
@@ -76,7 +76,7 @@
                     <th>Tipo</th>
                     <th>Exercício</th>
                     <th>Vencimento</th>
-                    <th>Valor</th>
+                    <th scope="col" class="gs-table__number">Valor</th>
                     <th>Status</th>
                     <th>Ações</th>
                 </tr>
@@ -88,9 +88,9 @@
                     <td>{{ linha.obrigacao.get_tipo_display }}</td>
                     <td>{{ linha.obrigacao.exercicio }}</td>
                     <td>{% if linha.obrigacao.data_vencimento %}{{ linha.obrigacao.data_vencimento|date:"d/m/Y" }}{% else %}—{% endif %}</td>
-                    <td>{% if linha.obrigacao.valor_previsto %}R$ {{ linha.obrigacao.valor_previsto|floatformat:2 }}{% else %}—{% endif %}</td>
+                    <td class="gs-table__number">{% if linha.obrigacao.valor_previsto %}{{ linha.obrigacao.valor_previsto|moeda_br }}{% else %}—{% endif %}</td>
                     <td><span class="gs-badge {{ linha.badge }}">{{ linha.rotulo }}</span></td>
-                    <td>
+                    <td class="gs-table__actions">
                         <a href="{% url 'financeiro:detalhe_obrigacao' linha.obrigacao.pk %}" class="gs-btn gs-btn-outline">Abrir</a>
                     </td>
                 </tr>
@@ -102,15 +102,20 @@
     <nav class="gs-pagination" aria-label="Paginação de obrigações">
         {% if page_obj.has_previous %}
         <a class="gs-btn gs-btn-outline" href="?page={{ page_obj.previous_page_number }}{% if filtro_querystring %}&amp;{{ filtro_querystring }}{% endif %}">Anterior</a>
+        {% else %}
+        <span class="gs-btn gs-btn-outline is-disabled" aria-disabled="true">Anterior</span>
         {% endif %}
         <span class="gs-pagination__info">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
         {% if page_obj.has_next %}
         <a class="gs-btn gs-btn-outline" href="?page={{ page_obj.next_page_number }}{% if filtro_querystring %}&amp;{{ filtro_querystring }}{% endif %}">Próxima</a>
+        {% else %}
+        <span class="gs-btn gs-btn-outline is-disabled" aria-disabled="true">Próxima</span>
         {% endif %}
     </nav>
     {% endif %}
     {% else %}
     <div class="gs-empty">
+        <p class="gs-empty__icon" aria-hidden="true"><i class="bi bi-inbox"></i></p>
         <h2 class="gs-empty__title">Nenhuma obrigação encontrada</h2>
         <p class="gs-empty__text">Gere as obrigações do exercício para a frota ativa.</p>
     </div>

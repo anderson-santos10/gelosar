@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load static %}
+{% load static moeda %}
 
 {% block title %}Financeiro | GELOSAR{% endblock %}
 
@@ -59,7 +59,7 @@
         <div class="col-12 col-md-6 col-xl">
             <a class="gs-card gs-card-link" href="{{ dashboard.pendentes.url }}">
                 <p class="gs-card__title">Pendentes</p>
-                <p class="gs-card__value">R$ {{ dashboard.pendentes.total|floatformat:2 }}</p>
+                <p class="gs-card__value">{{ dashboard.pendentes.total|moeda_br }}</p>
                 <p class="gs-muted">{{ dashboard.pendentes.quantidade }} conta{{ dashboard.pendentes.quantidade|pluralize }}</p>
             </a>
         </div>
@@ -68,7 +68,7 @@
         <div class="col-12 col-md-6 col-xl">
             <a class="gs-card gs-card-link gs-card-alert" href="{{ dashboard.vencidas.url }}">
                 <p class="gs-card__title">Vencidas</p>
-                <p class="gs-card__value">R$ {{ dashboard.vencidas.total|floatformat:2 }}</p>
+                <p class="gs-card__value">{{ dashboard.vencidas.total|moeda_br }}</p>
                 <p class="gs-muted">{{ dashboard.vencidas.quantidade }} conta{{ dashboard.vencidas.quantidade|pluralize }}</p>
             </a>
         </div>
@@ -77,7 +77,7 @@
         <div class="col-12 col-md-6 col-xl">
             <a class="gs-card gs-card-link" href="{{ dashboard.vencendo.url }}">
                 <p class="gs-card__title">Vencendo em breve</p>
-                <p class="gs-card__value">R$ {{ dashboard.vencendo.total|floatformat:2 }}</p>
+                <p class="gs-card__value">{{ dashboard.vencendo.total|moeda_br }}</p>
                 <p class="gs-muted">{{ dashboard.vencendo.quantidade }} nos próximos {{ dashboard.janela_dias }} dias</p>
             </a>
         </div>
@@ -86,7 +86,7 @@
         <div class="col-12 col-md-6 col-xl">
             <a class="gs-card gs-card-link" href="{{ dashboard.pagas.url }}">
                 <p class="gs-card__title">Pago no período</p>
-                <p class="gs-card__value">R$ {{ dashboard.pagas.total|floatformat:2 }}</p>
+                <p class="gs-card__value">{{ dashboard.pagas.total|moeda_br }}</p>
                 <p class="gs-muted">{{ dashboard.pagas.quantidade }} pagamento{{ dashboard.pagas.quantidade|pluralize }}</p>
             </a>
         </div>
@@ -95,8 +95,8 @@
         <div class="col-12 col-md-6 col-xl">
             <div class="gs-card">
                 <p class="gs-card__title">Comparação</p>
-                <p class="gs-card__value">R$ {{ dashboard.comparacao_atual|floatformat:2 }}</p>
-                <p class="gs-muted">Anterior: R$ {{ dashboard.comparacao_anterior|floatformat:2 }}</p>
+                <p class="gs-card__value">{{ dashboard.comparacao_atual|moeda_br }}</p>
+                <p class="gs-muted">Anterior: {{ dashboard.comparacao_anterior|moeda_br }}</p>
                 {% if dashboard.comparacao_percentual != None %}
                     {% if dashboard.comparacao_percentual > 0 %}
                     <span class="gs-badge gs-badge--warning">+{{ dashboard.comparacao_percentual|floatformat:2 }}%</span>
@@ -114,7 +114,7 @@
             <a class="gs-card gs-card-link" href="{{ dashboard.sem_fornecedor.url }}">
                 <p class="gs-card__title">Contas sem fornecedor</p>
                 <p class="gs-card__value">{{ dashboard.sem_fornecedor.quantidade }}</p>
-                <p class="gs-muted">R$ {{ dashboard.sem_fornecedor.total|floatformat:2 }}</p>
+                <p class="gs-muted">{{ dashboard.sem_fornecedor.total|moeda_br }}</p>
             </a>
         </div>
         {% endif %}
@@ -122,6 +122,7 @@
 
     {% if not dashboard.pendentes.visivel and not dashboard.vencidas.visivel and not dashboard.vencendo.visivel and not dashboard.pagas.visivel %}
     <div class="gs-empty mb-3">
+        <p class="gs-empty__icon" aria-hidden="true"><i class="bi bi-inbox"></i></p>
         <h2 class="gs-empty__title">Sem despesas no período</h2>
         <p class="gs-empty__text">Não há pagamentos neste intervalo. Compromissos em aberto também não foram encontrados.</p>
     </div>
@@ -183,7 +184,7 @@
                                 <td>{{ conta.categoria.nome }}</td>
                                 <td>{{ conta.fornecedor.nome|default:"—" }}</td>
                                 <td>{{ conta.data_vencimento|date:"d/m/Y" }}</td>
-                                <td>R$ {{ conta.valor|floatformat:2 }}</td>
+                                <td class="gs-table__number">{{ conta.valor|moeda_br }}</td>
                                 <td><span class="gs-badge gs-badge--warning">Pendente</span></td>
                             </tr>
                             {% endfor %}
@@ -191,7 +192,10 @@
                     </table>
                 </div>
                 {% else %}
-                <p class="gs-muted">Não há próximos vencimentos.</p>
+                <div class="gs-empty gs-empty--flush">
+                    <p class="gs-empty__icon" aria-hidden="true"><i class="bi bi-inbox"></i></p>
+                    <p class="gs-empty__title">Não há próximos vencimentos.</p>
+                </div>
                 {% endif %}
             </section>
         </div>
@@ -220,7 +224,7 @@
                                 <td>{{ conta.fornecedor.nome|default:"—" }}</td>
                                 <td>{{ conta.data_vencimento|date:"d/m/Y" }}</td>
                                 <td>{{ conta.dias_atraso }} d</td>
-                                <td>R$ {{ conta.valor|floatformat:2 }}</td>
+                                <td class="gs-table__number">{{ conta.valor|moeda_br }}</td>
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -252,7 +256,7 @@
                     <tr>
                         <td>{{ item.descricao }}</td>
                         <td>{{ item.categoria.nome }}</td>
-                        <td>R$ {{ item.valor|floatformat:2 }}</td>
+                        <td class="gs-table__number">{{ item.valor|moeda_br }}</td>
                         <td>Dia {{ item.dia_vencimento }}</td>
                     </tr>
                     {% endfor %}
@@ -268,12 +272,12 @@
         <div class="col-12 col-md-6">
             <div class="gs-card">
                 <p class="gs-card__title">Gastos com veículos</p>
-                <p class="gs-card__value">R$ {{ dashboard.gastos_veiculos.total|floatformat:2 }}</p>
+                <p class="gs-card__value">{{ dashboard.gastos_veiculos.total|moeda_br }}</p>
                 <p class="gs-muted">{{ dashboard.gastos_veiculos.quantidade }} lançamento{{ dashboard.gastos_veiculos.quantidade|pluralize }} pago{{ dashboard.gastos_veiculos.quantidade|pluralize }}</p>
                 {% if dashboard.ranking_veiculos %}
                 <ul class="gs-ranking">
                     {% for item in dashboard.ranking_veiculos %}
-                    <li>{{ item.veiculo }} — R$ {{ item.total|floatformat:2 }}</li>
+                    <li>{{ item.veiculo }} — {{ item.total|moeda_br }}</li>
                     {% endfor %}
                 </ul>
                 {% endif %}
@@ -284,7 +288,7 @@
         <div class="col-12 col-md-6">
             <div class="gs-card">
                 <p class="gs-card__title">Manutenção</p>
-                <p class="gs-card__value">R$ {{ dashboard.manutencao.total|floatformat:2 }}</p>
+                <p class="gs-card__value">{{ dashboard.manutencao.total|moeda_br }}</p>
                 <p class="gs-muted">{{ dashboard.manutencao.quantidade }} pagamento{{ dashboard.manutencao.quantidade|pluralize }}</p>
                 {% if dashboard.manutencao_maior_veiculo %}
                 <p class="gs-muted">Maior gasto: {{ dashboard.manutencao_maior_veiculo }}</p>
@@ -393,8 +397,8 @@
                     <tr>
                         <td>{{ linha.nome }}</td>
                         <td>{{ linha.quantidade }}</td>
-                        <td>R$ {{ linha.total|floatformat:2 }}</td>
-                        <td>{{ linha.percentual|floatformat:2 }}%</td>
+                        <td class="gs-table__number">{{ linha.total|moeda_br }}</td>
+                        <td class="gs-table__number">{{ linha.percentual|floatformat:2 }}%</td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -420,7 +424,7 @@
                     <tr>
                         <td>{{ linha.nome }}</td>
                         <td>{{ linha.quantidade }}</td>
-                        <td>R$ {{ linha.total|floatformat:2 }}</td>
+                        <td class="gs-table__number">{{ linha.total|moeda_br }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>

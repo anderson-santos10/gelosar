@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load static %}
+{% load moeda %}
 
 {% block title %}Pedido #{{ pedido.pk }} | GELOSAR{% endblock %}
 
@@ -14,7 +15,11 @@
             <ol class="gs-breadcrumb">
                 <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
                 <li aria-hidden="true">/</li>
-                <li><a href="{% url 'vendas:pedidos_abertos' %}">Pedidos</a></li>
+                {% if pedido.status == 'aberto' %}
+                <li><a href="{% url 'vendas:pedidos_abertos' %}">Pedidos em aberto</a></li>
+                {% else %}
+                <li><a href="{% url 'vendas:historico_pedidos' %}">Histórico de pedidos</a></li>
+                {% endif %}
                 <li aria-hidden="true">/</li>
                 <li>Pedido #{{ pedido.pk }}</li>
             </ol>
@@ -45,13 +50,13 @@
             <li>
                 Produto: {{ item.produto.nome }}<br>
                 Quantidade: {{ item.quantidade }} ×<br>
-                Preço unitário: R$ {{ item.preco_unitario|floatformat:2 }}<br>
-                Subtotal: R$ {{ item.subtotal|floatformat:2 }}
+                Preço unitário: {{ item.preco_unitario|moeda_br }}<br>
+                Subtotal: {{ item.subtotal|moeda_br }}
             </li>
             {% endfor %}
         </ul>
 
-        <p class="pedido-valor">Valor: R$ {{ pedido.total|floatformat:2 }}</p>
+        <p class="pedido-valor">Valor: {{ pedido.total|moeda_br }}</p>
 
         <p class="gs-label">Observação</p>
         {% if pedido.observacoes %}

@@ -12,14 +12,14 @@
 }
 
 .pedido-detalhe a {
-    color: var(--gs-navy);
+    color: var(--gs-heading);
     font-weight: 600;
     text-decoration: none;
 }
 
 .pedido-detalhe a:hover,
 .pedido-detalhe a:focus-visible {
-    color: var(--gs-primary);
+    color: var(--gs-link);
 }
 
 @media print {

@@ -122,15 +122,20 @@
     <nav class="gs-pagination" aria-label="Paginação de veículos">
         {% if page_obj.has_previous %}
         <a class="gs-btn gs-btn-outline" href="?page={{ page_obj.previous_page_number }}{% if filtro_querystring %}&amp;{{ filtro_querystring }}{% endif %}">Anterior</a>
+        {% else %}
+        <span class="gs-btn gs-btn-outline is-disabled" aria-disabled="true">Anterior</span>
         {% endif %}
         <span class="gs-pagination__info">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
         {% if page_obj.has_next %}
         <a class="gs-btn gs-btn-outline" href="?page={{ page_obj.next_page_number }}{% if filtro_querystring %}&amp;{{ filtro_querystring }}{% endif %}">Próxima</a>
+        {% else %}
+        <span class="gs-btn gs-btn-outline is-disabled" aria-disabled="true">Próxima</span>
         {% endif %}
     </nav>
     {% endif %}
     {% else %}
     <div class="gs-empty">
+        <p class="gs-empty__icon" aria-hidden="true"><i class="bi bi-inbox"></i></p>
         <h2 class="gs-empty__title">Nenhum veículo encontrado</h2>
         <p class="gs-empty__text">Cadastre a frota para controlar manutenção, IPVA e licenciamento.</p>
         {% if perms.financeiro.add_veiculo %}

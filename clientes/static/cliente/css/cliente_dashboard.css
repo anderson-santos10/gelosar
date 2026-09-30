@@ -1,7 +1,7 @@
 /* Dashboard do cliente — layout específico; tokens vêm de base.css. */
 
 .cliente-dashboard .gs-card__hint a {
-    color: var(--gs-primary);
+    color: var(--gs-link);
     text-decoration: none;
     font-weight: var(--gs-font-weight-medium);
 }
@@ -131,7 +131,7 @@
     padding: var(--gs-space-4) var(--gs-space-5);
     border: 0;
     background: var(--gs-surface);
-    color: var(--gs-navy);
+    color: var(--gs-heading);
     font-family: inherit;
     font-size: var(--gs-font-size-sm);
     font-weight: var(--gs-font-weight-semibold);
@@ -169,7 +169,7 @@
 .history-date {
     border: 0;
     background: transparent;
-    color: var(--gs-primary);
+    color: var(--gs-link);
     font-family: inherit;
     font-size: var(--gs-font-size-sm);
     font-weight: var(--gs-font-weight-semibold);

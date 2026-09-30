@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load static %}
+{% load static moeda %}
 
 {% block title %}{{ obrigacao }} | GELOSAR{% endblock %}
 
@@ -32,7 +32,7 @@
 
     <div class="gs-card mb-3">
         <p><strong>Vencimento:</strong> {% if obrigacao.data_vencimento %}{{ obrigacao.data_vencimento|date:"d/m/Y" }}{% else %}não informado{% endif %}</p>
-        <p><strong>Valor previsto:</strong> {% if obrigacao.valor_previsto %}R$ {{ obrigacao.valor_previsto|floatformat:2 }}{% else %}—{% endif %}</p>
+        <p><strong>Valor previsto:</strong> {% if obrigacao.valor_previsto %}{{ obrigacao.valor_previsto|moeda_br }}{% else %}—{% endif %}</p>
         {% if situacao_ipva %}
         <p><strong>Cálculo de IPVA:</strong> {{ situacao_ipva.rotulo }} — {{ situacao_ipva.motivo }}</p>
         {% endif %}
@@ -55,7 +55,7 @@
                     {% for conta in contas %}
                     <tr>
                         <td>{{ conta.descricao }}</td>
-                        <td>R$ {{ conta.valor|floatformat:2 }}</td>
+                        <td class="gs-table__number">{{ conta.valor|moeda_br }}</td>
                         <td>{{ conta.status_display_financeiro }}</td>
                     </tr>
                     {% endfor %}
@@ -63,7 +63,10 @@
             </table>
         </div>
         {% else %}
-        <p class="gs-muted">Nenhuma conta financeira gerada automaticamente. Lance o pagamento quando houver confirmação.</p>
+        <div class="gs-empty gs-empty--flush">
+            <p class="gs-empty__icon" aria-hidden="true"><i class="bi bi-inbox"></i></p>
+            <p class="gs-empty__title">Nenhuma conta financeira gerada automaticamente. Lance o pagamento quando houver confirmação.</p>
+        </div>
         {% endif %}
     </section>
 </div>

@@ -39,12 +39,12 @@
 
                     <div class="row g-2">
                         <div class="col-12">
-                            <label class="gs-label" for="{{ form.descricao.id_for_label }}">Descrição *</label>
+                            <label class="gs-label" for="{{ form.descricao.id_for_label }}">Descrição <span class="gs-required">*</span></label>
                             {{ form.descricao }}
                             {% if form.descricao.errors %}<p class="gs-field-error">{{ form.descricao.errors|striptags }}</p>{% endif %}
                         </div>
                         <div class="col-12 col-md-6">
-                            <label class="gs-label" for="{{ form.cliente.id_for_label }}">Cliente *</label>
+                            <label class="gs-label" for="{{ form.cliente.id_for_label }}">Cliente <span class="gs-required">*</span></label>
                             {{ form.cliente }}
                             {% if form.cliente.errors %}<p class="gs-field-error">{{ form.cliente.errors|striptags }}</p>{% endif %}
                         </div>
@@ -55,18 +55,18 @@
                             {% if form.venda.errors %}<p class="gs-field-error">{{ form.venda.errors|striptags }}</p>{% endif %}
                         </div>
                         <div class="col-12 col-md-6">
-                            <label class="gs-label" for="{{ form.categoria.id_for_label }}">Categoria *</label>
+                            <label class="gs-label" for="{{ form.categoria.id_for_label }}">Categoria <span class="gs-required">*</span></label>
                             {{ form.categoria }}
                             {% if form.categoria.errors %}<p class="gs-field-error">{{ form.categoria.errors|striptags }}</p>{% endif %}
                         </div>
                         <div class="col-12 col-md-3">
-                            <label class="gs-label" for="{{ form.competencia.id_for_label }}">Competência *</label>
+                            <label class="gs-label" for="{{ form.competencia.id_for_label }}">Competência <span class="gs-required">*</span></label>
                             {{ form.competencia }}
                             {% if form.competencia.help_text %}<p class="gs-field-hint">{{ form.competencia.help_text }}</p>{% endif %}
                             {% if form.competencia.errors %}<p class="gs-field-error">{{ form.competencia.errors|striptags }}</p>{% endif %}
                         </div>
                         <div class="col-12 col-md-3">
-                            <label class="gs-label" for="{{ form.valor.id_for_label }}">Valor *</label>
+                            <label class="gs-label" for="{{ form.valor.id_for_label }}">Valor <span class="gs-required">*</span></label>
                             {{ form.valor }}
                             {% if form.valor.errors %}<p class="gs-field-error">{{ form.valor.errors|striptags }}</p>{% endif %}
                         </div>
@@ -76,7 +76,7 @@
                             {% if form.data_emissao.errors %}<p class="gs-field-error">{{ form.data_emissao.errors|striptags }}</p>{% endif %}
                         </div>
                         <div class="col-12 col-md-4">
-                            <label class="gs-label" for="{{ form.data_vencimento.id_for_label }}">Vencimento *</label>
+                            <label class="gs-label" for="{{ form.data_vencimento.id_for_label }}">Vencimento <span class="gs-required">*</span></label>
                             {{ form.data_vencimento }}
                             {% if form.data_vencimento.errors %}<p class="gs-field-error">{{ form.data_vencimento.errors|striptags }}</p>{% endif %}
                         </div>

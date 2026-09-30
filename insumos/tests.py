@@ -39,6 +39,10 @@ class InsumoUITests(TestCase):
         self.client.force_login(self.com_perm)
         response = self.client.get(reverse("insumos:lista_insumos"))
         self.assertEqual(response.status_code, 200)
+        formulario = self.client.get(reverse("insumos:cadastrar_insumo"))
+        self.assertEqual(formulario.status_code, 200)
+        self.assertContains(formulario, "Ex.: Saco plástico 5 kg")
+        self.assertContains(formulario, "Ex.: unidade")
         response = self.client.post(
             reverse("insumos:cadastrar_insumo"),
             {

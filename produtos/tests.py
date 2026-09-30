@@ -47,6 +47,12 @@ class ProdutoUITests(TestCase):
 
     def test_cadastro_persiste(self):
         self.client.force_login(self.com_perm)
+        formulario = self.client.get(reverse("produtos:cadastrar_produto"))
+        self.assertEqual(formulario.status_code, 200)
+        self.assertContains(formulario, "Ex.: Gelo 5 kg")
+        self.assertContains(formulario, "Ex.: 5")
+        self.assertContains(formulario, "Ex.: 7,00")
+        self.assertContains(formulario, "Ex.: 20")
         response = self.client.post(
             reverse("produtos:cadastrar_produto"),
             {

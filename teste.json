@@ -1,0 +1,595 @@
+[
+{
+  "model": "admin.logentry",
+  "pk": 1,
+  "fields": {
+    "action_time": "2026-07-08T00:36:23.541Z",
+    "user": 1,
+    "content_type": 9,
+    "object_id": "1",
+    "object_repr": "Produto object (1)",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 2,
+  "fields": {
+    "action_time": "2026-07-08T01:12:17.626Z",
+    "user": 1,
+    "content_type": 10,
+    "object_id": "8",
+    "object_repr": "GL-200 - Saco Gelo 5k - 5",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 3,
+  "fields": {
+    "action_time": "2026-07-08T01:12:17.626Z",
+    "user": 1,
+    "content_type": 10,
+    "object_id": "7",
+    "object_repr": "GL-200 - Saco Gelo 5k - 5",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 4,
+  "fields": {
+    "action_time": "2026-07-08T01:12:17.626Z",
+    "user": 1,
+    "content_type": 10,
+    "object_id": "6",
+    "object_repr": "GL-200 - Saco Gelo 5k - 5",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 5,
+  "fields": {
+    "action_time": "2026-07-08T01:12:17.626Z",
+    "user": 1,
+    "content_type": 10,
+    "object_id": "5",
+    "object_repr": "GL-200 - Saco Gelo 5k - 5",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 6,
+  "fields": {
+    "action_time": "2026-07-08T01:12:17.626Z",
+    "user": 1,
+    "content_type": 10,
+    "object_id": "4",
+    "object_repr": "GL-200 - Saco Gelo 5k - 5",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 7,
+  "fields": {
+    "action_time": "2026-07-08T01:12:17.626Z",
+    "user": 1,
+    "content_type": 10,
+    "object_id": "3",
+    "object_repr": "GL-200 - Saco Gelo 5k - 5",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 8,
+  "fields": {
+    "action_time": "2026-07-08T01:12:17.626Z",
+    "user": 1,
+    "content_type": 10,
+    "object_id": "2",
+    "object_repr": "GL-200 - Saco Gelo 5k - 5",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 9,
+  "fields": {
+    "action_time": "2026-07-08T01:12:17.626Z",
+    "user": 1,
+    "content_type": 10,
+    "object_id": "1",
+    "object_repr": "GL-200 - Saco Gelo 5k - 5",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 10,
+  "fields": {
+    "action_time": "2026-07-08T01:15:12.726Z",
+    "user": 1,
+    "content_type": 10,
+    "object_id": "9",
+    "object_repr": "GL-200 - Saco Gelo 5k - 50",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"fields\": [\"Quantidade\"]}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 11,
+  "fields": {
+    "action_time": "2026-07-08T01:18:48.201Z",
+    "user": 1,
+    "content_type": 9,
+    "object_id": "2",
+    "object_repr": "Saco Gelo 2k",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 12,
+  "fields": {
+    "action_time": "2026-07-22T03:25:20.060Z",
+    "user": 1,
+    "content_type": 9,
+    "object_id": "2",
+    "object_repr": "Saco Gelo 3k",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"fields\": [\"Nome\", \"Peso kg\", \"Preco venda\"]}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 13,
+  "fields": {
+    "action_time": "2026-07-22T03:25:23.194Z",
+    "user": 1,
+    "content_type": 10,
+    "object_id": "10",
+    "object_repr": "GL-200 - Saco Gelo 3k - 9",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 14,
+  "fields": {
+    "action_time": "2026-07-22T03:26:37.881Z",
+    "user": 1,
+    "content_type": 10,
+    "object_id": "9",
+    "object_repr": "GL-200 - Saco Gelo 5k - 140",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"fields\": [\"Quantidade\"]}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 15,
+  "fields": {
+    "action_time": "2026-07-29T17:37:45.758Z",
+    "user": 1,
+    "content_type": 14,
+    "object_id": "1",
+    "object_repr": "Leve Facil Palmital",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 16,
+  "fields": {
+    "action_time": "2026-07-29T17:58:27.542Z",
+    "user": 1,
+    "content_type": 14,
+    "object_id": "1",
+    "object_repr": "Cliente object (1)",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"fields\": [\"Cnpj\", \"Cidade\"]}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 17,
+  "fields": {
+    "action_time": "2026-07-29T18:00:24.282Z",
+    "user": 1,
+    "content_type": 14,
+    "object_id": "2",
+    "object_repr": "Cliente object (2)",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 18,
+  "fields": {
+    "action_time": "2026-07-29T18:21:50.611Z",
+    "user": 1,
+    "content_type": 16,
+    "object_id": "1",
+    "object_repr": "Venda #1 - Leve Facil Palmital",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}, {\"added\": {\"name\": \"item venda\", \"object\": \"ItemVenda object (1)\"}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 19,
+  "fields": {
+    "action_time": "2026-07-29T18:22:39.700Z",
+    "user": 1,
+    "content_type": 16,
+    "object_id": "2",
+    "object_repr": "Venda #2 - Leve Facil Palmital 2",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}, {\"added\": {\"name\": \"item venda\", \"object\": \"ItemVenda object (2)\"}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 20,
+  "fields": {
+    "action_time": "2026-07-29T18:23:12.393Z",
+    "user": 1,
+    "content_type": 16,
+    "object_id": "3",
+    "object_repr": "Venda #3 - Leve Facil Palmital 2",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}, {\"added\": {\"name\": \"item venda\", \"object\": \"ItemVenda object (3)\"}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 21,
+  "fields": {
+    "action_time": "2026-07-29T18:23:37.851Z",
+    "user": 1,
+    "content_type": 16,
+    "object_id": "1",
+    "object_repr": "Venda #1 - Leve Facil Palmital",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 22,
+  "fields": {
+    "action_time": "2026-07-29T18:24:04.929Z",
+    "user": 1,
+    "content_type": 16,
+    "object_id": "4",
+    "object_repr": "Venda #4 - Leve Facil Palmital",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}, {\"added\": {\"name\": \"item venda\", \"object\": \"ItemVenda object (4)\"}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 23,
+  "fields": {
+    "action_time": "2026-07-29T18:51:06.909Z",
+    "user": 1,
+    "content_type": 16,
+    "object_id": "5",
+    "object_repr": "Venda #5 - Leve Facil Palmital 2",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}, {\"added\": {\"name\": \"item venda\", \"object\": \"Saco Gelo 5k - 10\"}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 24,
+  "fields": {
+    "action_time": "2026-07-29T18:51:54.314Z",
+    "user": 1,
+    "content_type": 16,
+    "object_id": "6",
+    "object_repr": "Venda #6 - Leve Facil Palmital",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}, {\"added\": {\"name\": \"item venda\", \"object\": \"Saco Gelo 3k - 10\"}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 25,
+  "fields": {
+    "action_time": "2026-07-29T18:52:38.431Z",
+    "user": 1,
+    "content_type": 16,
+    "object_id": "7",
+    "object_repr": "Venda #7 - Leve Facil Palmital 2",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}, {\"added\": {\"name\": \"item venda\", \"object\": \"Saco Gelo 3k - 10\"}}, {\"added\": {\"name\": \"item venda\", \"object\": \"Saco Gelo 5k - 10\"}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 26,
+  "fields": {
+    "action_time": "2026-08-03T23:24:45.890Z",
+    "user": 2,
+    "content_type": 9,
+    "object_id": "1",
+    "object_repr": "Saco Gelo 5k",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"fields\": [\"Preco venda\"]}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 27,
+  "fields": {
+    "action_time": "2026-08-03T23:25:20.408Z",
+    "user": 2,
+    "content_type": 16,
+    "object_id": "8",
+    "object_repr": "Venda #8 - Leve Facil Palmital",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}, {\"added\": {\"name\": \"item venda\", \"object\": \"Saco Gelo 5k - 7\"}}, {\"added\": {\"name\": \"item venda\", \"object\": \"Saco Gelo 3k - 7\"}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 28,
+  "fields": {
+    "action_time": "2026-08-06T19:49:23.694Z",
+    "user": 2,
+    "content_type": 16,
+    "object_id": "9",
+    "object_repr": "Venda #9 - Adega Da Boa",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}, {\"added\": {\"name\": \"item venda\", \"object\": \"Saco Gelo 5k - 5\"}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 29,
+  "fields": {
+    "action_time": "2026-08-06T20:01:28.646Z",
+    "user": 2,
+    "content_type": 16,
+    "object_id": "10",
+    "object_repr": "Venda #10 - Leve Facil Palmital",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}, {\"added\": {\"name\": \"item venda\", \"object\": \"Saco Gelo 3k - 7\"}}, {\"added\": {\"name\": \"item venda\", \"object\": \"Saco Gelo 5k - 7\"}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 30,
+  "fields": {
+    "action_time": "2026-08-09T18:54:31.582Z",
+    "user": 2,
+    "content_type": 16,
+    "object_id": "11",
+    "object_repr": "Venda #11 - Leve Facil Palmital",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}, {\"added\": {\"name\": \"item venda\", \"object\": \"Saco Gelo 5k - 9\"}}, {\"added\": {\"name\": \"item venda\", \"object\": \"Saco Gelo 3k - 10\"}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 31,
+  "fields": {
+    "action_time": "2026-08-14T00:58:45.225Z",
+    "user": 2,
+    "content_type": 16,
+    "object_id": "12",
+    "object_repr": "Venda #12 - Leve Facil Palmital",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}, {\"added\": {\"name\": \"item venda\", \"object\": \"Saco Gelo 3k - 12\"}}, {\"added\": {\"name\": \"item venda\", \"object\": \"Saco Gelo 5k - 10\"}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 32,
+  "fields": {
+    "action_time": "2026-08-14T01:08:54.198Z",
+    "user": 2,
+    "content_type": 16,
+    "object_id": "13",
+    "object_repr": "Venda #13 - Fedochenko Beer",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}, {\"added\": {\"name\": \"item venda\", \"object\": \"Saco Gelo 3k - 5\"}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 33,
+  "fields": {
+    "action_time": "2026-08-22T15:40:06.077Z",
+    "user": 1,
+    "content_type": 16,
+    "object_id": "14",
+    "object_repr": "Venda #14 - Leve Facil Palmital",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}, {\"added\": {\"name\": \"item venda\", \"object\": \"Saco Gelo 3k - 15\"}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 34,
+  "fields": {
+    "action_time": "2026-08-22T15:45:20.686Z",
+    "user": 1,
+    "content_type": 7,
+    "object_id": "4",
+    "object_repr": "EQ0004 - Conservador de Gelo",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 35,
+  "fields": {
+    "action_time": "2026-08-24T18:07:19.564Z",
+    "user": 1,
+    "content_type": 16,
+    "object_id": "15",
+    "object_repr": "Venda #15 - Fedochenko Beer",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}, {\"added\": {\"name\": \"item venda\", \"object\": \"Saco Gelo 3k - 7\"}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 36,
+  "fields": {
+    "action_time": "2026-08-24T18:07:19.633Z",
+    "user": 1,
+    "content_type": 16,
+    "object_id": "16",
+    "object_repr": "Venda #16 - Fedochenko Beer",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}, {\"added\": {\"name\": \"item venda\", \"object\": \"Saco Gelo 3k - 7\"}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 37,
+  "fields": {
+    "action_time": "2026-08-26T04:13:39.562Z",
+    "user": 1,
+    "content_type": 10,
+    "object_id": "11",
+    "object_repr": "GL-200 - Saco Gelo 5k - 17",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 38,
+  "fields": {
+    "action_time": "2026-08-26T05:26:04.307Z",
+    "user": 1,
+    "content_type": 10,
+    "object_id": "12",
+    "object_repr": "GL-200 - Saco Gelo 5k - 17",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 39,
+  "fields": {
+    "action_time": "2026-08-26T17:42:32.144Z",
+    "user": 1,
+    "content_type": 10,
+    "object_id": "13",
+    "object_repr": "GL-200 - Saco Gelo 5k - 11",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 40,
+  "fields": {
+    "action_time": "2026-08-26T17:59:36.447Z",
+    "user": 1,
+    "content_type": 10,
+    "object_id": "14",
+    "object_repr": "GL-200 - Saco Gelo 3k - 5",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 41,
+  "fields": {
+    "action_time": "2026-08-26T21:40:45.783Z",
+    "user": 1,
+    "content_type": 10,
+    "object_id": "15",
+    "object_repr": "GL-200 - Saco Gelo 3k - 2",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 42,
+  "fields": {
+    "action_time": "2026-08-26T21:57:05.410Z",
+    "user": 1,
+    "content_type": 11,
+    "object_id": "1",
+    "object_repr": "Embalagem Gelo 5k",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 43,
+  "fields": {
+    "action_time": "2026-08-26T21:57:32.838Z",
+    "user": 1,
+    "content_type": 11,
+    "object_id": "2",
+    "object_repr": "Embalagem Gelo 3k",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 44,
+  "fields": {
+    "action_time": "2026-08-26T22:02:17.358Z",
+    "user": 1,
+    "content_type": 11,
+    "object_id": "2",
+    "object_repr": "Embalagem Gelo 3k",
+    "action_flag": 2,
+    "change_message": "[]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 45,
+  "fields": {
+    "action_time": "2026-08-26T22:02:20.855Z",
+    "user": 1,
+    "content_type": 11,
+    "object_id": "1",
+    "object_repr": "Embalagem Gelo 5k",
+    "action_flag": 2,
+    "change_message": "[]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 46,
+  "fields": {
+    "action_time": "2026-08-26T22:03:35.782Z",
+    "user": 1,
+    "content_type": 17,
+    "object_id": "1",
+    "object_repr": 

@@ -40,12 +40,12 @@
                             {{ form.fornecedor }}
                         </div>
                         <div class="col-12 col-md-4">
-                            <label class="gs-label" for="{{ form.data_realizacao.id_for_label }}">Data *</label>
+                            <label class="gs-label" for="{{ form.data_realizacao.id_for_label }}">Data <span class="gs-required">*</span></label>
                             {{ form.data_realizacao }}
                             {% if form.data_realizacao.errors %}<p class="gs-field-error">{{ form.data_realizacao.errors|striptags }}</p>{% endif %}
                         </div>
                         <div class="col-12 col-md-4">
-                            <label class="gs-label" for="{{ form.km_realizacao.id_for_label }}">Km *</label>
+                            <label class="gs-label" for="{{ form.km_realizacao.id_for_label }}">Km <span class="gs-required">*</span></label>
                             {{ form.km_realizacao }}
                             {% if form.km_realizacao.errors %}<p class="gs-field-error">{{ form.km_realizacao.errors|striptags }}</p>{% endif %}
                         </div>
@@ -55,7 +55,7 @@
                             {% if form.anexo.errors %}<p class="gs-field-error">{{ form.anexo.errors|striptags }}</p>{% endif %}
                         </div>
                         <div class="col-12">
-                            <label class="gs-label" for="{{ form.descricao.id_for_label }}">Descrição *</label>
+                            <label class="gs-label" for="{{ form.descricao.id_for_label }}">Descrição <span class="gs-required">*</span></label>
                             {{ form.descricao }}
                             {% if form.descricao.errors %}<p class="gs-field-error">{{ form.descricao.errors|striptags }}</p>{% endif %}
                         </div>

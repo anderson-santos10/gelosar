@@ -18,17 +18,19 @@
     </header>
 
     <!-- SEÇÃO 1: MAQUINÁRIO E PRODUÇÃO -->
+    {% if total_equipamentos or producao_hoje or producao_semana or producao_mes %}
     <div class="row g-4 mb-4">
 
+        {% if total_equipamentos %}
         <!-- PARQUE DE EQUIPAMENTOS -->
-        <div class="col-12 col-xl-4">
+        <div class="col-12{% if producao_hoje or producao_semana or producao_mes %} col-xl-4{% endif %}">
             <div class="card card-gs shadow-sm h-100 p-4 d-flex flex-column justify-content-between">
                 <div>
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <h2 class="gs-section-label">
                             Equipamentos
                         </h2>
-                        <span class="gs-badge gs-badge--success">
+                        <span class="gs-badge gs-badge--info">
                             Status operacional
                         </span>
                     </div>
@@ -36,7 +38,7 @@
                     <div class="p-3 rounded-4 mb-4 equipment-summary">
                         <div class="d-flex align-items-center gap-3">
                             <div class="icon-box icon-box-primary shadow-sm">
-                                <i class="bi bi-cpu fs-4"></i>
+                                <i class="bi bi-cpu fs-4" aria-hidden="true"></i>
                             </div>
                             <div>
                                 <span class="text-uppercase text-muted fw-bold small">Total Maquinário</span>
@@ -73,15 +75,17 @@
             </div>
         </div>
 
+        {% endif %}
+        {% if producao_hoje or producao_semana or producao_mes %}
         <!-- PRODUÇÃO ACUMULADA -->
-        <div class="col-12 col-xl-8">
+        <div class="col-12{% if total_equipamentos %} col-xl-8{% endif %}">
             <div class="card card-gs shadow-sm h-100 p-4 d-flex flex-column justify-content-between">
                 <div>
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <h2 class="gs-section-label">
                             Produção acumulada
                         </h2>
-                        <span class="gs-badge gs-badge--success">
+                        <span class="gs-badge gs-badge--info">
                             Volume fabricado
                         </span>
                     </div>
@@ -92,7 +96,7 @@
                                 <div class="d-flex justify-content-between align-items-center mb-2">
                                     <span class="gs-section-label">Hoje</span>
                                     <div class="icon-box icon-box-cyan production-icon">
-                                        <i class="bi bi-snow"></i>
+                                        <i class="bi bi-snow" aria-hidden="true"></i>
                                     </div>
                                 </div>
                                 <span class="gs-card__hint">{% now "d/m/Y" %}</span>
@@ -110,7 +114,7 @@
                                 <div class="d-flex justify-content-between align-items-center mb-2">
                                     <span class="gs-section-label">Esta semana</span>
                                     <div class="icon-box icon-box-cyan production-icon">
-                                        <i class="bi bi-graph-up-arrow"></i>
+                                        <i class="bi bi-graph-up-arrow" aria-hidden="true"></i>
                                     </div>
                                 </div>
                                 <span class="gs-card__hint">Semana vigente</span>
@@ -128,7 +132,7 @@
                                 <div class="d-flex justify-content-between align-items-center mb-2">
                                     <span class="gs-section-label">Este mês</span>
                                     <div class="icon-box icon-box-cyan production-icon">
-                                        <i class="bi bi-calendar-check"></i>
+                                        <i class="bi bi-calendar-check" aria-hidden="true"></i>
                                     </div>
                                 </div>
                                 <span class="gs-card__hint">{% now "F/Y" %}</span>
@@ -144,10 +148,13 @@
                 </div>
             </div>
         </div>
+        {% endif %}
 
     </div>
+    {% endif %}
 
     <!-- SEÇÃO 2: ESTOQUE E INSUMOS -->
+    {% if pode_ver_estoque %}
     <div class="row g-4">
 
         <!-- PRODUTOS ACABADOS (GELO) -->
@@ -158,7 +165,7 @@
                         <h2 class="gs-section-label">
                             Produtos acabados (gelo)
                         </h2>
-                        <i class="bi bi-box-seam dashboard-blue"></i>
+                        <i class="bi bi-box-seam dashboard-blue" aria-hidden="true"></i>
                     </div>
 
                     <div class="row g-3 mb-4">
@@ -206,7 +213,7 @@
                         <h2 class="gs-section-label">
                             Insumos (embalagens)
                         </h2>
-                        <i class="bi bi-layers dashboard-blue"></i>
+                        <i class="bi bi-layers dashboard-blue" aria-hidden="true"></i>
                     </div>
 
                     <div class="row g-3 mb-4">
@@ -247,49 +254,51 @@
         </div>
 
     </div>
+    {% endif %}
 
-    <div class="row g-4 mt-1">
-        <div class="col-12 col-xl-4">
-            <div class="card card-gs gs-hud shadow-sm h-100 p-4">
-                <h2 class="gs-section-label mb-3">Vendas (7 dias)</h2>
-                <div class="gs-chart-wrap">
-                    <canvas
-                        id="chart-vendas"
-                        data-gs-chart="chart-vendas-data"
-                        aria-label="Gráfico de vendas dos últimos 7 dias"
-                    ></canvas>
-                </div>
+    {% if pode_ver_vendas and chart_vendas.values|join:"" != "0.00.00.00.00.00.00.0" or pode_ver_producao and chart_producao.datasets.0.data|join:"" != "0000000" or pode_ver_producao and chart_producao.datasets.1.data|join:"" != "0000000" or pode_ver_estoque and chart_estoque.values|join:"" != "00" %}
+    <div class="gs-dashboard-charts">
+        {% if pode_ver_vendas and chart_vendas.values|join:"" != "0.00.00.00.00.00.00.0" %}
+        <div class="card card-gs gs-hud shadow-sm h-100 p-4">
+            <h2 class="gs-section-label mb-3">Vendas (7 dias)</h2>
+            <div class="gs-chart-wrap">
+                <canvas
+                    id="chart-vendas"
+                    data-gs-chart="chart-vendas-data"
+                    aria-label="Gráfico de vendas dos últimos 7 dias"
+                ></canvas>
             </div>
         </div>
-        <div class="col-12 col-xl-4">
-            <div class="card card-gs gs-hud shadow-sm h-100 p-4">
-                <h2 class="gs-section-label mb-3">Produção (7 dias)</h2>
-                <div class="gs-chart-wrap">
-                    <canvas
-                        id="chart-producao"
-                        data-gs-chart="chart-producao-data"
-                        aria-label="Gráfico de produção dos últimos 7 dias"
-                    ></canvas>
-                </div>
+        {{ chart_vendas|json_script:"chart-vendas-data" }}
+        {% endif %}
+        {% if pode_ver_producao and chart_producao.datasets.0.data|join:"" != "0000000" or pode_ver_producao and chart_producao.datasets.1.data|join:"" != "0000000" %}
+        <div class="card card-gs gs-hud shadow-sm h-100 p-4">
+            <h2 class="gs-section-label mb-3">Produção (7 dias)</h2>
+            <div class="gs-chart-wrap">
+                <canvas
+                    id="chart-producao"
+                    data-gs-chart="chart-producao-data"
+                    aria-label="Gráfico de produção dos últimos 7 dias"
+                ></canvas>
             </div>
         </div>
-        <div class="col-12 col-xl-4">
-            <div class="card card-gs gs-hud shadow-sm h-100 p-4">
-                <h2 class="gs-section-label mb-3">Estoque atual</h2>
-                <div class="gs-chart-wrap">
-                    <canvas
-                        id="chart-estoque"
-                        data-gs-chart="chart-estoque-data"
-                        aria-label="Gráfico de estoque atual de gelo"
-                    ></canvas>
-                </div>
+        {{ chart_producao|json_script:"chart-producao-data" }}
+        {% endif %}
+        {% if pode_ver_estoque and chart_estoque.values|join:"" != "00" %}
+        <div class="card card-gs gs-hud shadow-sm h-100 p-4">
+            <h2 class="gs-section-label mb-3">Estoque atual</h2>
+            <div class="gs-chart-wrap">
+                <canvas
+                    id="chart-estoque"
+                    data-gs-chart="chart-estoque-data"
+                    aria-label="Gráfico de estoque atual de gelo"
+                ></canvas>
             </div>
         </div>
+        {{ chart_estoque|json_script:"chart-estoque-data" }}
+        {% endif %}
     </div>
-
-    {{ chart_vendas|json_script:"chart-vendas-data" }}
-    {{ chart_producao|json_script:"chart-producao-data" }}
-    {{ chart_estoque|json_script:"chart-estoque-data" }}
+    {% endif %}
 
 </div>
 {% endblock %}

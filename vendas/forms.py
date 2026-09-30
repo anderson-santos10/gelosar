@@ -97,6 +97,7 @@ class PedidoForm(forms.ModelForm):
                     "class": "form-control gs-textarea",
                     "rows": 3,
                     "aria-describedby": "endereco-ajuda",
+                    "placeholder": "Ex.: Rua das Flores, 123",
                 }
             ),
             "cidade": forms.TextInput(attrs={"class": "form-control gs-input"}),

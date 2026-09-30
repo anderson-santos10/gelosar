@@ -62,7 +62,7 @@ def _badge_obrigacao(obrigacao, hoje=None):
     if obrigacao.status == ObrigacaoVeiculo.STATUS_NAO_APLICAVEL:
         return "Não aplicável", "gs-badge--neutral"
     if obrigacao.status == ObrigacaoVeiculo.STATUS_CANCELADO:
-        return "Cancelado", "gs-badge--neutral"
+        return "Cancelado", "gs-badge--danger"
     if obrigacao.data_vencimento and obrigacao.data_vencimento < hoje:
         return "Atrasado", "gs-badge--danger"
     if not obrigacao.data_vencimento:

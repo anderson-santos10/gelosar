@@ -24,28 +24,28 @@
     </header>
 
     {% if equipamentos %}
-    <div class="gs-table-wrap">
+    <div class="gs-table-wrap gs-table-wrap--stack">
         <table class="gs-table">
             <thead>
                 <tr>
-                    <th>Código</th>
-                    <th>Nome</th>
-                    <th>Tipo</th>
-                    <th>Status</th>
-                    <th>Cliente</th>
-                    <th>Localização</th>
-                    <th>Ações</th>
+                    <th scope="col">Código</th>
+                    <th scope="col">Nome</th>
+                    <th scope="col">Tipo</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Cliente</th>
+                    <th scope="col">Localização</th>
+                    <th scope="col">Ações</th>
                 </tr>
             </thead>
             <tbody>
                 {% for equipamento in equipamentos %}
                 <tr>
-                    <td>
+                    <td data-label="Código">
                         <a href="{% url 'equipamentos:detalhe_equipamento' equipamento.id %}">{{ equipamento.codigo }}</a>
                     </td>
-                    <td>{{ equipamento.nome }}</td>
-                    <td>{{ equipamento.get_tipo_display }}</td>
-                    <td>
+                    <td data-label="Nome">{{ equipamento.nome }}</td>
+                    <td data-label="Tipo">{{ equipamento.get_tipo_display }}</td>
+                    <td data-label="Status">
                         {% if equipamento.status == 'ativo' %}
                             <span class="gs-badge gs-badge--ok">{{ equipamento.get_status_display }}</span>
                         {% elif equipamento.status == 'manutencao' %}
@@ -54,15 +54,15 @@
                             <span class="gs-badge gs-badge--neutral">{{ equipamento.get_status_display }}</span>
                         {% endif %}
                     </td>
-                    <td>
+                    <td data-label="Cliente">
                         {% if equipamento.cliente %}
                             <a href="{% url 'clientes:dashboard_cliente' equipamento.cliente.id %}">{{ equipamento.cliente.nome }}</a>
                         {% else %}
                             —
                         {% endif %}
                     </td>
-                    <td>{{ equipamento.localizacao|default:"—" }}</td>
-                    <td>
+                    <td data-label="Localização">{{ equipamento.localizacao|default:"—" }}</td>
+                    <td data-label="Ações" class="gs-table__actions">
                         <a href="{% url 'equipamentos:detalhe_equipamento' equipamento.id %}" class="gs-btn gs-btn-outline">Ver</a>
                     </td>
                 </tr>
@@ -72,6 +72,7 @@
     </div>
     {% else %}
     <div class="gs-empty">
+        <p class="gs-empty__icon" aria-hidden="true"><i class="bi bi-inbox"></i></p>
         <h2 class="gs-empty__title">Nenhum equipamento cadastrado</h2>
         <p class="gs-empty__text">Ainda não existem equipamentos registrados no sistema.</p>
         <a href="{% url 'equipamentos:cadastrar_equipamentos' %}" class="gs-btn gs-btn-primary">

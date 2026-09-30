@@ -37,6 +37,11 @@ class GelosarAdminUITests(TestCase):
             password="teste-123",
             is_staff=True,
         )
+        self.comum = User.objects.create_user(
+            username="gs-admin-comum",
+            password="teste-123",
+            is_staff=False,
+        )
 
     def test_sidebar_urls_existem(self):
         for name in ADMIN_URLS:
@@ -49,6 +54,49 @@ class GelosarAdminUITests(TestCase):
         response = self.client.get(reverse("admin:index"))
         self.assertEqual(response.status_code, 302)
         self.assertIn("/admin/login/", response.url)
+
+    def test_anonimo_redireciona_e_navbar_sem_administracao(self):
+        response = self.client.get(reverse("admin:index"))
+        self.assertEqual(response.status_code, 302)
+        self.assertIn("/admin/login/", response.url)
+
+        navbar = self.client.get(reverse("login"))
+        self.assertEqual(navbar.status_code, 200)
+        self.assertNotContains(navbar, "<span>Administração</span>", html=False)
+
+    def test_usuario_comum_nao_ve_botao_nem_indice(self):
+        self.client.force_login(self.comum)
+        navbar = self.client.get(reverse("dashboard"))
+        self.assertEqual(navbar.status_code, 200)
+        self.assertNotContains(navbar, "<span>Administração</span>", html=False)
+
+        admin = self.client.get(reverse("admin:index"))
+        self.assertEqual(admin.status_code, 302)
+        self.assertIn("/admin/login/", admin.url)
+        seguido = self.client.get(reverse("admin:index"), follow=True)
+        self.assertNotContains(seguido, "Dashboard administrativo")
+
+    def test_staff_ve_botao_e_acessa_admin(self):
+        self.client.force_login(self.staff)
+        navbar = self.client.get(reverse("dashboard"))
+        self.assertEqual(navbar.status_code, 200)
+        self.assertContains(navbar, "<span>Administração</span>", html=False)
+        self.assertContains(navbar, reverse("admin:index"))
+
+        admin = self.client.get(reverse("admin:index"))
+        self.assertEqual(admin.status_code, 200)
+        self.assertContains(admin, "Dashboard administrativo")
+
+    def test_superuser_ve_botao_e_acessa_admin(self):
+        self.client.force_login(self.superuser)
+        navbar = self.client.get(reverse("dashboard"))
+        self.assertEqual(navbar.status_code, 200)
+        self.assertContains(navbar, "<span>Administração</span>", html=False)
+        self.assertContains(navbar, reverse("admin:index"))
+
+        admin = self.client.get(reverse("admin:index"))
+        self.assertEqual(admin.status_code, 200)
+        self.assertContains(admin, "Dashboard administrativo")
 
     def test_login_admin_funciona(self):
         response = self.client.post(

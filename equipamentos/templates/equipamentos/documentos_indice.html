@@ -71,6 +71,7 @@
     </div>
     {% else %}
     <div class="gs-empty">
+        <p class="gs-empty__icon" aria-hidden="true"><i class="bi bi-inbox"></i></p>
         <h2 class="gs-empty__title">Nenhum documento cadastrado</h2>
         <p class="gs-empty__text">Ainda não existem arquivos anexados a equipamentos.</p>
         <a href="{% url 'equipamentos:listar_equipamentos' %}" class="gs-btn gs-btn-primary">Ir para equipamentos</a>

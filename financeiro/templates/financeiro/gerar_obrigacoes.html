@@ -27,7 +27,7 @@
                     {% csrf_token %}
                     <div class="row g-2">
                         <div class="col-12 col-md-6">
-                            <label class="gs-label" for="{{ form.exercicio.id_for_label }}">Exercício *</label>
+                            <label class="gs-label" for="{{ form.exercicio.id_for_label }}">Exercício <span class="gs-required">*</span></label>
                             {{ form.exercicio }}
                         </div>
                         <div class="col-12 col-md-6">

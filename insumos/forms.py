@@ -12,3 +12,7 @@ class InsumoForm(forms.ModelForm):
             "estoque_minimo",
             "ativo",
         ]
+        widgets = {
+            "nome": forms.TextInput(attrs={"placeholder": "Ex.: Saco plástico 5 kg"}),
+            "unidade": forms.TextInput(attrs={"placeholder": "Ex.: unidade"}),
+        }

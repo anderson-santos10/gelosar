@@ -35,10 +35,10 @@ class ContratoComodatoForm(forms.ModelForm):
             "cliente": forms.Select(attrs={"class": "form-select gs-input"}),
             "equipamento": forms.Select(attrs={"class": "form-select gs-input"}),
             "data_inicio": forms.DateInput(
-                attrs={"type": "date", "class": "form-control gs-input"}
+                attrs={"type": "date", "class": "form-control gs-input", "title": "Selecione a data"}
             ),
             "data_fim": forms.DateInput(
-                attrs={"type": "date", "class": "form-control gs-input"}
+                attrs={"type": "date", "class": "form-control gs-input", "title": "Selecione a data"}
             ),
             "status": forms.Select(attrs={"class": "form-select gs-input"}),
             "observacoes": forms.Textarea(

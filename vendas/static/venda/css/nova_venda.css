@@ -62,7 +62,7 @@
     border: 1px dashed var(--gs-primary);
     border-radius: var(--gs-radius-sm);
     background: var(--gs-info-bg);
-    color: var(--gs-primary);
+    color: var(--gs-link);
     font-size: var(--gs-font-size-sm);
     font-weight: var(--gs-font-weight-semibold);
     cursor: pointer;
@@ -72,9 +72,18 @@
     background: var(--gs-ice);
 }
 
+.pedido-cliente .gs-label,
+.venda-formset .gs-label {
+    display: block;
+    margin-bottom: 0.35rem;
+}
+
 .total-area {
     display: flex;
     justify-content: flex-end;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--gs-border);
 }
 
 .total-box {
@@ -98,7 +107,7 @@
 .total-value {
     font-size: 1.35rem;
     font-weight: 700;
-    color: var(--gs-navy);
+    color: var(--gs-heading);
 }
 
 @media (max-width: 800px) {

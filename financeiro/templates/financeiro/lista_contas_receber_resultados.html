@@ -1,3 +1,4 @@
+{% load moeda %}
 <div
     class="contas-fragmento"
     data-filtros-ativos="{{ filtros_ativos }}"
@@ -6,31 +7,31 @@
         <div class="col-6 col-md-4 col-xl">
             <div class="gs-card">
                 <p class="gs-card__title">A receber</p>
-                <p class="gs-card__value">R$ {{ totais.total_a_receber|floatformat:2 }}</p>
+                <p class="gs-card__value">{{ totais.total_a_receber|moeda_br }}</p>
             </div>
         </div>
         <div class="col-6 col-md-4 col-xl">
             <div class="gs-card">
                 <p class="gs-card__title">Em atraso</p>
-                <p class="gs-card__value">R$ {{ totais.total_vencido|floatformat:2 }}</p>
+                <p class="gs-card__value">{{ totais.total_vencido|moeda_br }}</p>
             </div>
         </div>
         <div class="col-6 col-md-4 col-xl">
             <div class="gs-card">
                 <p class="gs-card__title">Recebido</p>
-                <p class="gs-card__value">R$ {{ totais.total_recebido|floatformat:2 }}</p>
+                <p class="gs-card__value">{{ totais.total_recebido|moeda_br }}</p>
             </div>
         </div>
         <div class="col-6 col-md-4 col-xl">
             <div class="gs-card">
                 <p class="gs-card__title">Cancelado</p>
-                <p class="gs-card__value">R$ {{ totais.total_cancelado|floatformat:2 }}</p>
+                <p class="gs-card__value">{{ totais.total_cancelado|moeda_br }}</p>
             </div>
         </div>
         <div class="col-6 col-md-4 col-xl">
             <div class="gs-card">
                 <p class="gs-card__title">Total</p>
-                <p class="gs-card__value">R$ {{ totais.total_geral|floatformat:2 }}</p>
+                <p class="gs-card__value">{{ totais.total_geral|moeda_br }}</p>
             </div>
         </div>
     </div>
@@ -45,7 +46,7 @@
                     <th>Venda</th>
                     <th>Categoria</th>
                     <th>Vencimento</th>
-                    <th>Valor</th>
+                    <th scope="col" class="gs-table__number">Valor</th>
                     <th>Status</th>
                     <th>Forma</th>
                     <th>Ações</th>
@@ -65,7 +66,7 @@
                     </td>
                     <td>{{ conta.categoria.nome }}</td>
                     <td>{{ conta.data_vencimento|date:"d/m/Y" }}</td>
-                    <td>R$ {{ conta.valor|floatformat:2 }}</td>
+                    <td class="gs-table__number">{{ conta.valor|moeda_br }}</td>
                     <td>
                         {% if conta.vencida %}
                         <span class="gs-badge gs-badge--danger">Vencida</span>
@@ -74,11 +75,11 @@
                         {% elif conta.status == 'recebida' %}
                         <span class="gs-badge gs-badge--ok">Recebida</span>
                         {% else %}
-                        <span class="gs-badge gs-badge--neutral">Cancelada</span>
+                        <span class="gs-badge gs-badge--danger">Cancelada</span>
                         {% endif %}
                     </td>
                     <td>{{ conta.get_forma_recebimento_display|default:"-" }}</td>
-                    <td>
+                    <td class="gs-table__actions">
                         {% if perms.financeiro.change_contareceber and conta.status == 'pendente' %}
                         <a href="{% url 'financeiro:editar_conta_receber' conta.pk %}" class="gs-btn gs-btn-outline">Editar</a>
                         <form method="post" action="{% url 'financeiro:marcar_conta_recebida' conta.pk %}" class="gs-inline-form">
@@ -105,16 +106,21 @@
     <nav class="gs-pagination" aria-label="Paginação de contas a receber">
         {% if page_obj.has_previous %}
         <a class="gs-btn gs-btn-outline" href="?page={{ page_obj.previous_page_number }}{% if filtro_querystring %}&amp;{{ filtro_querystring }}{% endif %}">Anterior</a>
+        {% else %}
+        <span class="gs-btn gs-btn-outline is-disabled" aria-disabled="true">Anterior</span>
         {% endif %}
         <span class="gs-pagination__info">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
         {% if page_obj.has_next %}
         <a class="gs-btn gs-btn-outline" href="?page={{ page_obj.next_page_number }}{% if filtro_querystring %}&amp;{{ filtro_querystring }}{% endif %}">Próxima</a>
+        {% else %}
+        <span class="gs-btn gs-btn-outline is-disabled" aria-disabled="true">Próxima</span>
         {% endif %}
     </nav>
     {% endif %}
 
     {% else %}
     <div class="gs-empty">
+        <p class="gs-empty__icon" aria-hidden="true"><i class="bi bi-inbox"></i></p>
         {% if existem_contas and filtros_ativos %}
         <h2 class="gs-empty__title">Nenhuma conta a receber encontrada.</h2>
         <p class="gs-empty__text">Não encontramos contas a receber com os filtros selecionados.</p>

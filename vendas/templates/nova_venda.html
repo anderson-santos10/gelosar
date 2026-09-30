@@ -34,10 +34,10 @@
         </div>
         {% endif %}
 
-        <div class="gs-card mb-4">
-            <p class="gs-card__title">Dados do pedido</p>
+        <div class="gs-card mb-4 pedido-cliente">
+            <p class="gs-card__title">Dados do cliente</p>
             <div class="row g-3">
-                <div class="col-12 col-md-6">
+                <div class="col-12 col-lg-6">
                     <label class="gs-label" for="{{ venda_form.cliente.id_for_label }}">
                         Cliente{% if venda_form.cliente.field.required %} *{% endif %}
                     </label>
@@ -46,12 +46,12 @@
                     <p class="gs-field-error">{{ error }}</p>
                     {% endfor %}
                 </div>
-                <div class="col-12 col-md-6">
-                    <label class="gs-label" for="{{ venda_form.observacoes.id_for_label }}">
-                        Observações
+                <div class="col-12 col-lg-6">
+                    <label class="gs-label" for="{{ venda_form.cidade.id_for_label }}">
+                        Cidade
                     </label>
-                    {{ venda_form.observacoes }}
-                    {% for error in venda_form.observacoes.errors %}
+                    {{ venda_form.cidade }}
+                    {% for error in venda_form.cidade.errors %}
                     <p class="gs-field-error">{{ error }}</p>
                     {% endfor %}
                 </div>
@@ -64,12 +64,12 @@
                     <p class="gs-field-error">{{ error }}</p>
                     {% endfor %}
                 </div>
-                <div class="col-12 col-md-6">
-                    <label class="gs-label" for="{{ venda_form.cidade.id_for_label }}">
-                        Cidade
+                <div class="col-12">
+                    <label class="gs-label" for="{{ venda_form.observacoes.id_for_label }}">
+                        Observações
                     </label>
-                    {{ venda_form.cidade }}
-                    {% for error in venda_form.cidade.errors %}
+                    {{ venda_form.observacoes }}
+                    {% for error in venda_form.observacoes.errors %}
                     <p class="gs-field-error">{{ error }}</p>
                     {% endfor %}
                 </div>
@@ -77,7 +77,7 @@
         </div>
 
         <div class="gs-card venda-formset">
-            <p class="gs-card__title">Produtos do pedido</p>
+            <p class="gs-card__title">Itens do pedido</p>
             <p class="gs-card__hint mb-3">Adicione os produtos e informe as quantidades.</p>
 
             {% if formset.non_form_errors %}

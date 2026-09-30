@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load moeda %}
 
 {% block title %}Produtos | GELOSAR{% endblock %}
 
@@ -22,33 +23,33 @@
     </header>
 
     {% if produtos %}
-    <div class="gs-table-wrap">
+    <div class="gs-table-wrap gs-table-wrap--stack">
         <table class="gs-table">
             <thead>
                 <tr>
-                    <th>Nome</th>
-                    <th>Peso (kg)</th>
-                    <th>Preço</th>
-                    <th>Estoque mín.</th>
-                    <th>Status</th>
-                    <th>Ações</th>
+                    <th scope="col">Nome</th>
+                    <th scope="col" class="gs-table__number">Peso (kg)</th>
+                    <th scope="col" class="gs-table__number">Preço</th>
+                    <th scope="col" class="gs-table__number">Estoque mín.</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Ações</th>
                 </tr>
             </thead>
             <tbody>
                 {% for produto in produtos %}
                 <tr>
-                    <td>{{ produto.nome }}</td>
-                    <td>{{ produto.peso_kg }}</td>
-                    <td>R$ {{ produto.preco_venda }}</td>
-                    <td>{{ produto.estoque_minimo }}</td>
-                    <td>
+                    <td data-label="Nome">{{ produto.nome }}</td>
+                    <td data-label="Peso (kg)" class="gs-table__number">{{ produto.peso_kg }}</td>
+                    <td data-label="Preço" class="gs-table__number">{{ produto.preco_venda|moeda_br }}</td>
+                    <td data-label="Estoque mín." class="gs-table__number">{{ produto.estoque_minimo }}</td>
+                    <td data-label="Status">
                         {% if produto.ativo %}
                         <span class="gs-badge gs-badge--ok">Ativo</span>
                         {% else %}
                         <span class="gs-badge gs-badge--neutral">Inativo</span>
                         {% endif %}
                     </td>
-                    <td>
+                    <td data-label="Ações" class="gs-table__actions">
                         {% if perms.produtos.change_produto %}
                         <a href="{% url 'produtos:editar_produto' produto.pk %}" class="gs-btn gs-btn-outline">Editar</a>
                         {% endif %}
@@ -60,6 +61,7 @@
     </div>
     {% else %}
     <div class="gs-empty">
+        <p class="gs-empty__icon" aria-hidden="true"><i class="bi bi-inbox"></i></p>
         <h2 class="gs-empty__title">Nenhum produto cadastrado</h2>
         {% if perms.produtos.add_produto %}
         <a href="{% url 'produtos:cadastrar_produto' %}" class="gs-btn gs-btn-primary">Cadastrar produto</a>

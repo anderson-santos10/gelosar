@@ -36,12 +36,12 @@
                     {% endif %}
                     <div class="row g-2">
                         <div class="col-12 col-md-4">
-                            <label class="gs-label" for="{{ form.marca.id_for_label }}">Marca *</label>
+                            <label class="gs-label" for="{{ form.marca.id_for_label }}">Marca <span class="gs-required">*</span></label>
                             {{ form.marca }}
                             {% if form.marca.errors %}<p class="gs-field-error">{{ form.marca.errors|striptags }}</p>{% endif %}
                         </div>
                         <div class="col-12 col-md-4">
-                            <label class="gs-label" for="{{ form.modelo.id_for_label }}">Modelo *</label>
+                            <label class="gs-label" for="{{ form.modelo.id_for_label }}">Modelo <span class="gs-required">*</span></label>
                             {{ form.modelo }}
                             {% if form.modelo.errors %}<p class="gs-field-error">{{ form.modelo.errors|striptags }}</p>{% endif %}
                         </div>
@@ -50,7 +50,7 @@
                             {{ form.versao }}
                         </div>
                         <div class="col-12 col-md-4">
-                            <label class="gs-label" for="{{ form.placa.id_for_label }}">Placa *</label>
+                            <label class="gs-label" for="{{ form.placa.id_for_label }}">Placa <span class="gs-required">*</span></label>
                             {{ form.placa }}
                             {% if form.placa.errors %}<p class="gs-field-error">{{ form.placa.errors|striptags }}</p>{% endif %}
                         </div>
@@ -64,12 +64,12 @@
                             {{ form.uf }}
                         </div>
                         <div class="col-12 col-md-3">
-                            <label class="gs-label" for="{{ form.ano_fabricacao.id_for_label }}">Ano fabricação *</label>
+                            <label class="gs-label" for="{{ form.ano_fabricacao.id_for_label }}">Ano fabricação <span class="gs-required">*</span></label>
                             {{ form.ano_fabricacao }}
                             {% if form.ano_fabricacao.errors %}<p class="gs-field-error">{{ form.ano_fabricacao.errors|striptags }}</p>{% endif %}
                         </div>
                         <div class="col-12 col-md-3">
-                            <label class="gs-label" for="{{ form.ano_modelo.id_for_label }}">Ano modelo *</label>
+                            <label class="gs-label" for="{{ form.ano_modelo.id_for_label }}">Ano modelo <span class="gs-required">*</span></label>
                             {{ form.ano_modelo }}
                             {% if form.ano_modelo.errors %}<p class="gs-field-error">{{ form.ano_modelo.errors|striptags }}</p>{% endif %}
                         </div>

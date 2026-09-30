@@ -34,7 +34,7 @@
                     {% endif %}
                     <div class="row g-2">
                         <div class="col-12">
-                            <label class="gs-label" for="{{ form.nome.id_for_label }}">Nome *</label>
+                            <label class="gs-label" for="{{ form.nome.id_for_label }}">Nome <span class="gs-required">*</span></label>
                             {{ form.nome }}
                             {% if form.nome.errors %}<p class="gs-field-error">{{ form.nome.errors|striptags }}</p>{% endif %}
                         </div>

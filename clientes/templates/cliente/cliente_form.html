@@ -43,7 +43,7 @@
                     <div class="row g-2">
                         <div class="col-12 col-md-6 col-lg-4">
                             <label class="gs-label" for="{{ form.nome.id_for_label }}">
-                                Nome / Razão Social{% if form.nome.field.required %} *{% endif %}
+                                Nome / Razão Social{% if form.nome.field.required %} <span class="gs-required">*</span>{% endif %}
                             </label>
                             {{ form.nome }}
                             {% if form.nome.errors %}
@@ -53,7 +53,7 @@
 
                         <div class="col-12 col-md-6 col-lg-4">
                             <label class="gs-label" for="{{ form.cnpj.id_for_label }}">
-                                CNPJ / CPF{% if form.cnpj.field.required %} *{% endif %}
+                                CNPJ / CPF{% if form.cnpj.field.required %} <span class="gs-required">*</span>{% endif %}
                             </label>
                             {{ form.cnpj }}
                             {% if form.cnpj.errors %}
@@ -63,7 +63,7 @@
 
                         <div class="col-12 col-md-6 col-lg-4">
                             <label class="gs-label" for="{{ form.telefone.id_for_label }}">
-                                Telefone{% if form.telefone.field.required %} *{% endif %}
+                                Telefone{% if form.telefone.field.required %} <span class="gs-required">*</span>{% endif %}
                             </label>
                             {{ form.telefone }}
                             {% if form.telefone.errors %}
@@ -73,7 +73,7 @@
 
                         <div class="col-12 col-md-6">
                             <label class="gs-label" for="{{ form.email.id_for_label }}">
-                                E-mail{% if form.email.field.required %} *{% endif %}
+                                E-mail{% if form.email.field.required %} <span class="gs-required">*</span>{% endif %}
                             </label>
                             {{ form.email }}
                             {% if form.email.errors %}
@@ -83,7 +83,7 @@
 
                         <div class="col-12 col-md-6">
                             <label class="gs-label" for="{{ form.cidade.id_for_label }}">
-                                Cidade{% if form.cidade.field.required %} *{% endif %}
+                                Cidade{% if form.cidade.field.required %} <span class="gs-required">*</span>{% endif %}
                             </label>
                             {{ form.cidade }}
                             {% if form.cidade.errors %}
@@ -93,7 +93,7 @@
 
                         <div class="col-12">
                             <label class="gs-label" for="{{ form.endereco.id_for_label }}">
-                                Endereço{% if form.endereco.field.required %} *{% endif %}
+                                Endereço{% if form.endereco.field.required %} <span class="gs-required">*</span>{% endif %}
                             </label>
                             {{ form.endereco }}
                             {% if form.endereco.errors %}
@@ -128,7 +128,7 @@
 
                         <div class="col-12">
                             <label class="gs-label" for="{{ form.observacoes.id_for_label }}">
-                                Observações{% if form.observacoes.field.required %} *{% endif %}
+                                Observações{% if form.observacoes.field.required %} <span class="gs-required">*</span>{% endif %}
                             </label>
                             {{ form.observacoes }}
                             {% if form.observacoes.errors %}

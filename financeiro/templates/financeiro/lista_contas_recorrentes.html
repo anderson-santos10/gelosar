@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load static %}
+{% load static moeda %}
 
 {% block title %}Contas recorrentes | GELOSAR{% endblock %}
 
@@ -80,7 +80,7 @@
                     <th>Descrição</th>
                     <th>Categoria</th>
                     <th>Fornecedor</th>
-                    <th>Valor</th>
+                    <th scope="col" class="gs-table__number">Valor</th>
                     <th>Periodicidade</th>
                     <th>Dia</th>
                     <th>Início</th>
@@ -96,8 +96,8 @@
                     <td>{{ item.descricao }}</td>
                     <td>{{ item.categoria.nome }}</td>
                     <td>{{ item.fornecedor.nome|default:"-" }}</td>
-                    <td>
-                        R$ {{ item.valor|floatformat:2 }}
+                    <td class="gs-table__number">
+                        {{ item.valor|moeda_br }}
                         {% if item.valor_estimado %}
                         <span class="gs-badge gs-badge--warning">Estimado</span>
                         {% endif %}
@@ -132,6 +132,7 @@
     </div>
     {% else %}
     <div class="gs-empty">
+        <p class="gs-empty__icon" aria-hidden="true"><i class="bi bi-inbox"></i></p>
         <h2 class="gs-empty__title">Nenhuma recorrência cadastrada</h2>
         <p class="gs-empty__text">Cadastre aluguel, internet e outras obrigações que se repetem todo mês.</p>
         {% if perms.financeiro.add_contarecorrente %}

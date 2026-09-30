@@ -3,6 +3,16 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
+    <script>
+        (function () {
+            try {
+                var theme = localStorage.getItem("gs-theme");
+                if (theme === "dark" || theme === "light") {
+                    document.documentElement.setAttribute("data-theme", theme);
+                }
+            } catch (e) {}
+        })();
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#071E40">
     <title>{% block title %}GELOSAR{% endblock %}</title>
@@ -72,6 +82,7 @@
                             </a>
                         </li>
 
+                        {% if perms.clientes.view_cliente or perms.clientes.add_cliente or perms.equipamentos.view_equipamento or perms.equipamentos.add_equipamento or perms.produtos.view_produto or perms.insumos.view_insumo %}
                         <li class="gs-nav__item has-dropdown{% if rn == 'lista_clientes' or rn == 'cadastrar_cliente' or rn == 'editar_cliente' or rn == 'dashboard_cliente' or ns == 'equipamentos' and rn != 'contrato_comodato' and rn != 'indice_documentos' or ns == 'produtos' or ns == 'insumos' %} is-current{% endif %}">
                             <button type="button" class="gs-nav__link gs-nav__trigger" aria-expanded="false" aria-haspopup="true" aria-controls="gsDropdownCadastros" id="gsTriggerCadastros">
                                 <i class="bi bi-folder2-open" aria-hidden="true"></i>
@@ -131,7 +142,9 @@
                                 {% endif %}
                             </ul>
                         </li>
+                        {% endif %}
 
+                        {% if perms.estoque.view_movimentacaoproduto or perms.estoque.add_movimentacaoproduto or perms.estoque.add_movimentacaoinsumo or perms.producao.view_producao or perms.producao.add_producao or perms.vendas.add_venda or perms.vendas.view_pedido or perms.vendas.add_pedido or perms.vendas.entregar_pedido %}
                         <li class="gs-nav__item has-dropdown{% if ns == 'producao' or ns == 'estoque' or ns == 'vendas' %} is-current{% endif %}">
                             <button type="button" class="gs-nav__link gs-nav__trigger" aria-expanded="false" aria-haspopup="true" aria-controls="gsDropdownOperacoes" id="gsTriggerOperacoes">
                                 <i class="bi bi-sliders" aria-hidden="true"></i>
@@ -211,6 +224,7 @@
                                 {% endif %}
                             </ul>
                         </li>
+                        {% endif %}
 
                         {% if perms.financeiro.view_fornecedor or perms.financeiro.view_categoriafinanceira or perms.financeiro.view_contapagar or perms.financeiro.view_contareceber or perms.financeiro.view_contarecorrente or perms.financeiro.view_veiculo %}
                         <li class="gs-nav__item has-dropdown{% if ns == 'financeiro' %} is-current{% endif %}">
@@ -288,6 +302,7 @@
                         </li>
                         {% endif %}
 
+                        {% if perms.equipamentos.view_equipamento or perms.equipamentos.view_contratocomodato %}
                         <li class="gs-nav__item has-dropdown{% if rn == 'contrato_comodato' or rn == 'contrato_comodato_novo' or rn == 'contrato_comodato_detalhe' or rn == 'contrato_comodato_editar' or rn == 'indice_documentos' %} is-current{% endif %}">
                             <button type="button" class="gs-nav__link gs-nav__trigger" aria-expanded="false" aria-haspopup="true" aria-controls="gsDropdownDocumentos" id="gsTriggerDocumentos">
                                 <i class="bi bi-file-earmark-text" aria-hidden="true"></i>
@@ -313,6 +328,7 @@
                                 {% endif %}
                             </ul>
                         </li>
+                        {% endif %}
 
                         {% if user.is_staff %}
                         <li class="gs-nav__item">
@@ -358,6 +374,18 @@
                     </div>
                 </div>
             </div>
+
+            <button
+                type="button"
+                class="gs-theme-toggle"
+                id="gsThemeToggle"
+                aria-pressed="false"
+                aria-label="Ativar tema escuro"
+                title="Tema escuro"
+            >
+                <i class="bi bi-moon-stars gs-theme-toggle__icon gs-theme-toggle__icon--dark" aria-hidden="true"></i>
+                <i class="bi bi-sun gs-theme-toggle__icon gs-theme-toggle__icon--light" aria-hidden="true"></i>
+            </button>
 
         </div>
     </header>

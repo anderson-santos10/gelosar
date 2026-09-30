@@ -56,7 +56,7 @@
                     <th>Horário</th>
                     <th>Máquina / Equipamento</th>
                     <th>Produto</th>
-                    <th>Quantidade</th>
+                    <th scope="col" class="gs-table__number">Quantidade</th>
                 </tr>
             </thead>
             <tbody>
@@ -66,7 +66,7 @@
                     <td>{{ producao.data_hora|date:"H:i" }}</td>
                     <td>{{ producao.equipamento.nome }}</td>
                     <td>{{ producao.produto.nome }}</td>
-                    <td>{{ producao.quantidade }} sacos</td>
+                    <td class="gs-table__number">{{ producao.quantidade }} sacos</td>
                 </tr>
                 {% endfor %}
             </tbody>
@@ -74,6 +74,7 @@
     </div>
     {% else %}
     <div class="gs-empty">
+        <p class="gs-empty__icon" aria-hidden="true"><i class="bi bi-inbox"></i></p>
         <h2 class="gs-empty__title">Nenhuma produção registrada</h2>
         <p class="gs-empty__text">Ainda não existem registros de produção no sistema.</p>
         <a href="{% url 'producao:new_producao' %}" class="gs-btn gs-btn-primary">Nova produção</a>

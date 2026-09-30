@@ -57,15 +57,20 @@
     <nav class="gs-pagination" aria-label="Paginação de manutenções">
         {% if page_obj.has_previous %}
         <a class="gs-btn gs-btn-outline" href="?page={{ page_obj.previous_page_number }}">Anterior</a>
+        {% else %}
+        <span class="gs-btn gs-btn-outline is-disabled" aria-disabled="true">Anterior</span>
         {% endif %}
         <span class="gs-pagination__info">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
         {% if page_obj.has_next %}
         <a class="gs-btn gs-btn-outline" href="?page={{ page_obj.next_page_number }}">Próxima</a>
+        {% else %}
+        <span class="gs-btn gs-btn-outline is-disabled" aria-disabled="true">Próxima</span>
         {% endif %}
     </nav>
     {% endif %}
     {% else %}
     <div class="gs-empty">
+        <p class="gs-empty__icon" aria-hidden="true"><i class="bi bi-inbox"></i></p>
         <h2 class="gs-empty__title">Nenhuma manutenção registrada</h2>
         {% if perms.financeiro.add_manutencaoveiculo %}
         <a href="{% url 'financeiro:cadastrar_manutencao' veiculo.pk %}" class="gs-btn gs-btn-primary">Registrar manutenção</a>

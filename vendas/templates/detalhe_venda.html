@@ -1,7 +1,8 @@
 {% extends "base.html" %}
 {% load static %}
+{% load moeda %}
 
-{% block title %}Pedido #{{ venda.id }} | GELOSAR{% endblock %}
+{% block title %}Venda #{{ venda.id }} | GELOSAR{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'venda/css/detalhe_venda.css' %}">
@@ -17,10 +18,10 @@
                 <li aria-hidden="true">/</li>
                 <li><a href="{% url 'clientes:dashboard_cliente' venda.cliente.pk %}">{{ venda.cliente.nome }}</a></li>
                 <li aria-hidden="true">/</li>
-                <li>Pedido #{{ venda.id }}</li>
+                <li>Venda #{{ venda.id }}</li>
             </ol>
-            <h1 class="gs-page-header__title">Pedido #{{ venda.id }}</h1>
-            <p class="gs-page-header__desc">Detalhes e produtos do pedido</p>
+            <h1 class="gs-page-header__title">Venda #{{ venda.id }}</h1>
+            <p class="gs-page-header__desc">Detalhes e produtos da venda</p>
         </div>
         <div class="gs-page-header__actions">
             <a href="{% url 'clientes:dashboard_cliente' venda.cliente.pk %}" class="gs-btn gs-btn-outline">Voltar</a>
@@ -35,7 +36,7 @@
         <p class="gs-card__title">Informações do pedido</p>
         <div class="row g-3">
             <div class="col-12 col-md-4">
-                <p class="gs-card__hint mb-1">Número do pedido</p>
+                <p class="gs-card__hint mb-1">Número da venda</p>
                 <p class="mb-0 fw-semibold">#{{ venda.id }}</p>
             </div>
             <div class="col-12 col-md-4">
@@ -57,8 +58,8 @@
                 <p class="mb-0 fw-semibold">{{ venda.quantidade_total }}</p>
             </div>
             <div class="col-12 col-md-4">
-                <p class="gs-card__hint mb-1">Total do pedido</p>
-                <p class="mb-0 fw-semibold">R$ {{ venda.total|floatformat:2 }}</p>
+                <p class="gs-card__hint mb-1">Total da venda</p>
+                <p class="mb-0 fw-semibold">{{ venda.total|moeda_br }}</p>
             </div>
             {% if venda.pedido %}
             <div class="col-12 col-md-4">
@@ -84,18 +85,18 @@
                 <thead>
                     <tr>
                         <th>Produto</th>
-                        <th>Quantidade</th>
-                        <th>Preço unitário</th>
-                        <th>Subtotal</th>
+                        <th scope="col" class="gs-table__number">Quantidade</th>
+                        <th scope="col" class="gs-table__number">Preço unitário</th>
+                        <th scope="col" class="gs-table__number">Subtotal</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for item in venda.itens.all %}
                     <tr>
                         <td>{{ item.produto.nome }}</td>
-                        <td>{{ item.quantidade }}</td>
-                        <td>R$ {{ item.preco_unitario|floatformat:2 }}</td>
-                        <td>R$ {{ item.subtotal|floatformat:2 }}</td>
+                        <td class="gs-table__number">{{ item.quantidade }}</td>
+                        <td class="gs-table__number">{{ item.preco_unitario|moeda_br }}</td>
+                        <td class="gs-table__number">{{ item.subtotal|moeda_br }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -111,13 +112,14 @@
                     </div>
                     <div class="d-flex justify-content-between">
                         <span class="fw-semibold">Total</span>
-                        <span class="fw-semibold">R$ {{ venda.total|floatformat:2 }}</span>
+                        <span class="fw-semibold">{{ venda.total|moeda_br }}</span>
                     </div>
                 </div>
             </div>
         </div>
         {% else %}
         <div class="gs-empty gs-empty--flush">
+            <p class="gs-empty__icon" aria-hidden="true"><i class="bi bi-inbox"></i></p>
             <h2 class="gs-empty__title">Nenhum produto neste pedido</h2>
             <p class="gs-empty__text">Nenhum produto foi adicionado a este pedido.</p>
         </div>

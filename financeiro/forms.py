@@ -40,18 +40,33 @@ class FornecedorForm(forms.ModelForm):
             "ativo",
         ]
         widgets = {
-            "nome": forms.TextInput(attrs={"class": "form-control gs-input"}),
+            "nome": forms.TextInput(
+                attrs={
+                    "class": "form-control gs-input",
+                    "placeholder": "Ex.: João da Silva",
+                }
+            ),
             "cnpj": forms.TextInput(
                 attrs={
                     "class": "form-control gs-input",
                     "inputmode": "numeric",
                     "autocomplete": "off",
                     "maxlength": "18",
-                    "placeholder": "00.000.000/0000-00",
+                    "placeholder": "Ex.: 00.000.000/0000-00",
                 }
             ),
-            "telefone": forms.TextInput(attrs={"class": "form-control gs-input"}),
-            "email": forms.EmailInput(attrs={"class": "form-control gs-input"}),
+            "telefone": forms.TextInput(
+                attrs={
+                    "class": "form-control gs-input",
+                    "placeholder": "Ex.: (14) 99999-9999",
+                }
+            ),
+            "email": forms.EmailInput(
+                attrs={
+                    "class": "form-control gs-input",
+                    "placeholder": "Ex.: contato@empresa.com.br",
+                }
+            ),
             "observacoes": forms.Textarea(
                 attrs={"class": "form-control gs-textarea", "rows": 4}
             ),
@@ -149,7 +164,7 @@ class ContaPagarForm(forms.ModelForm):
             "fornecedor": forms.Select(attrs={"class": "form-select gs-input"}),
             "competencia": forms.DateInput(
                 format="%Y-%m-%d",
-                attrs={"type": "date", "class": "form-control gs-input"},
+                attrs={"type": "date", "class": "form-control gs-input", "title": "Selecione a data"},
             ),
             "valor": forms.NumberInput(
                 attrs={
@@ -160,16 +175,16 @@ class ContaPagarForm(forms.ModelForm):
             ),
             "data_emissao": forms.DateInput(
                 format="%Y-%m-%d",
-                attrs={"type": "date", "class": "form-control gs-input"},
+                attrs={"type": "date", "class": "form-control gs-input", "title": "Selecione a data"},
             ),
             "data_vencimento": forms.DateInput(
                 format="%Y-%m-%d",
-                attrs={"type": "date", "class": "form-control gs-input"},
+                attrs={"type": "date", "class": "form-control gs-input", "title": "Selecione a data"},
             ),
             "status": forms.Select(attrs={"class": "form-select gs-input"}),
             "data_pagamento": forms.DateInput(
                 format="%Y-%m-%d",
-                attrs={"type": "date", "class": "form-control gs-input"},
+                attrs={"type": "date", "class": "form-control gs-input", "title": "Selecione a data"},
             ),
             "forma_pagamento": forms.Select(attrs={"class": "form-select gs-input"}),
             "observacoes": forms.Textarea(
@@ -314,11 +329,11 @@ class ContaRecorrenteForm(forms.ModelForm):
             ),
             "data_inicio": forms.DateInput(
                 format="%Y-%m-%d",
-                attrs={"type": "date", "class": "form-control gs-input"},
+                attrs={"type": "date", "class": "form-control gs-input", "title": "Selecione a data"},
             ),
             "data_fim": forms.DateInput(
                 format="%Y-%m-%d",
-                attrs={"type": "date", "class": "form-control gs-input"},
+                attrs={"type": "date", "class": "form-control gs-input", "title": "Selecione a data"},
             ),
             "observacoes": forms.Textarea(
                 attrs={"class": "form-control gs-textarea", "rows": 3}
@@ -450,7 +465,7 @@ class VeiculoForm(forms.ModelForm):
             ),
             "data_aquisicao": forms.DateInput(
                 format="%Y-%m-%d",
-                attrs={"type": "date", "class": "form-control gs-input"},
+                attrs={"type": "date", "class": "form-control gs-input", "title": "Selecione a data"},
             ),
             "observacoes": forms.Textarea(
                 attrs={"class": "form-control gs-textarea", "rows": 3}
@@ -545,7 +560,7 @@ class ManutencaoVeiculoForm(forms.ModelForm):
             "fornecedor": forms.Select(attrs={"class": "form-select gs-input"}),
             "data_realizacao": forms.DateInput(
                 format="%Y-%m-%d",
-                attrs={"type": "date", "class": "form-control gs-input"},
+                attrs={"type": "date", "class": "form-control gs-input", "title": "Selecione a data"},
             ),
             "km_realizacao": forms.NumberInput(
                 attrs={"class": "form-control gs-input", "min": 0}
@@ -608,7 +623,7 @@ class ObrigacaoVeiculoForm(forms.ModelForm):
             "exercicio": forms.NumberInput(attrs={"class": "form-control gs-input"}),
             "data_vencimento": forms.DateInput(
                 format="%Y-%m-%d",
-                attrs={"type": "date", "class": "form-control gs-input"},
+                attrs={"type": "date", "class": "form-control gs-input", "title": "Selecione a data"},
             ),
             "status": forms.Select(attrs={"class": "form-select gs-input"}),
             "valor_previsto": forms.NumberInput(
@@ -684,7 +699,7 @@ class ContaReceberForm(forms.ModelForm):
             "categoria": forms.Select(attrs={"class": "form-select gs-input"}),
             "competencia": forms.DateInput(
                 format="%Y-%m-%d",
-                attrs={"type": "date", "class": "form-control gs-input"},
+                attrs={"type": "date", "class": "form-control gs-input", "title": "Selecione a data"},
             ),
             "valor": forms.NumberInput(
                 attrs={
@@ -695,16 +710,16 @@ class ContaReceberForm(forms.ModelForm):
             ),
             "data_emissao": forms.DateInput(
                 format="%Y-%m-%d",
-                attrs={"type": "date", "class": "form-control gs-input"},
+                attrs={"type": "date", "class": "form-control gs-input", "title": "Selecione a data"},
             ),
             "data_vencimento": forms.DateInput(
                 format="%Y-%m-%d",
-                attrs={"type": "date", "class": "form-control gs-input"},
+                attrs={"type": "date", "class": "form-control gs-input", "title": "Selecione a data"},
             ),
             "status": forms.Select(attrs={"class": "form-select gs-input"}),
             "data_recebimento": forms.DateInput(
                 format="%Y-%m-%d",
-                attrs={"type": "date", "class": "form-control gs-input"},
+                attrs={"type": "date", "class": "form-control gs-input", "title": "Selecione a data"},
             ),
             "forma_recebimento": forms.Select(attrs={"class": "form-select gs-input"}),
             "observacoes": forms.Textarea(

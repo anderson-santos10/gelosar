@@ -56,6 +56,7 @@
     </div>
     {% else %}
     <div class="gs-empty">
+        <p class="gs-empty__icon" aria-hidden="true"><i class="bi bi-inbox"></i></p>
         <h2 class="gs-empty__title">Nenhum documento anexado</h2>
         <p class="gs-empty__text">Este equipamento ainda não possui arquivos cadastrados.</p>
         <a href="{% url 'equipamentos:upload_documento' equipamento.pk %}" class="gs-btn gs-btn-primary">Adicionar documento</a>

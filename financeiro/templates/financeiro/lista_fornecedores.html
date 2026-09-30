@@ -30,33 +30,33 @@
     </header>
 
     {% if fornecedores %}
-    <div class="gs-table-wrap">
+    <div class="gs-table-wrap gs-table-wrap--stack">
         <table class="gs-table">
             <thead>
                 <tr>
-                    <th>Nome</th>
-                    <th>CNPJ</th>
-                    <th>Telefone</th>
-                    <th>E-mail</th>
-                    <th>Status</th>
-                    <th>Ações</th>
+                    <th scope="col">Nome</th>
+                    <th scope="col">CNPJ</th>
+                    <th scope="col">Telefone</th>
+                    <th scope="col">E-mail</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Ações</th>
                 </tr>
             </thead>
             <tbody>
                 {% for fornecedor in fornecedores %}
                 <tr>
-                    <td>{{ fornecedor.nome }}</td>
-                    <td>{{ fornecedor.cnpj_formatado|default:"-" }}</td>
-                    <td>{{ fornecedor.telefone|default:"-" }}</td>
-                    <td>{{ fornecedor.email|default:"-" }}</td>
-                    <td>
+                    <td data-label="Nome">{{ fornecedor.nome }}</td>
+                    <td data-label="CNPJ">{{ fornecedor.cnpj_formatado|default:"-" }}</td>
+                    <td data-label="Telefone">{{ fornecedor.telefone|default:"-" }}</td>
+                    <td data-label="E-mail">{{ fornecedor.email|default:"-" }}</td>
+                    <td data-label="Status">
                         {% if fornecedor.ativo %}
                         <span class="gs-badge gs-badge--ok">Ativo</span>
                         {% else %}
                         <span class="gs-badge gs-badge--neutral">Inativo</span>
                         {% endif %}
                     </td>
-                    <td>
+                    <td data-label="Ações" class="gs-table__actions">
                         {% if perms.financeiro.change_fornecedor %}
                         <a href="{% url 'financeiro:editar_fornecedor' fornecedor.pk %}" class="gs-btn gs-btn-outline">Editar</a>
                         <form method="post" action="{% url 'financeiro:alternar_ativo_fornecedor' fornecedor.pk %}" class="gs-inline-form">
@@ -74,6 +74,7 @@
     </div>
     {% else %}
     <div class="gs-empty">
+        <p class="gs-empty__icon" aria-hidden="true"><i class="bi bi-inbox"></i></p>
         <h2 class="gs-empty__title">Nenhum fornecedor cadastrado</h2>
         <p class="gs-empty__text">Cadastre um fornecedor para usar nas contas a pagar.</p>
         {% if perms.financeiro.add_fornecedor %}

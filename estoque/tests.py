@@ -330,7 +330,9 @@ class AlertaEstoqueZeradoOuNegativoTests(TestCase):
         response = self.client.get(reverse("estoque:estoque"))
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context["estoque_5kg_sacos"], 0)
-        self.assertContains(response, "sem estoque disponível")
+        self.assertEqual(response.context["estoque_3kg_sacos"], 0)
+        self.assertContains(response, "Gelo 5 kg — estoque atual: 0 sacos")
+        self.assertContains(response, "Gelo 3 kg — estoque atual: 0 sacos")
 
     def test_estoque_positivo_nao_exibe_alerta(self):
         MovimentacaoProduto.objects.create(
@@ -342,7 +344,7 @@ class AlertaEstoqueZeradoOuNegativoTests(TestCase):
         response = self.client.get(reverse("estoque:estoque"))
         self.assertGreater(response.context["estoque_5kg_sacos"], 0)
         self.assertGreater(response.context["estoque_3kg_sacos"], 0)
-        self.assertNotContains(response, "sem estoque disponível")
+        self.assertNotContains(response, "estoque atual")
 
     def test_estoque_negativo_exibe_alerta(self):
         MovimentacaoProduto.objects.create(
@@ -352,5 +354,7 @@ class AlertaEstoqueZeradoOuNegativoTests(TestCase):
             produto=self.p3, tipo="ENTRADA", quantidade=1
         )
         response = self.client.get(reverse("estoque:estoque"))
-        self.assertLess(response.context["estoque_5kg_sacos"], 0)
-        self.assertContains(response, "sem estoque disponível")
+        self.assertEqual(response.context["estoque_5kg_sacos"], -3)
+        self.assertEqual(response.context["estoque_3kg_sacos"], 1)
+        self.assertContains(response, "Gelo 5 kg — estoque atual: -3 sacos")
+        self.assertNotContains(response, "Gelo 3 kg — estoque atual")

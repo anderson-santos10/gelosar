@@ -69,6 +69,7 @@
     </div>
     {% else %}
     <div class="gs-empty">
+        <p class="gs-empty__icon" aria-hidden="true"><i class="bi bi-inbox"></i></p>
         <h2 class="gs-empty__title">Nenhum plano cadastrado</h2>
         {% if perms.financeiro.add_planomanutencao %}
         <a href="{% url 'financeiro:cadastrar_plano_veiculo' veiculo.pk %}" class="gs-btn gs-btn-primary">Novo plano</a>
