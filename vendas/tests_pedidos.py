@@ -1,6 +1,7 @@
 import json
 from datetime import date
 from decimal import Decimal
+from pathlib import Path
 from unittest.mock import patch
 
 from django.contrib.auth import get_user_model
@@ -17,6 +18,29 @@ from financeiro.models import ContaReceber
 from produtos.models import Produto
 from vendas.models import ItemPedido, ItemVenda, Pedido, Venda
 from vendas.services import PedidoNaoAberto, entregar_pedido
+
+
+class CalculoPedidoJsTests(SimpleTestCase):
+
+    def _script(self, nome):
+        return (
+            Path(__file__).resolve().parent / "static" / "venda" / "js" / nome
+        ).read_text(encoding="utf-8")
+
+    def test_total_considera_linha_com_checkbox_desmarcado(self):
+        texto = self._script("nova_venda.js")
+        self.assertIn("quantidadeInteira", texto)
+        self.assertIn("quantidadeInput.addEventListener", texto)
+        self.assertIn("deleteInput.checked", texto)
+        self.assertNotIn("value === 'on'", texto)
+        self.assertNotIn('value === "on"', texto)
+        self.assertIn("getElementById('total-venda')", texto)
+
+    def test_formulario_alternativo_usa_a_mesma_regra(self):
+        texto = self._script("pedido_form.js")
+        self.assertIn("quantidadeInteira", texto)
+        self.assertIn("apagar.checked", texto)
+        self.assertNotIn('value === "on"', texto)
 
 
 class PedidoFluxoTests(TestCase):
@@ -191,6 +215,8 @@ class PedidoFluxoTests(TestCase):
         self.assertIn('id="total-venda"', html)
         self.assertIn('class="form-control preco-input"', html)
         self.assertIn('class="subtotal"', html)
+        self.assertIn("nova_venda.js", html)
+        self.assertIn("produtos-precos-data", html)
 
     @override_settings(ESTOQUE_DATA_CORTE=None)
     def test_post_sem_endereco_copia_o_cadastro_do_cliente(self):
@@ -218,6 +244,19 @@ class PedidoFluxoTests(TestCase):
         self.assertContains(response, "A quantidade deve ser pelo menos 1 saco.")
         self.assertEqual(Pedido.objects.count(), 0)
         self.assertEqual(Venda.objects.count(), 0)
+
+    @override_settings(ESTOQUE_DATA_CORTE=None)
+    def test_preco_enviado_pelo_navegador_nao_altera_o_gravado(self):
+        response = self._criar(**{
+            "itens-0-quantidade": "4",
+            "itens-0-preco_unitario": "0.01",
+            "total": "0.01",
+        })
+        self.assertEqual(response.status_code, 302)
+        item = ItemPedido.objects.get()
+        self.assertEqual(item.quantidade, 4)
+        self.assertEqual(item.preco_unitario, Decimal("7.00"))
+        self.assertEqual(item.pedido.total, Decimal("28.00"))
 
     @override_settings(ESTOQUE_DATA_CORTE=None)
     def test_quantidade_fracionada_e_rejeitada(self):

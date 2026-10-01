@@ -12,6 +12,7 @@ from estoque.services import (
 from producao.models import Producao
 
 from .charts import producao_por_dia, vendas_por_dia
+from .numeros import quantidade_sem_decimal
 from .periodo import dia_local_atual, intervalo_dia_local
 
 
@@ -81,9 +82,9 @@ class DashboardView(LoginRequiredMixin, TemplateView):
                 or 0
             )
 
-            context["producao_hoje"] = producao_hoje
-            context["producao_semana"] = producao_semana
-            context["producao_mes"] = producao_mes
+            context["producao_hoje"] = quantidade_sem_decimal(producao_hoje)
+            context["producao_semana"] = quantidade_sem_decimal(producao_semana)
+            context["producao_mes"] = quantidade_sem_decimal(producao_mes)
             context["chart_producao"] = producao_por_dia()
 
         if pode_estoque:
@@ -93,9 +94,11 @@ class DashboardView(LoginRequiredMixin, TemplateView):
 
             total_estoque_gelo = estoque_5kg + estoque_3kg
 
-            context["estoque_5kg_sacos"] = estoque_5kg
-            context["estoque_3kg_sacos"] = estoque_3kg
-            context["total_estoque_gelo_sacos"] = total_estoque_gelo
+            context["estoque_5kg_sacos"] = quantidade_sem_decimal(estoque_5kg)
+            context["estoque_3kg_sacos"] = quantidade_sem_decimal(estoque_3kg)
+            context["total_estoque_gelo_sacos"] = quantidade_sem_decimal(
+                total_estoque_gelo
+            )
 
             embalagens = calcular_estoques_insumo_por_nome(
                 "Embalagem Gelo 5k",

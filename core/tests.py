@@ -3,6 +3,7 @@ from pathlib import Path
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.template import Context, Template
 from django.test import SimpleTestCase, TestCase
 from django.urls import reverse
 from django.utils import timezone
@@ -308,6 +309,10 @@ class DashboardPermissaoBlocosTests(TestCase):
         self.assertContains(response, "Insumos (embalagens)")
         self.assertContains(response, 'id="chart-estoque"')
         self.assertEqual(response.context["estoque_5kg_sacos"], 6)
+        self.assertIsInstance(response.context["estoque_5kg_sacos"], int)
+        self.assertIsInstance(response.context["chart_estoque"]["values"][0], int)
+        self.assertNotContains(response, "6,00")
+        self.assertNotContains(response, "6.00")
         self.assertNotContains(response, "Total Maquinário")
         self.assertNotContains(response, "Produção acumulada")
         self.assertNotContains(response, 'id="chart-vendas"')
@@ -322,6 +327,8 @@ class DashboardPermissaoBlocosTests(TestCase):
         self.assertContains(response, "Produção acumulada")
         self.assertContains(response, 'id="chart-producao"')
         self.assertGreater(response.context["producao_hoje"], 0)
+        self.assertIsInstance(response.context["producao_hoje"], int)
+        self.assertNotContains(response, "3,00")
         self.assertNotContains(response, "Produtos acabados (gelo)")
         self.assertNotContains(response, "Total Maquinário")
         self.assertNotContains(response, 'id="chart-vendas"')
@@ -334,6 +341,10 @@ class DashboardPermissaoBlocosTests(TestCase):
         self.assertContains(response, 'id="chart-vendas"')
         self.assertContains(response, "Vendas (7 dias)")
         self.assertIn("chart_vendas", response.context)
+        self.assertTrue(response.context["chart_vendas"]["currency"])
+        self.assertTrue(
+            all(isinstance(valor, float) for valor in response.context["chart_vendas"]["values"])
+        )
         self.assertNotContains(response, "Produção acumulada")
         self.assertNotContains(response, "Produtos acabados (gelo)")
         self.assertNotContains(response, "Total Maquinário")
@@ -665,3 +676,24 @@ class ProducaoDiaDashboardEListaTests(TestCase):
             dash.context["producao_hoje"],
             lista.context["producao_hoje"],
         )
+
+
+class QuantidadeSemDecimalTests(SimpleTestCase):
+
+    def test_inteiro_exato_perde_casas_decimais(self):
+        from core.numeros import quantidade_sem_decimal
+
+        self.assertEqual(quantidade_sem_decimal(Decimal("25.00")), 25)
+        self.assertEqual(quantidade_sem_decimal(Decimal("100.00")), 100)
+        self.assertEqual(quantidade_sem_decimal(25), 25)
+        self.assertIsInstance(quantidade_sem_decimal(Decimal("25.00")), int)
+
+    def test_fracao_real_permanece(self):
+        from core.numeros import quantidade_sem_decimal
+
+        self.assertEqual(quantidade_sem_decimal(Decimal("25.50")), Decimal("25.50"))
+
+    def test_moeda_continua_com_centavos(self):
+        template = Template("{% load moeda %}{{ valor|moeda_br }}")
+        html = template.render(Context({"valor": Decimal("25.00")}))
+        self.assertEqual(html, "R$ 25,00")

@@ -43,4 +43,9 @@
     </div>
 
 </div>
+{{ clientes_enderecos|json_script:"clientes-enderecos-equipamento" }}
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'equipamentos/js/equipamento_localizacao.js' %}"></script>
 {% endblock %}

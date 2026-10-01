@@ -11,29 +11,27 @@ from django.views.generic import DeleteView, DetailView, ListView, CreateView, U
 from accounts.authz import ModulePermissionRequiredMixin
 
 from .models import ContratoComodato, Equipamento, DocumentoEquipamento
-from .forms import ContratoComodatoForm, DocumentoEquipamentoForm
+from .forms import (
+    ContratoComodatoForm,
+    DocumentoEquipamentoForm,
+    EquipamentoForm,
+    enderecos_por_cliente,
+)
 
 
 
 class EquipamentoCreateView(LoginRequiredMixin, ModulePermissionRequiredMixin, CreateView):
     permission_required = "equipamentos.add_equipamento"
     model = Equipamento
-    fields = [
-        'nome',
-        'tipo',
-        'cliente',
-        'fabricante',
-        'numero_serie',
-        'valor_compra',
-        'data_compra',
-        'garantia_meses',
-        'localizacao',
-        'status',
-        'observacoes',
-    ]
+    form_class = EquipamentoForm
 
     template_name = 'equipamentos/cadastrar_equipamentos.html'
     success_url = reverse_lazy('equipamentos:listar_equipamentos')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["clientes_enderecos"] = enderecos_por_cliente()
+        return context
     
 
 class EquipamentoListView(LoginRequiredMixin, ModulePermissionRequiredMixin, ListView):
@@ -133,23 +131,16 @@ class EquipamentoDetailView(LoginRequiredMixin, ModulePermissionRequiredMixin, D
 class EquipamentoUpdateView(LoginRequiredMixin, ModulePermissionRequiredMixin, UpdateView):
     permission_required = "equipamentos.change_equipamento"
     model = Equipamento
-    fields = [
-        'nome',
-        'tipo',
-        'cliente',
-        'fabricante',
-        'numero_serie',
-        'valor_compra',
-        'data_compra',
-        'garantia_meses',
-        'localizacao',
-        'status',
-        'observacoes',
-    ]
+    form_class = EquipamentoForm
 
     template_name = 'equipamentos/editar_equipamento.html'
     success_url = reverse_lazy('equipamentos:listar_equipamentos')
     context_object_name = 'equipamento'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["clientes_enderecos"] = enderecos_por_cliente()
+        return context
     
 class EquipamentoDeleteView(LoginRequiredMixin, ModulePermissionRequiredMixin, DeleteView):
     permission_required = "equipamentos.delete_equipamento"

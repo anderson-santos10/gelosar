@@ -1,3 +1,4 @@
+import json
 from datetime import date
 
 from django.contrib.admin.sites import site
@@ -13,7 +14,7 @@ from django.conf import settings
 from accounts.test_utils import conceder_permissoes
 from clientes.models import Cliente
 from equipamentos.admin import ContratoComodatoAdmin
-from equipamentos.forms import ContratoComodatoForm, DocumentoEquipamentoForm
+from equipamentos.forms import ContratoComodatoForm, DocumentoEquipamentoForm, EquipamentoForm
 from equipamentos.models import ContratoComodato, DocumentoEquipamento, Equipamento
 from equipamentos.validators import (
     MENSAGEM_CONTEUDO_INVALIDO,
@@ -341,6 +342,142 @@ class EquipamentoCRUDTests(TestCase):
         self.assertEqual(eq.nome, "Freezer CRUD editado")
         self.assertEqual(eq.status, "manutencao")
         self.assertEqual(eq.numero_serie, "SN-CRUD")
+        self.assertEqual(eq.localizacao, "Pátio")
+
+
+class LocalizacaoDoClienteTests(TestCase):
+
+    ENDERECO = "Rua Exemplo, 123 - Centro - Marília/SP"
+
+    def setUp(self):
+        User = get_user_model()
+        self.user = User.objects.create_user(
+            username="eq-local",
+            password="teste-123",
+        )
+        conceder_permissoes(
+            self.user,
+            "equipamentos.add_equipamento",
+            "equipamentos.change_equipamento",
+            "equipamentos.view_equipamento",
+        )
+        self.client.force_login(self.user)
+        self.com_endereco = Cliente.objects.create(
+            nome="Mercado São João",
+            endereco=self.ENDERECO,
+        )
+        self.sem_endereco = Cliente.objects.create(nome="Sem endereço")
+        self.outro = Cliente.objects.create(
+            nome="Padaria Central",
+            endereco="Avenida Brasil, 50 - Centro - Marília/SP",
+        )
+
+    def _dados(self, **extras):
+        dados = {
+            "nome": "Máquina local",
+            "tipo": "maquina_gelo",
+            "status": "ativo",
+            "fabricante": "",
+            "numero_serie": "",
+            "localizacao": "texto digitado",
+            "observacoes": "",
+        }
+        dados.update(extras)
+        return dados
+
+    def test_formulario_copia_endereco_do_cliente(self):
+        form = EquipamentoForm(data=self._dados(cliente=self.com_endereco.pk))
+        self.assertTrue(form.is_valid(), form.errors)
+        self.assertEqual(form.cleaned_data["localizacao"], self.ENDERECO)
+
+    def test_formulario_troca_cliente_e_substitui_localizacao(self):
+        primeiro = EquipamentoForm(
+            data=self._dados(cliente=self.com_endereco.pk, localizacao="antigo")
+        )
+        self.assertTrue(primeiro.is_valid(), primeiro.errors)
+        equipamento = primeiro.save()
+
+        segundo = EquipamentoForm(
+            data=self._dados(
+                cliente=self.outro.pk,
+                localizacao=equipamento.localizacao,
+            ),
+            instance=equipamento,
+        )
+        self.assertTrue(segundo.is_valid(), segundo.errors)
+        self.assertEqual(
+            segundo.cleaned_data["localizacao"],
+            "Avenida Brasil, 50 - Centro - Marília/SP",
+        )
+
+    def test_formulario_cliente_sem_endereco_deixa_localizacao_vazia(self):
+        form = EquipamentoForm(
+            data=self._dados(cliente=self.sem_endereco.pk, localizacao=self.ENDERECO)
+        )
+        self.assertTrue(form.is_valid(), form.errors)
+        self.assertEqual(form.cleaned_data["localizacao"], "")
+
+    def test_formulario_sem_cliente_mantem_localizacao_informada(self):
+        form = EquipamentoForm(data=self._dados(localizacao="Pátio"))
+        self.assertTrue(form.is_valid(), form.errors)
+        self.assertEqual(form.cleaned_data["localizacao"], "Pátio")
+
+    def test_cadastro_persiste_endereco_do_cliente(self):
+        response = self.client.post(
+            reverse("equipamentos:cadastrar_equipamentos"),
+            self._dados(
+                cliente=self.com_endereco.pk,
+                localizacao="endereço que o javascript não enviou",
+            ),
+        )
+        self.assertEqual(response.status_code, 302)
+        equipamento = Equipamento.objects.get(nome="Máquina local")
+        self.assertEqual(equipamento.cliente, self.com_endereco)
+        self.assertEqual(equipamento.localizacao, self.ENDERECO)
+
+    def test_cadastro_cliente_sem_endereco_salva_localizacao_vazia(self):
+        response = self.client.post(
+            reverse("equipamentos:cadastrar_equipamentos"),
+            self._dados(cliente=self.sem_endereco.pk, localizacao=self.ENDERECO),
+        )
+        self.assertEqual(response.status_code, 302)
+        equipamento = Equipamento.objects.get(nome="Máquina local")
+        self.assertEqual(equipamento.localizacao, "")
+
+    def test_edicao_troca_cliente_e_atualiza_localizacao(self):
+        equipamento = Equipamento.objects.create(
+            nome="Máquina local",
+            tipo="maquina_gelo",
+            cliente=self.com_endereco,
+            localizacao=self.ENDERECO,
+        )
+        response = self.client.post(
+            reverse("equipamentos:editar_equipamento", args=[equipamento.pk]),
+            self._dados(cliente=self.outro.pk, localizacao=self.ENDERECO),
+        )
+        self.assertEqual(response.status_code, 302)
+        equipamento.refresh_from_db()
+        self.assertEqual(equipamento.cliente, self.outro)
+        self.assertEqual(
+            equipamento.localizacao,
+            "Avenida Brasil, 50 - Centro - Marília/SP",
+        )
+
+    def test_pagina_de_cadastro_expoe_enderecos_para_o_navegador(self):
+        response = self.client.get(reverse("equipamentos:cadastrar_equipamentos"))
+        self.assertEqual(response.status_code, 200)
+        html = response.content.decode()
+        self.assertIn("equipamento_localizacao.js", html)
+        inicio = html.index('id="clientes-enderecos-equipamento"')
+        trecho = html[inicio:html.index("</script>", inicio)]
+        payload = trecho.split(">", 1)[1]
+        enderecos = json.loads(payload)
+        self.assertEqual(enderecos[str(self.com_endereco.pk)], self.ENDERECO)
+        self.assertEqual(
+            enderecos[str(self.outro.pk)],
+            "Avenida Brasil, 50 - Centro - Marília/SP",
+        )
+        self.assertEqual(enderecos[str(self.sem_endereco.pk)], "")
 
 
 class ContratoComodatoPersistenciaTests(TestCase):

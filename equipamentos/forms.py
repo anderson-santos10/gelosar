@@ -1,6 +1,50 @@
 from django import forms
-from .models import ContratoComodato, DocumentoEquipamento
+
+from clientes.models import Cliente
+
+from .models import ContratoComodato, DocumentoEquipamento, Equipamento
 from .validators import validar_arquivo_documento
+
+
+def localizacao_do_cliente(cliente):
+    """Copia o endereço já cadastrado no cliente para o limite do campo."""
+    if cliente is None:
+        return ""
+    limite = Equipamento._meta.get_field("localizacao").max_length
+    endereco = (cliente.endereco or "").strip()
+    return endereco[:limite]
+
+
+def enderecos_por_cliente():
+    return {
+        str(cliente.pk): localizacao_do_cliente(cliente)
+        for cliente in Cliente.objects.only("id", "endereco")
+    }
+
+
+class EquipamentoForm(forms.ModelForm):
+    class Meta:
+        model = Equipamento
+        fields = [
+            "nome",
+            "tipo",
+            "cliente",
+            "fabricante",
+            "numero_serie",
+            "valor_compra",
+            "data_compra",
+            "garantia_meses",
+            "localizacao",
+            "status",
+            "observacoes",
+        ]
+
+    def clean(self):
+        cleaned = super().clean()
+        cliente = cleaned.get("cliente")
+        if cliente is not None:
+            cleaned["localizacao"] = localizacao_do_cliente(cliente)
+        return cleaned
 
 
 class DocumentoEquipamentoForm(forms.ModelForm):

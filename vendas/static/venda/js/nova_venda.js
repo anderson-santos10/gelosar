@@ -26,6 +26,14 @@
         return Math.round(numero * 100);
     };
 
+    const quantidadeInteira = (valor) => {
+        const texto = String(valor ?? "").trim();
+        if (!/^\d+$/.test(texto)) return 0;
+        const numero = Number(texto);
+        if (!Number.isSafeInteger(numero) || numero < 1) return 0;
+        return numero;
+    };
+
     const obterCampos = (row) => {
         return {
             produtoSelect: row.querySelector('.produto-select') || row.querySelector('select[name$="-produto"]'),
@@ -82,8 +90,7 @@
             if (!produtoSelect || !quantidadeInput) return;
 
             const produtoId = produtoSelect.value;
-            const quantidade = Number(quantidadeInput.value);
-            const quantidadeValida = Number.isFinite(quantidade) ? quantidade : 0;
+            const quantidadeValida = quantidadeInteira(quantidadeInput.value);
             const precoCentavos = paraCentavos(precosProdutos[produtoId]);
             const subtotalCentavos = Math.round(quantidadeValida * precoCentavos);
             const precoUnitario = precoCentavos / 100;
@@ -102,7 +109,7 @@
                 if (row.style.display === 'none') return;
 
                 const deleteInput = row.querySelector('input[name$="-DELETE"]');
-                if (deleteInput && (deleteInput.checked || deleteInput.value === 'on')) {
+                if (deleteInput && deleteInput.checked) {
                     return;
                 }
 
@@ -110,8 +117,7 @@
                 if (!produtoSelect || !quantidadeInput) return;
 
                 const produtoId = produtoSelect.value;
-                const quantidade = Number(quantidadeInput.value);
-                const quantidadeValida = Number.isFinite(quantidade) ? quantidade : 0;
+                const quantidadeValida = quantidadeInteira(quantidadeInput.value);
                 const precoCentavos = paraCentavos(precosProdutos[produtoId]);
                 totalCentavos += Math.round(quantidadeValida * precoCentavos);
             });

@@ -5,9 +5,11 @@ from django.urls import reverse, reverse_lazy
 
 from accounts.authz import ModulePermissionRequiredMixin
 from core.charts import compras_cliente_por_mes, mix_produtos_cliente
+from core.numeros import quantidade_sem_decimal
 from equipamentos.models import ContratoComodato, Equipamento
 
 from .forms import ClienteForm
+from .historico import agrupar_compras
 from .models import Cliente
 
 
@@ -184,6 +186,11 @@ class DashboardClienteView(LoginRequiredMixin, ModulePermissionRequiredMixin, De
 
                 produtos[nome] += item.quantidade
 
+        produtos = {
+            nome: quantidade_sem_decimal(quantidade)
+            for nome, quantidade in produtos.items()
+        }
+
         # =====================================================
         # CONTEXTO
         # =====================================================
@@ -194,7 +201,9 @@ class DashboardClienteView(LoginRequiredMixin, ModulePermissionRequiredMixin, De
 
             'total_compras': total_compras,
 
-            'quantidade_total': quantidade_total,
+            'quantidade_total': quantidade_sem_decimal(quantidade_total),
+
+            'historico': agrupar_compras(vendas),
 
             'ultima_compra': ultima_compra,
 

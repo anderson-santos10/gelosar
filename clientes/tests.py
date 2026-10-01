@@ -2,6 +2,7 @@ from django.contrib.admin.sites import site
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import NoReverseMatch, reverse
+from datetime import date
 from decimal import Decimal
 from pathlib import Path
 
@@ -11,6 +12,7 @@ from accounts.test_utils import conceder_permissoes
 from clientes.admin import ClienteAdmin
 from clientes.models import Cliente
 from equipamentos.models import Equipamento
+from produtos.models import Produto
 
 
 class DashboardClienteViewTests(TestCase):
@@ -69,11 +71,9 @@ class DashboardClienteViewTests(TestCase):
             reverse("clientes:dashboard_cliente", args=[self.cliente.pk])
         )
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, f'id="historico-venda-{venda.pk}"')
-        self.assertContains(
-            response,
-            f'data-gs-sensitive-container="historico-venda-{venda.pk}"',
-        )
+        self.assertContains(response, 'id="historico-dia-')
+        self.assertContains(response, 'data-gs-sensitive-container="historico-dia-')
+        self.assertContains(response, "Total do dia")
         self.assertContains(response, "R$ ••••••")
         self.assertContains(response, "sensitive-value")
         self.assertContains(response, "sensitive-masked")
@@ -355,3 +355,148 @@ class ClienteCnpjComodatoListaTests(TestCase):
         self.assertContains(response, "Não é possível marcar Não")
         cliente.refresh_from_db()
         self.assertTrue(cliente.possui_equipamento_comodato)
+
+
+class ApresentacaoClienteTests(TestCase):
+
+    def test_formatadores_de_contato(self):
+        from clientes.utils import apresentar_cidade, formatar_telefone
+
+        self.assertEqual(formatar_telefone("14999998888"), "(14) 99999-8888")
+        self.assertEqual(formatar_telefone("1433334444"), "(14) 3333-4444")
+        self.assertEqual(formatar_telefone("(14) 99999-8888"), "(14) 99999-8888")
+        self.assertEqual(formatar_telefone(""), "")
+        self.assertEqual(formatar_telefone("123"), "123")
+        self.assertEqual(apresentar_cidade("Marília/SP"), "Marília - SP")
+        self.assertEqual(apresentar_cidade("Marília - SP"), "Marília - SP")
+        self.assertEqual(apresentar_cidade("Marília"), "Marília")
+        self.assertEqual(apresentar_cidade(""), "")
+
+    def test_dashboard_mostra_cadastro_formatado_e_vazio(self):
+        User = get_user_model()
+        usuario = User.objects.create_user(username="cliente-fmt", password="teste-123")
+        conceder_permissoes(usuario, "clientes.view_cliente")
+        self.client.force_login(usuario)
+        completo = Cliente.objects.create(
+            nome="Mercado São João",
+            cnpj="12345678000199",
+            telefone="14999998888",
+            endereco="Rua Exemplo, 123",
+            cidade="Marília/SP",
+        )
+        response = self.client.get(
+            reverse("clientes:dashboard_cliente", args=[completo.pk])
+        )
+        self.assertContains(response, "12.345.678/0001-99")
+        self.assertContains(response, "(14) 99999-8888")
+        self.assertContains(response, "Marília - SP")
+        self.assertContains(response, "Rua Exemplo, 123")
+        self.assertContains(response, "bi-building")
+        self.assertContains(response, "bi-telephone")
+        self.assertContains(response, "bi-geo-alt")
+        self.assertContains(response, "bi-pin-map")
+        self.assertNotContains(response, "00.000.000/0000-00")
+
+        vazio = Cliente.objects.create(nome="Sem dados")
+        response = self.client.get(
+            reverse("clientes:dashboard_cliente", args=[vazio.pk])
+        )
+        self.assertContains(response, "CNPJ/CPF não informado")
+        self.assertContains(response, "Sem telefone")
+        self.assertContains(response, "Endereço não informado")
+        self.assertContains(response, "Cidade não informada")
+        self.assertNotContains(response, "00.000.000/0000-00")
+
+
+class HistoricoComprasClienteTests(TestCase):
+
+    def setUp(self):
+        User = get_user_model()
+        self.user = User.objects.create_user(username="hist-cli", password="teste-123")
+        conceder_permissoes(self.user, "clientes.view_cliente")
+        self.client.force_login(self.user)
+        self.joao = Cliente.objects.create(nome="João da Silva")
+        self.maria = Cliente.objects.create(nome="Maria Souza")
+        self.gelo_3 = Produto.objects.create(
+            nome="Gelo 3kg",
+            peso_kg=Decimal("3.00"),
+            preco_venda=Decimal("8.00"),
+        )
+        self.gelo_5 = Produto.objects.create(
+            nome="Gelo 5kg",
+            peso_kg=Decimal("5.00"),
+            preco_venda=Decimal("10.00"),
+        )
+
+    def _venda(self, cliente, dia, itens):
+        from vendas.models import ItemVenda, Venda
+
+        venda = Venda.objects.create(cliente=cliente)
+        Venda.objects.filter(pk=venda.pk).update(data=dia)
+        venda.refresh_from_db()
+        for produto, quantidade in itens:
+            ItemVenda.objects.create(
+                venda=venda,
+                produto=produto,
+                quantidade=Decimal(quantidade),
+            )
+        return venda
+
+    def test_agrupa_mesmo_cliente_no_mesmo_dia(self):
+        from clientes.historico import agrupar_compras
+        from vendas.models import Venda
+
+        self._venda(self.joao, date(2026, 10, 1), [(self.gelo_3, "10.00"), (self.gelo_5, "5.00")])
+        self._venda(self.joao, date(2026, 10, 1), [(self.gelo_3, "2.00")])
+        self._venda(self.joao, date(2026, 10, 2), [(self.gelo_5, "1.00")])
+        self._venda(self.maria, date(2026, 10, 1), [(self.gelo_3, "4.00")])
+
+        grupos = agrupar_compras(
+            Venda.objects.select_related("cliente").prefetch_related("itens__produto")
+        )
+        mesmo_dia = [
+            grupo for grupo in grupos
+            if grupo["cliente_id"] == self.joao.pk and grupo["data"] == date(2026, 10, 1)
+        ]
+        self.assertEqual(len(mesmo_dia), 1)
+        itens = {item["produto"]: item for item in mesmo_dia[0]["itens"]}
+        self.assertEqual(set(itens), {"Gelo 3kg", "Gelo 5kg"})
+        self.assertEqual(itens["Gelo 3kg"]["quantidade"], 12)
+        self.assertEqual(itens["Gelo 5kg"]["quantidade"], 5)
+        self.assertEqual(itens["Gelo 3kg"]["subtotal"], Decimal("96.00"))
+        self.assertEqual(itens["Gelo 5kg"]["subtotal"], Decimal("50.00"))
+        self.assertEqual(mesmo_dia[0]["quantidade"], 17)
+        self.assertEqual(mesmo_dia[0]["total"], Decimal("146.00"))
+        self.assertEqual(len(mesmo_dia[0]["vendas"]), 2)
+
+        outro_dia = [
+            grupo for grupo in grupos
+            if grupo["cliente_id"] == self.joao.pk and grupo["data"] == date(2026, 10, 2)
+        ]
+        self.assertEqual(len(outro_dia), 1)
+        self.assertEqual(outro_dia[0]["quantidade"], 1)
+
+        maria = [grupo for grupo in grupos if grupo["cliente_id"] == self.maria.pk]
+        self.assertEqual(len(maria), 1)
+        self.assertEqual(maria[0]["data"], date(2026, 10, 1))
+        self.assertEqual(maria[0]["quantidade"], 4)
+        self.assertEqual(Venda.objects.count(), 4)
+
+    def test_dashboard_exibe_grupo_sem_decimal_na_quantidade(self):
+        self._venda(
+            self.joao,
+            date(2026, 10, 1),
+            [(self.gelo_3, "25.00")],
+        )
+        response = self.client.get(
+            reverse("clientes:dashboard_cliente", args=[self.joao.pk])
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context["quantidade_total"], 25)
+        self.assertIsInstance(response.context["quantidade_total"], int)
+        self.assertEqual(len(response.context["historico"]), 1)
+        self.assertEqual(response.context["historico"][0]["quantidade"], 25)
+        self.assertContains(response, "R$ 200,00")
+        self.assertContains(response, "Total do dia")
+        self.assertNotContains(response, "25,00")
+        self.assertNotContains(response, "25.00")

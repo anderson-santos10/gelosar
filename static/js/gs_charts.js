@@ -22,6 +22,17 @@
         });
     }
 
+    function formatarQuantidade(valor) {
+        const numero = Number(valor);
+        if (!Number.isFinite(numero)) {
+            return String(valor);
+        }
+        if (Math.abs(numero - Math.trunc(numero)) < 1e-9) {
+            return String(Math.trunc(numero));
+        }
+        return numero.toLocaleString("pt-BR", { maximumFractionDigits: 2 });
+    }
+
     function valorGrafico(contexto, anel) {
         if (anel) {
             return contexto.parsed;
@@ -150,7 +161,7 @@
                                     return contexto.label + ": " + formatarMoeda(bruto);
                                 }
                                 const nome = contexto.dataset.label || contexto.label;
-                                return nome + ": " + bruto;
+                                return nome + ": " + formatarQuantidade(bruto);
                             },
                         },
                     },

@@ -42,6 +42,14 @@
             return Math.round(numero * 100);
         };
 
+        const quantidadeInteira = (valor) => {
+            const texto = String(valor ?? "").trim();
+            if (!/^\d+$/.test(texto)) return 0;
+            const numero = Number(texto);
+            if (!Number.isSafeInteger(numero) || numero < 1) return 0;
+            return numero;
+        };
+
         const atualizarCard = (card) => {
             const produto = card.querySelector('select[name$="-produto"]');
             const quantidade = card.querySelector('input[name$="-quantidade"]');
@@ -49,8 +57,7 @@
             const subtotal = card.querySelector(".subtotal");
             if (!produto || !quantidade) return 0;
             const unitario = centavosDe(precos[produto.value]);
-            const qtd = Number(quantidade.value);
-            const qtdValida = Number.isFinite(qtd) ? qtd : 0;
+            const qtdValida = quantidadeInteira(quantidade.value);
             const parcial = Math.round(qtdValida * unitario);
             if (preco) preco.textContent = formatar(unitario);
             if (subtotal) subtotal.textContent = formatar(parcial);
@@ -62,7 +69,7 @@
             document.querySelectorAll(".item-row").forEach((card) => {
                 if (card.hidden) return;
                 const apagar = card.querySelector('input[name$="-DELETE"]');
-                if (apagar && (apagar.checked || apagar.value === "on")) return;
+                if (apagar && apagar.checked) return;
                 total += atualizarCard(card);
             });
             if (totalPedido) totalPedido.textContent = formatar(total);

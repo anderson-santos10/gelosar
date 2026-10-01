@@ -1,6 +1,11 @@
 from django.db import models
 
-from .utils import formatar_cnpj_cpf, normalizar_cnpj
+from .utils import (
+    apresentar_cidade,
+    formatar_cnpj_cpf,
+    formatar_telefone,
+    normalizar_cnpj,
+)
 
 
 class Cliente(models.Model):
@@ -75,6 +80,14 @@ class Cliente(models.Model):
     @property
     def cnpj_formatado(self):
         return formatar_cnpj_cpf(self.cnpj)
+
+    @property
+    def telefone_formatado(self):
+        return formatar_telefone(self.telefone)
+
+    @property
+    def cidade_apresentacao(self):
+        return apresentar_cidade(self.cidade)
 
     @property
     def possui_comodato_efetivo(self):

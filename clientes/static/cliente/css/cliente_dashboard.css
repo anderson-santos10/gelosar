@@ -1,5 +1,26 @@
 /* Dashboard do cliente — layout específico; tokens vêm de base.css. */
 
+.cliente-dados {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--gs-space-2) var(--gs-space-4);
+    margin: var(--gs-space-2) 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+.cliente-dados li {
+    display: flex;
+    align-items: center;
+    gap: var(--gs-space-2);
+    color: var(--gs-text-muted);
+    font-size: var(--gs-font-size-sm);
+}
+
+.cliente-dados i {
+    color: var(--gs-link);
+}
+
 .cliente-dashboard .gs-card__hint a {
     color: var(--gs-link);
     text-decoration: none;
@@ -181,6 +202,14 @@
     flex-wrap: wrap;
     align-items: center;
     gap: var(--gs-space-2);
+}
+
+.history-day-total {
+    margin: 0;
+    padding: var(--gs-space-3) var(--gs-space-5) 0;
+    color: var(--gs-text-muted);
+    font-size: var(--gs-font-size-sm);
+    font-weight: var(--gs-font-weight-semibold);
 }
 
 @media (max-width: 575.98px) {

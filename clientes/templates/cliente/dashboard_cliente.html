@@ -20,11 +20,24 @@
                 <li>{{ cliente.nome }}</li>
             </ol>
             <h1 class="gs-page-header__title">{{ cliente.nome }}</h1>
-            <p class="gs-page-header__desc">
-                {{ cliente.cnpj_formatado|default:"CNPJ/CPF não informado" }}
-                · {{ cliente.telefone|default:"Sem telefone" }}
-                · {{ cliente.cidade|default:"Cidade não informada" }}
-            </p>
+            <ul class="cliente-dados">
+                <li>
+                    <i class="bi bi-building" aria-hidden="true"></i>
+                    <span>{% if cliente.cnpj_formatado %}{{ cliente.cnpj_formatado }}{% else %}CNPJ/CPF não informado{% endif %}</span>
+                </li>
+                <li>
+                    <i class="bi bi-telephone" aria-hidden="true"></i>
+                    <span>{% if cliente.telefone_formatado %}{{ cliente.telefone_formatado }}{% else %}Sem telefone{% endif %}</span>
+                </li>
+                <li>
+                    <i class="bi bi-geo-alt" aria-hidden="true"></i>
+                    <span>{% if cliente.endereco %}{{ cliente.endereco }}{% else %}Endereço não informado{% endif %}</span>
+                </li>
+                <li>
+                    <i class="bi bi-pin-map" aria-hidden="true"></i>
+                    <span>{% if cliente.cidade_apresentacao %}{{ cliente.cidade_apresentacao }}{% else %}Cidade não informada{% endif %}</span>
+                </li>
+            </ul>
         </div>
         <div class="gs-page-header__actions">
             {% if cliente.ativo %}
@@ -260,30 +273,35 @@
 
         <div class="collapse" id="collapseHistorico">
             <div class="history-body" id="accordionVendas">
-                {% if vendas %}
-                    {% for venda in vendas %}
-                    <div class="history-item" id="historico-venda-{{ venda.pk }}">
+                {% if historico %}
+                    {% for dia in historico %}
+                    <div class="history-item" id="historico-dia-{{ dia.data|date:'Ymd' }}">
                         <div class="history-item-header">
                             <button
                                 class="history-date"
                                 type="button"
                                 data-bs-toggle="collapse"
-                                data-bs-target="#collapseVenda{{ forloop.counter }}"
+                                data-bs-target="#collapseDia{{ forloop.counter }}"
                                 aria-expanded="false"
-                                aria-controls="collapseVenda{{ forloop.counter }}"
+                                aria-controls="collapseDia{{ forloop.counter }}"
                             >
-                                {{ venda.data|date:"d/m/Y" }}
+                                {{ dia.data|date:"d/m/Y" }}
                             </button>
-                            <div class="history-value kpi-card">
-                                <span class="gs-badge gs-badge--ok sensitive-value d-none">{{ venda.total|moeda_br }}</span>
+                            <div class="history-value">
+                                <span class="gs-badge gs-badge--neutral sensitive-value d-none">{{ dia.quantidade }} sacos</span>
+                                <span class="gs-badge gs-badge--neutral sensitive-masked">••• sacos</span>
+                                <span class="gs-badge gs-badge--ok sensitive-value d-none">{{ dia.total|moeda_br }}</span>
                                 <span class="gs-badge gs-badge--neutral sensitive-masked">R$ ••••••</span>
+                                {% for venda in dia.vendas %}
                                 <a href="{% url 'vendas:detalhe_venda' venda.pk %}" class="gs-btn gs-btn-ghost">Ver pedido</a>
-                                <button type="button" class="gs-btn gs-btn-ghost gs-btn-icon btn-sensitive-toggle" data-gs-sensitive-container="historico-venda-{{ venda.pk }}" aria-label="Mostrar valores" title="Alternar visibilidade">
+                                {% endfor %}
+                                <button type="button" class="gs-btn gs-btn-ghost gs-btn-icon btn-sensitive-toggle" data-gs-sensitive-container="historico-dia-{{ dia.data|date:'Ymd' }}" aria-label="Mostrar valores" title="Alternar visibilidade">
                                     <i class="bi bi-eye" aria-hidden="true"></i>
                                 </button>
                             </div>
                         </div>
-                        <div id="collapseVenda{{ forloop.counter }}" class="collapse" data-bs-parent="#accordionVendas">
+                        <div id="collapseDia{{ forloop.counter }}" class="collapse" data-bs-parent="#accordionVendas">
+                            <p class="history-day-total">Total do dia</p>
                             <div class="gs-table-wrap gs-table-wrap--flush">
                                 <table class="gs-table">
                                     <thead>
@@ -294,9 +312,9 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {% for item in venda.itens.all %}
+                                        {% for item in dia.itens %}
                                         <tr>
-                                            <td>{{ item.produto.nome }}</td>
+                                            <td>{{ item.produto }}</td>
                                             <td>
                                                 <span class="sensitive-value d-none">{{ item.quantidade }} sacos</span>
                                                 <span class="sensitive-masked">••• sacos</span>
